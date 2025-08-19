@@ -1,4 +1,3 @@
-
 #!/bin/bash
 set -e
 
@@ -262,14 +261,18 @@ echo ""
 echo "✅ INSTALAÇÃO CONCLUÍDA!"
 echo ""
 echo "=== PRÓXIMOS PASSOS ==="
-echo "1. Clone seu repositório:"
+echo "1. Clone seu repositório Family Care:"
 echo "   cd /opt/prontuario-app"
-echo "   git clone https://github.com/SEU_USUARIO/SEU_REPO.git ."
+echo "   git clone https://github.com/dataqoda/familycare.git ."
 echo ""
-echo "2. Execute o primeiro deploy:"
+echo "2. Configure o Git (se necessário):"
+echo "   git config --global user.name 'Seu Nome'"
+echo "   git config --global user.email 'seu@email.com'"
+echo ""
+echo "3. Execute o primeiro deploy:"
 echo "   ./deploy.sh"
 echo ""
-echo "3. Configure SSL (se tiver domínio):"
+echo "4. Configure SSL (se tiver domínio):"
 echo "   ./setup-ssl.sh seudominio.com"
 echo ""
 echo "=== INFORMAÇÕES IMPORTANTES ==="
