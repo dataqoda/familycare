@@ -10,8 +10,6 @@ packages = ["lsb-release"]
 deploymentTarget = "autoscale"
 build = ["npm", "run", "build"]
 run = ["npm", "run", "start"]
-autoscaleMaxInstances = 1
-autoscaleMachineType = "0.25vCPU-256MB"
 
 [[ports]]
 localPort = 5000

@@ -4,44 +4,11 @@ import { storage } from "./storage";
 import { insertPatientSchema, insertAppointmentSchema, insertMedicalRecordSchema, insertPendingItemSchema, insertRecentUpdateSchema } from "@shared/schema";
 import { z } from "zod";
 
-// Cache simples para reduzir consultas ao banco
-const cache = new Map();
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
-
-function getCached(key: string) {
-  const cached = cache.get(key);
-  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-    return cached.data;
-  }
-  cache.delete(key);
-  return null;
-}
-
-function setCache(key: string, data: any) {
-  cache.set(key, { data, timestamp: Date.now() });
-  // Limpar cache antigo
-  if (cache.size > 100) {
-    const entries = Array.from(cache.entries());
-    const now = Date.now();
-    entries.forEach(([k, v]) => {
-      if (now - v.timestamp > CACHE_TTL) {
-        cache.delete(k);
-      }
-    });
-  }
-}
-
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Patients routes with caching
+  // Patients routes
   app.get("/api/patients", async (req, res) => {
     try {
-      const cached = getCached('patients');
-      if (cached) {
-        return res.json(cached);
-      }
-      
       const patients = await storage.getPatients();
-      setCache('patients', patients);
       res.json(patients);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch patients" });
