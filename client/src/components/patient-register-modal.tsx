@@ -5,6 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import type { InsertPatient } from "@shared/schema";
@@ -17,12 +20,18 @@ interface PatientRegisterModalProps {
 export default function PatientRegisterModal({ open, onOpenChange }: PatientRegisterModalProps) {
   const [formData, setFormData] = useState({
     name: "",
-    age: "",
+    birthDate: "",
     bloodType: "",
     doctor: "",
-    allergies: "",
-    avatar: "👤",
+    allergies: [] as string[],
+    photoUrl: "👤",
+    emergencyContactName: "",
+    emergencyContactPhone: "",
+    insurancePlan: "",
+    insuranceNumber: "",
   });
+
+  const [newAllergy, setNewAllergy] = useState("");
   
   const { toast } = useToast();
   const queryClient = useQueryClient();

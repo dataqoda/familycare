@@ -32,16 +32,14 @@ export default function Sidebar({ patients, isOpen, onToggle, onPatientClick }: 
           
           {/* Navigation Menu */}
           <nav className="flex-1 p-4 space-y-2">
-            <Link href="/">
-              <a className="flex items-center px-4 py-2 text-gray-700 bg-purple-50 rounded-lg">
-                <span className="mr-3">📊</span>
-                Dashboard
-              </a>
+            <Link href="/" className="flex items-center px-4 py-2 text-gray-700 bg-purple-50 rounded-lg">
+              <span className="mr-3">📊</span>
+              Dashboard
             </Link>
-            <a href="#" className="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg">
+            <Link href="/search" className="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg">
               <span className="mr-3">🔍</span>
               Busca
-            </a>
+            </Link>
             
             <div className="pt-4">
               <h3 className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Pacientes</h3>
@@ -55,7 +53,7 @@ export default function Sidebar({ patients, isOpen, onToggle, onPatientClick }: 
                     }}
                     className="w-full text-left flex items-center px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg"
                   >
-                    <span className="mr-3">{patient.avatar}</span>
+                    <span className="mr-3">{patient.photoUrl}</span>
                     {patient.name}
                   </button>
                 ))}

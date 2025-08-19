@@ -60,11 +60,11 @@ export default function PatientDetails() {
           
           <div className="flex items-center space-x-4">
             <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center">
-              <span className="text-3xl">{patient.avatar}</span>
+              <span className="text-3xl">{patient.photoUrl}</span>
             </div>
             <div>
               <h1 className="text-3xl font-bold text-gray-900">{patient.name}</h1>
-              <p className="text-lg text-gray-600">{patient.age} anos</p>
+              <p className="text-lg text-gray-600">{new Date().getFullYear() - new Date(patient.birthDate).getFullYear()} anos</p>
             </div>
           </div>
         </div>

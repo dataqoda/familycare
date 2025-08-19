@@ -1,16 +1,29 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp, integer, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, timestamp, integer, boolean, date } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 export const patients = pgTable("patients", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: text("name").notNull(),
-  age: integer("age").notNull(),
+  birthDate: date("birth_date").notNull(),
   bloodType: text("blood_type"),
   doctor: text("doctor"),
   allergies: text("allergies").array().default([]),
-  avatar: text("avatar").default("👤"),
+  photoUrl: text("photo_url"),
+  // Emergency contact
+  emergencyContactName: text("emergency_contact_name"),
+  emergencyContactPhone: text("emergency_contact_phone"),
+  // Insurance information
+  insurancePlan: text("insurance_plan"),
+  insuranceNumber: text("insurance_number"),
+  insuranceCardFrontUrl: text("insurance_card_front_url"),
+  insuranceCardBackUrl: text("insurance_card_back_url"),
+  idCardFrontUrl: text("id_card_front_url"),
+  idCardBackUrl: text("id_card_back_url"),
+  // Security
+  sensitiveDataPasswordActive: boolean("sensitive_data_password_active").default(false),
+  sensitiveDataPassword: text("sensitive_data_password"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -29,10 +42,47 @@ export const appointments = pgTable("appointments", {
 export const medicalRecords = pgTable("medical_records", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   patientId: varchar("patient_id").notNull().references(() => patients.id),
-  type: text("type").notNull(), // 'exam', 'medication', 'appointment', 'history', 'incident', 'pending'
+  type: text("type").notNull(), // 'exam', 'medication', 'appointment', 'history', 'incident', 'pending', 'credential'
+  
+  // Common fields
+  title: text("title"),
+  description: text("description"),
   date: text("date").notNull(),
-  description: text("description").notNull(),
   attachments: text("attachments").array().default([]),
+  
+  // Exam specific fields
+  examType: text("exam_type"),
+  requestingDoctor: text("requesting_doctor"),
+  observations: text("observations"),
+  
+  // Medication specific fields
+  medicationName: text("medication_name"),
+  frequency: text("frequency"),
+  usageType: text("usage_type"), // 'continuous', 'temporary'
+  periodOfDay: text("period_of_day"), // 'morning', 'afternoon', 'evening', 'dawn', 'any'
+  startDate: text("start_date"),
+  duration: text("duration"),
+  prescribingDoctor: text("prescribing_doctor"),
+  indication: text("indication"),
+  
+  // Appointment specific fields
+  clinicHospital: text("clinic_hospital"),
+  doctor: text("doctor"),
+  specialty: text("specialty"),
+  address: text("address"),
+  mapUrl: text("map_url"),
+  time: text("time"),
+  
+  // Pending specific fields
+  deadline: text("deadline"),
+  
+  // Credential specific fields
+  serviceName: text("service_name"),
+  serviceUrl: text("service_url"),
+  username: text("username"),
+  password: text("password"),
+  additionalNotes: text("additional_notes"),
+  
   createdAt: timestamp("created_at").defaultNow(),
 });
 

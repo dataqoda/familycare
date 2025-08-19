@@ -60,16 +60,66 @@ export class MemStorage implements IStorage {
   private initializeData() {
     // Initialize with sample family data
     const familyMembers = [
-      { name: "João Silva", age: 45, bloodType: "O+", doctor: "Dr. Santos", allergies: ["Penicilina", "Amendoim"], avatar: "👨" },
-      { name: "Maria Silva", age: 42, bloodType: "A+", doctor: "Dra. Costa", allergies: ["Aspirina"], avatar: "👩" },
-      { name: "Ana Silva", age: 16, bloodType: "B+", doctor: "Dr. Oliveira", allergies: [], avatar: "👧" },
-      { name: "Pedro Silva", age: 12, bloodType: "O+", doctor: "Dr. Lima", allergies: ["Pólen"], avatar: "👦" }
+      { 
+        name: "João Silva", 
+        birthDate: "1979-01-15", 
+        bloodType: "O+", 
+        doctor: "Dr. Santos", 
+        allergies: ["Penicilina", "Amendoim"], 
+        photoUrl: "👨",
+        emergencyContactName: "Maria Silva",
+        emergencyContactPhone: "(11) 99999-8888",
+        insurancePlan: "Unimed",
+        insuranceNumber: "123456789"
+      },
+      { 
+        name: "Maria Silva", 
+        birthDate: "1982-03-22", 
+        bloodType: "A+", 
+        doctor: "Dra. Costa", 
+        allergies: ["Aspirina"], 
+        photoUrl: "👩",
+        emergencyContactName: "João Silva",
+        emergencyContactPhone: "(11) 99999-7777",
+        insurancePlan: "Unimed",
+        insuranceNumber: "987654321"
+      },
+      { 
+        name: "Ana Silva", 
+        birthDate: "2008-07-10", 
+        bloodType: "B+", 
+        doctor: "Dr. Oliveira", 
+        allergies: [], 
+        photoUrl: "👧",
+        emergencyContactName: "João Silva",
+        emergencyContactPhone: "(11) 99999-7777",
+        insurancePlan: "Unimed",
+        insuranceNumber: "456789123"
+      },
+      { 
+        name: "Pedro Silva", 
+        birthDate: "2012-11-05", 
+        bloodType: "O+", 
+        doctor: "Dr. Lima", 
+        allergies: ["Pólen"], 
+        photoUrl: "👦",
+        emergencyContactName: "Maria Silva",
+        emergencyContactPhone: "(11) 99999-8888",
+        insurancePlan: "Unimed",
+        insuranceNumber: "789123456"
+      }
     ];
 
     familyMembers.forEach(member => {
       const patient: Patient = {
         id: randomUUID(),
         ...member,
+        sensitiveDataPasswordActive: false,
+        sensitiveDataPassword: null,
+        insuranceCardFrontUrl: null,
+        insuranceCardBackUrl: null,
+        idCardFrontUrl: null,
+        idCardBackUrl: null,
         createdAt: new Date()
       };
       this.patients.set(patient.id, patient);

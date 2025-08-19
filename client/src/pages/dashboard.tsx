@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Sidebar from "@/components/sidebar";
 import Header from "@/components/header";
-import QuickRegisterModal from "@/components/quick-register-modal";
-import PatientRegisterModal from "@/components/patient-register-modal";
+import AdvancedQuickRegisterModal from "@/components/advanced-quick-register-modal";
+import ImprovedPatientRegisterModal from "@/components/improved-patient-register-modal";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
@@ -187,10 +187,10 @@ export default function Dashboard() {
                   >
                     <div className="flex flex-col items-center text-center">
                       <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-3">
-                        <span className="text-2xl">{patient.avatar}</span>
+                        <span className="text-2xl">{patient.photoUrl}</span>
                       </div>
                       <h3 className="font-medium text-gray-900 mb-1">{patient.name}</h3>
-                      <p className="text-sm text-gray-600 mb-2">{patient.age} anos</p>
+                      <p className="text-sm text-gray-600 mb-2">{new Date().getFullYear() - new Date(patient.birthDate).getFullYear()} anos</p>
                       <div className="text-xs text-gray-500 space-y-1">
                         <div><span className="font-medium">Tipo:</span> <span>{patient.bloodType || "N/A"}</span></div>
                         <div><span className="font-medium">Dr:</span> <span>{patient.doctor || "N/A"}</span></div>
@@ -243,13 +243,13 @@ export default function Dashboard() {
         </main>
       </div>
 
-      <QuickRegisterModal 
+      <AdvancedQuickRegisterModal 
         open={showQuickRegister} 
         onOpenChange={setShowQuickRegister}
         patients={patients}
       />
       
-      <PatientRegisterModal 
+      <ImprovedPatientRegisterModal 
         open={showPatientRegister} 
         onOpenChange={setShowPatientRegister}
       />
