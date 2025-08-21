@@ -18,13 +18,9 @@ print_color() {
 
 # Função para lidar com erros
 handle_error() {
-    local line_no=$1
-    print_color $RED "❌ Erro na linha $line_no. Abortando instalação..."
+    print_color $RED "❌ Erro detectado. Abortando instalação..."
     exit 1
 }
-
-# Configurar trap para capturar erros
-trap 'handle_error ${LINENO}' ERR
 
 # Função para perguntar com valor padrão
 ask_with_default() {
