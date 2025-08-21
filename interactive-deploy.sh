@@ -1,3 +1,4 @@
+
 #!/bin/bash
 set -e
 
@@ -64,11 +65,11 @@ ask_yes_no() {
 }
 
 clear
-print_color $PURPLE "🚀 FAMILY CARE - SCRIPT DE DEPLOY INTERATIVO"
-print_color $CYAN "============================================="
+print_color $PURPLE "🚀 FAMILY CARE - SCRIPT DE DEPLOY SEGURO"
+print_color $CYAN "========================================="
 echo ""
 print_color $YELLOW "Este script irá configurar completamente seu servidor Ubuntu"
-print_color $YELLOW "para rodar a aplicação Family Care em produção."
+print_color $YELLOW "para rodar a aplicação Family Care em produção com segurança."
 echo ""
 
 # Verificar se está rodando como root
@@ -91,6 +92,7 @@ GIT_USER_NAME=$(ask_with_default "Seu nome para configuração do Git" "Data Qod
 GIT_USER_EMAIL=$(ask_with_default "Seu email para configuração do Git" "dataqoda@gmail.com")
 DOMAIN_NAME=$(ask_with_default "Domínio personalizado (deixe vazio se não tiver)" "portainer.ti.fac.unb.br")
 APP_NAME=$(ask_with_default "Nome da aplicação para PM2" "family-care")
+APP_USER=$(ask_with_default "Usuário do sistema para a aplicação" "familycare")
 DB_NAME=$(ask_with_default "Nome do banco de dados" "familycare_db")
 DB_USER=$(ask_with_default "Usuário do banco de dados" "familycare_user")
 
@@ -112,7 +114,6 @@ echo "----------------------------"
 SETUP_SSL=$(ask_yes_no "Configurar SSL automaticamente (precisa de domínio)" "n")
 SETUP_FIREWALL=$(ask_yes_no "Configurar firewall UFW" "y")
 SETUP_BACKUP=$(ask_yes_no "Configurar backup automático do banco" "y")
-SETUP_MONITORING=$(ask_yes_no "Instalar monitoramento básico" "y")
 SETUP_FAIL2BAN=$(ask_yes_no "Instalar fail2ban para segurança" "y")
 
 echo ""
@@ -122,6 +123,7 @@ echo "GitHub URL: $GITHUB_URL"
 echo "Git User: $GIT_USER_NAME <$GIT_USER_EMAIL>"
 echo "Domínio: ${DOMAIN_NAME:-'Não configurado'}"
 echo "App Name: $APP_NAME"
+echo "App User: $APP_USER"
 echo "Database: $DB_NAME ($DB_USER)"
 echo "Port: $APP_PORT"
 echo ""
@@ -143,7 +145,7 @@ show_progress() {
     print_color $CYAN "[$step/$total] $description"
 }
 
-TOTAL_STEPS=15
+TOTAL_STEPS=16
 CURRENT_STEP=1
 
 # 1. Atualizar sistema
@@ -158,7 +160,18 @@ show_progress $CURRENT_STEP $TOTAL_STEPS "Instalando ferramentas básicas..."
 apt-get install -y curl wget gnupg2 software-properties-common apt-transport-https ca-certificates lsb-release unzip git build-essential
 ((CURRENT_STEP++))
 
-# 3. Instalar Node.js 20
+# 3. Criar usuário dedicado para a aplicação
+show_progress $CURRENT_STEP $TOTAL_STEPS "Criando usuário dedicado para a aplicação..."
+if ! id "$APP_USER" &>/dev/null; then
+    useradd -m -s /bin/bash "$APP_USER"
+    usermod -aG sudo "$APP_USER"
+    print_color $GREEN "✅ Usuário $APP_USER criado"
+else
+    print_color $YELLOW "⚠️  Usuário $APP_USER já existe"
+fi
+((CURRENT_STEP++))
+
+# 4. Instalar Node.js 20
 show_progress $CURRENT_STEP $TOTAL_STEPS "Instalando Node.js 20..."
 curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
 apt-get install -y nodejs
@@ -166,7 +179,7 @@ print_color $GREEN "✅ Node.js $(node --version) instalado"
 print_color $GREEN "✅ npm $(npm --version) instalado"
 ((CURRENT_STEP++))
 
-# 4. Instalar PostgreSQL 16
+# 5. Instalar PostgreSQL 16
 show_progress $CURRENT_STEP $TOTAL_STEPS "Instalando PostgreSQL 16..."
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
 echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list
@@ -174,7 +187,7 @@ apt-get update -y
 apt-get install -y postgresql-16 postgresql-client-16
 ((CURRENT_STEP++))
 
-# 5. Configurar PostgreSQL
+# 6. Configurar PostgreSQL
 show_progress $CURRENT_STEP $TOTAL_STEPS "Configurando PostgreSQL..."
 systemctl start postgresql
 systemctl enable postgresql
@@ -209,7 +222,7 @@ fi
 print_color $GREEN "✅ PostgreSQL configurado com banco '$DB_NAME'"
 ((CURRENT_STEP++))
 
-# 6. Instalar Nginx
+# 7. Instalar Nginx
 show_progress $CURRENT_STEP $TOTAL_STEPS "Instalando e configurando Nginx..."
 apt-get install -y nginx
 
@@ -293,13 +306,13 @@ nginx -t
 print_color $GREEN "✅ Nginx configurado"
 ((CURRENT_STEP++))
 
-# 7. Instalar PM2
+# 8. Instalar PM2 globalmente
 show_progress $CURRENT_STEP $TOTAL_STEPS "Instalando PM2..."
 npm install -g pm2@latest
-print_color $GREEN "✅ PM2 instalado"
+print_color $GREEN "✅ PM2 instalado globalmente"
 ((CURRENT_STEP++))
 
-# 8. Configurar Firewall (se solicitado)
+# 9. Configurar Firewall (se solicitado)
 if [ "$SETUP_FIREWALL" = "y" ]; then
     show_progress $CURRENT_STEP $TOTAL_STEPS "Configurando firewall UFW..."
     ufw --force reset
@@ -312,7 +325,7 @@ if [ "$SETUP_FIREWALL" = "y" ]; then
 fi
 ((CURRENT_STEP++))
 
-# 9. Instalar fail2ban (se solicitado)
+# 10. Instalar fail2ban (se solicitado)
 if [ "$SETUP_FAIL2BAN" = "y" ]; then
     show_progress $CURRENT_STEP $TOTAL_STEPS "Instalando fail2ban..."
     apt-get install -y fail2ban
@@ -344,32 +357,45 @@ EOL
 fi
 ((CURRENT_STEP++))
 
-# 10. Instalar Certbot
+# 11. Instalar Certbot
 show_progress $CURRENT_STEP $TOTAL_STEPS "Instalando Certbot para SSL..."
 apt-get install -y certbot python3-certbot-nginx
 ((CURRENT_STEP++))
 
-# 11. Criar diretório da aplicação
+# 12. Criar estrutura de diretórios
 show_progress $CURRENT_STEP $TOTAL_STEPS "Criando estrutura de diretórios..."
-mkdir -p /opt/$APP_NAME
-mkdir -p /var/log/pm2
-cd /opt/$APP_NAME
+APP_DIR="/home/$APP_USER/$APP_NAME"
+mkdir -p "$APP_DIR"
+mkdir -p "/var/log/$APP_NAME"
+mkdir -p "/home/$APP_USER/.pm2"
+
+# Definir permissões corretas
+chown -R "$APP_USER:$APP_USER" "/home/$APP_USER"
+chown -R "$APP_USER:$APP_USER" "/var/log/$APP_NAME"
 ((CURRENT_STEP++))
 
-# 12. Configurar Git e clonar repositório
+# 13. Configurar Git e clonar repositório como usuário dedicado
 show_progress $CURRENT_STEP $TOTAL_STEPS "Configurando Git e clonando repositório..."
+
+# Executar comandos como usuário dedicado
+sudo -u "$APP_USER" bash << EOF
+cd "$APP_DIR"
 git config --global user.name "$GIT_USER_NAME"
 git config --global user.email "$GIT_USER_EMAIL"
 git config --global init.defaultBranch main
 
 # Clonar repositório
 git clone $GITHUB_URL .
+EOF
+
 print_color $GREEN "✅ Repositório clonado de $GITHUB_URL"
 ((CURRENT_STEP++))
 
-# 13. Criar arquivo .env e instalar dependências
+# 14. Configurar aplicação
 show_progress $CURRENT_STEP $TOTAL_STEPS "Configurando aplicação..."
-cat > /opt/$APP_NAME/.env << EOL
+
+# Criar arquivo .env
+sudo -u "$APP_USER" cat > "$APP_DIR/.env" << EOL
 # Environment
 NODE_ENV=production
 PORT=$APP_PORT
@@ -386,163 +412,83 @@ EOL
 
 print_color $GREEN "✅ Arquivo .env criado"
 
-# Instalar dependências
+# Instalar dependências como usuário dedicado
+sudo -u "$APP_USER" bash << EOF
+cd "$APP_DIR"
 npm install
-print_color $GREEN "✅ Dependências instaladas"
-
-# Build da aplicação
 npm run build
-print_color $GREEN "✅ Build concluído"
+EOF
+
+print_color $GREEN "✅ Dependências instaladas e build concluído"
 ((CURRENT_STEP++))
 
-# 14. Configurar PM2 e iniciar aplicação
-show_progress $CURRENT_STEP $TOTAL_STEPS "Configurando PM2..."
+# 15. Configurar PM2 para usuário dedicado
+show_progress $CURRENT_STEP $TOTAL_STEPS "Configurando PM2 para usuário dedicado..."
 
-# Verificar se npm start existe no package.json
-if ! grep -q '"start"' /opt/$APP_NAME/package.json; then
-    print_color $YELLOW "⚠️  Script 'start' não encontrado no package.json. Usando 'npm run dev'..."
-    START_SCRIPT="dev"
-else
-    START_SCRIPT="start"
-fi
+# Instalar PM2 para o usuário dedicado
+sudo -u "$APP_USER" npm install -g pm2@latest
 
-# Criar ecosystem.config.cjs (CommonJS) para projetos ES module
-cat > /opt/$APP_NAME/ecosystem.config.cjs << 'EOL'
+# Criar configuração PM2 correta
+sudo -u "$APP_USER" cat > "$APP_DIR/ecosystem.config.js" << EOF
 module.exports = {
   apps: [{
-    name: 'family-care',
+    name: '$APP_NAME',
     script: 'npm',
     args: 'run start',
+    cwd: '$APP_DIR',
     instances: 1,
     autorestart: true,
     watch: false,
     max_memory_restart: '500M',
     env: {
       NODE_ENV: 'production',
-      PORT: 5000
+      PORT: $APP_PORT
     },
-    error_file: '/var/log/pm2/family-care-error.log',
-    out_file: '/var/log/pm2/family-care-out.log',
-    log_file: '/var/log/pm2/family-care-combined.log',
+    error_file: '/var/log/$APP_NAME/error.log',
+    out_file: '/var/log/$APP_NAME/out.log',
+    log_file: '/var/log/$APP_NAME/combined.log',
     time: true
   }]
 };
-EOL
+EOF
 
-# Verificar sintaxe do ecosystem.config.cjs
-print_color $CYAN "🔍 Verificando sintaxe do ecosystem.config.cjs..."
-if node -c /opt/$APP_NAME/ecosystem.config.cjs; then
-    print_color $GREEN "✅ Sintaxe do ecosystem.config.cjs válida"
-else
-    print_color $RED "❌ Erro na sintaxe do ecosystem.config.cjs"
-    print_color $YELLOW "📄 Conteúdo do arquivo:"
-    cat /opt/$APP_NAME/ecosystem.config.cjs
-    print_color $YELLOW "🔧 Criando configuração PM2 alternativa..."
-    
-    # Fallback: usar configuração simples
-    rm -f /opt/$APP_NAME/ecosystem.config.cjs
-    cat > /opt/$APP_NAME/ecosystem.config.cjs << 'EOL'
-module.exports = {
-  apps: [{
-    name: "family-care",
-    script: "npm",
-    args: "run start",
-    instances: 1,
-    autorestart: true,
-    watch: false,
-    env: {
-      NODE_ENV: "production",
-      PORT: 5000
-    }
-  }]
-};
-EOL
-    
-    # Verificar novamente
-    if ! node -c /opt/$APP_NAME/ecosystem.config.cjs; then
-        print_color $RED "❌ Falha crítica na criação do ecosystem.config.cjs"
-        exit 1
-    fi
+# Verificar se package.json tem script start
+if ! sudo -u "$APP_USER" grep -q '"start"' "$APP_DIR/package.json"; then
+    print_color $YELLOW "⚠️  Script 'start' não encontrado. Usando 'dev'..."
+    sudo -u "$APP_USER" sed -i 's/npm run start/npm run dev/g' "$APP_DIR/ecosystem.config.js"
 fi
 
 # Limpar PM2 existentes
-print_color $CYAN "🧹 Limpando processos PM2 existentes..."
-pm2 delete all 2>/dev/null || true
-pm2 kill 2>/dev/null || true
+sudo -u "$APP_USER" pm2 delete all 2>/dev/null || true
+sudo -u "$APP_USER" pm2 kill 2>/dev/null || true
 
-# Aguardar um momento
 sleep 3
 
-# Criar diretório de logs se não existir
-mkdir -p /var/log/pm2
-
-# Iniciar aplicação
+# Iniciar aplicação como usuário dedicado
 print_color $CYAN "🚀 Iniciando aplicação com PM2..."
-cd /opt/$APP_NAME
-
-# Log do que está sendo executado
-print_color $YELLOW "📋 Configuração PM2:"
-cat /opt/$APP_NAME/ecosystem.config.cjs
-
-# Tentar iniciar com ecosystem.config.cjs
-if pm2 start /opt/$APP_NAME/ecosystem.config.cjs; then
-    print_color $GREEN "✅ Aplicação iniciada com ecosystem.config.cjs"
-else
-    print_color $RED "❌ Falha ao iniciar com ecosystem.config.cjs"
-    print_color $YELLOW "📋 Logs de erro do PM2:"
-    pm2 logs --lines 10 2>/dev/null || true
-    
-    print_color $YELLOW "🔧 Tentando método alternativo..."
-    # Tentar iniciar diretamente
-    if [ -f "package.json" ] && grep -q '"start"' package.json; then
-        pm2 start npm --name "$APP_NAME" -- run start
-    elif [ -f "package.json" ] && grep -q '"dev"' package.json; then
-        pm2 start npm --name "$APP_NAME" -- run dev
-    else
-        print_color $RED "❌ Não foi possível determinar como iniciar a aplicação"
-        print_color $YELLOW "📄 Conteúdo do package.json:"
-        cat package.json | grep -A5 -B5 '"scripts"' || true
-        exit 1
-    fi
-fi
-
-# Aguardar inicialização
-sleep 5
-
-# Verificar status
-if pm2 list | grep -q "online"; then
-    print_color $GREEN "✅ Aplicação está rodando"
-    pm2 list
-else
-    print_color $RED "❌ Aplicação não está rodando corretamente"
-    print_color $YELLOW "📋 Status do PM2:"
-    pm2 list
-    print_color $YELLOW "📋 Logs recentes:"
-    pm2 logs --lines 20 || true
-fi
-
-# Salvar configuração PM2
+sudo -u "$APP_USER" bash << EOF
+cd "$APP_DIR"
+pm2 start ecosystem.config.js
 pm2 save
+EOF
 
-# Configurar auto-start
-print_color $CYAN "🔄 Configurando PM2 auto-start..."
-pm2 startup systemd -u root --hp /root
-systemctl enable pm2-root 2>/dev/null || true
+# Configurar auto-start para o usuário dedicado
+sudo -u "$APP_USER" pm2 startup systemd -u "$APP_USER" --hp "/home/$APP_USER" | grep -E '^sudo' | bash
 
-print_color $GREEN "✅ PM2 configurado e aplicação iniciada"
+print_color $GREEN "✅ PM2 configurado para usuário $APP_USER"
 ((CURRENT_STEP++))
 
-# 15. Criar scripts de manutenção
+# 16. Criar scripts de manutenção
 show_progress $CURRENT_STEP $TOTAL_STEPS "Criando scripts de manutenção..."
 
 # Script de deploy
-cat > /opt/$APP_NAME/deploy.sh << EOL
+sudo -u "$APP_USER" cat > "$APP_DIR/deploy.sh" << EOF
 #!/bin/bash
 set -e
 
 echo "🚀 Iniciando deploy do Family Care..."
 
-cd /opt/$APP_NAME
+cd "$APP_DIR"
 
 # Parar aplicação
 pm2 stop $APP_NAME || true
@@ -550,7 +496,7 @@ pm2 stop $APP_NAME || true
 # Backup do banco
 echo "📦 Fazendo backup do banco..."
 mkdir -p backups
-pg_dump -U $DB_USER -h localhost $DB_NAME > backups/backup_\$(date +%Y%m%d_%H%M%S).sql
+PGPASSWORD='$DB_PASSWORD' pg_dump -U $DB_USER -h localhost $DB_NAME > backups/backup_\$(date +%Y%m%d_%H%M%S).sql
 
 # Atualizar código
 echo "📥 Atualizando código..."
@@ -569,12 +515,12 @@ echo "▶️ Reiniciando aplicação..."
 pm2 restart $APP_NAME
 
 echo "✅ Deploy concluído!"
-EOL
+EOF
 
-chmod +x /opt/$APP_NAME/deploy.sh
+chmod +x "$APP_DIR/deploy.sh"
 
 # Script de monitoramento
-cat > /opt/$APP_NAME/monitor.sh << EOL
+sudo -u "$APP_USER" cat > "$APP_DIR/monitor.sh" << EOF
 #!/bin/bash
 
 echo "=== FAMILY CARE - STATUS DO SISTEMA ==="
@@ -588,7 +534,7 @@ echo "PM2: \$(pm2 list | grep -c online) processos online"
 echo ""
 
 echo "=== APLICAÇÃO ==="
-pm2 show $APP_NAME --nojs 2>/dev/null || echo "Aplicação não encontrada"
+pm2 show $APP_NAME 2>/dev/null || echo "Aplicação não encontrada"
 echo ""
 
 echo "=== RECURSOS ==="
@@ -599,23 +545,23 @@ echo ""
 
 echo "=== LOGS RECENTES ==="
 echo "--- PM2 (últimas 10 linhas) ---"
-pm2 logs $APP_NAME --lines 10 --nojs 2>/dev/null || echo "Sem logs PM2"
-EOL
+pm2 logs $APP_NAME --lines 10 2>/dev/null || echo "Sem logs PM2"
+EOF
 
-chmod +x /opt/$APP_NAME/monitor.sh
+chmod +x "$APP_DIR/monitor.sh"
 
 # Script de backup se solicitado
 if [ "$SETUP_BACKUP" = "y" ]; then
-    cat > /opt/$APP_NAME/backup.sh << EOL
+    sudo -u "$APP_USER" cat > "$APP_DIR/backup.sh" << EOF
 #!/bin/bash
 set -e
 
-BACKUP_DIR="/opt/$APP_NAME/backups"
+BACKUP_DIR="$APP_DIR/backups"
 mkdir -p \$BACKUP_DIR
 
 # Fazer backup
 BACKUP_FILE="\$BACKUP_DIR/backup_\$(date +%Y%m%d_%H%M%S).sql"
-pg_dump -U $DB_USER -h localhost $DB_NAME > \$BACKUP_FILE
+PGPASSWORD='$DB_PASSWORD' pg_dump -U $DB_USER -h localhost $DB_NAME > \$BACKUP_FILE
 
 # Comprimir backup
 gzip \$BACKUP_FILE
@@ -626,13 +572,15 @@ echo "✅ Backup criado: \${BACKUP_FILE}.gz"
 find \$BACKUP_DIR -name "backup_*.sql.gz" -type f -mtime +7 -delete
 
 echo "🧹 Backups antigos removidos"
-EOL
+EOF
 
-    chmod +x /opt/$APP_NAME/backup.sh
-    mkdir -p /opt/$APP_NAME/backups
+    chmod +x "$APP_DIR/backup.sh"
+    sudo -u "$APP_USER" mkdir -p "$APP_DIR/backups"
 
-    # Agendar backup diário
-    (crontab -l 2>/dev/null; echo "0 2 * * * /opt/$APP_NAME/backup.sh >> /var/log/backup.log 2>&1") | crontab -
+    # Agendar backup diário para o usuário dedicado
+    sudo -u "$APP_USER" bash << EOF
+(crontab -l 2>/dev/null; echo "0 2 * * * $APP_DIR/backup.sh >> /var/log/$APP_NAME/backup.log 2>&1") | crontab -
+EOF
     print_color $GREEN "✅ Backup automático configurado"
 fi
 
@@ -655,9 +603,9 @@ if [ "$SETUP_SSL" = "y" ] && [ -n "$DOMAIN_NAME" ]; then
     fi
 fi
 
-# Definir permissões
-chown -R www-data:www-data /opt/$APP_NAME
-chmod -R 755 /opt/$APP_NAME
+# Definir permissões finais
+chown -R "$APP_USER:$APP_USER" "$APP_DIR"
+chown -R "$APP_USER:$APP_USER" "/var/log/$APP_NAME"
 
 # Reiniciar serviços
 systemctl restart nginx
@@ -669,9 +617,11 @@ echo ""
 
 print_color $BLUE "📊 INFORMAÇÕES DO SISTEMA:"
 echo "App Name: $APP_NAME"
+echo "App User: $APP_USER"
+echo "App Directory: $APP_DIR"
 echo "Database: $DB_NAME"
-echo "User: $DB_USER"
-echo "Password: $DB_PASSWORD"
+echo "DB User: $DB_USER"
+echo "DB Password: $DB_PASSWORD"
 echo "Port: $APP_PORT"
 if [ -n "$DOMAIN_NAME" ]; then
     echo "Domain: $DOMAIN_NAME"
@@ -686,25 +636,26 @@ else
 fi
 echo ""
 
-print_color $BLUE "🔧 COMANDOS ÚTEIS:"
-echo "pm2 list                    # Status da aplicação"
-echo "pm2 logs $APP_NAME         # Ver logs"
-echo "pm2 restart $APP_NAME      # Reiniciar app"
-echo "./monitor.sh               # Status do sistema"
-echo "./deploy.sh                # Deploy automático"
+print_color $BLUE "🔧 COMANDOS ÚTEIS (execute como usuário $APP_USER):"
+echo "sudo -u $APP_USER pm2 list                    # Status da aplicação"
+echo "sudo -u $APP_USER pm2 logs $APP_NAME         # Ver logs"
+echo "sudo -u $APP_USER pm2 restart $APP_NAME      # Reiniciar app"
+echo "sudo -u $APP_USER $APP_DIR/monitor.sh        # Status do sistema"
+echo "sudo -u $APP_USER $APP_DIR/deploy.sh         # Deploy automático"
 if [ "$SETUP_BACKUP" = "y" ]; then
-    echo "./backup.sh                # Backup manual"
+    echo "sudo -u $APP_USER $APP_DIR/backup.sh         # Backup manual"
 fi
 echo ""
 
-print_color $YELLOW "⚠️  IMPORTANTE:"
-echo "1. Guarde a senha do banco: $DB_PASSWORD"
-echo "2. Guarde a chave da sessão: $SESSION_SECRET"
-echo "3. Configure seu domínio DNS para apontar para este servidor"
+print_color $YELLOW "⚠️  IMPORTANTE - SEGURANÇA:"
+echo "1. A aplicação roda como usuário '$APP_USER' (não root)"
+echo "2. Guarde a senha do banco: $DB_PASSWORD"
+echo "3. Guarde a chave da sessão: $SESSION_SECRET"
+echo "4. Configure seu domínio DNS para apontar para este servidor"
 echo ""
 
 echo ""
-print_color $PURPLE "✨ Family Care está pronto para uso!"
+print_color $PURPLE "✨ Family Care está pronto para uso com segurança!"
 
 # Testar se a aplicação está rodando
 sleep 5
@@ -712,6 +663,6 @@ if curl -s http://localhost:$APP_PORT > /dev/null; then
     print_color $GREEN "✅ Aplicação está respondendo na porta $APP_PORT"
 else
     print_color $YELLOW "⚠️  Verificando status da aplicação..."
-    pm2 status
-    print_color $YELLOW "Execute 'pm2 logs $APP_NAME' para ver os logs"
+    sudo -u "$APP_USER" pm2 status || true
+    print_color $YELLOW "Execute 'sudo -u $APP_USER pm2 logs $APP_NAME' para ver os logs"
 fi
