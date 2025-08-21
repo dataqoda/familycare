@@ -26,33 +26,33 @@ handle_error() {
 ask_with_default() {
     local prompt="$1"
     local default="$2"
-    local result
+    local result=""
 
     if [ -n "$default" ]; then
         read -p "$prompt [$default]: " result
-        echo "${result:-$default}"
+        result="${result:-$default}"
     else
         read -p "$prompt: " result
-        echo "$result"
     fi
+    echo "$result"
 }
 
 # Função para perguntar sim/não
 ask_yes_no() {
     local prompt="$1"
     local default="$2"
-    local result
+    local result=""
 
     while true; do
         if [ "$default" = "y" ]; then
             read -p "$prompt [Y/n]: " result
-            result=${result:-y}
+            result="${result:-y}"
         else
             read -p "$prompt [y/N]: " result
-            result=${result:-n}
+            result="${result:-n}"
         fi
 
-        case $result in
+        case "$result" in
             [Yy]* ) echo "y"; break;;
             [Nn]* ) echo "n"; break;;
             * ) echo "Por favor, responda yes ou no.";;
@@ -146,7 +146,7 @@ CURRENT_STEP=1
 
 # Função para incrementar step de forma segura
 increment_step() {
-    CURRENT_STEP=$((CURRENT_STEP + 1))
+    CURRENT_STEP=$(($CURRENT_STEP + 1))
 }
 
 # 1. Atualizar sistema
