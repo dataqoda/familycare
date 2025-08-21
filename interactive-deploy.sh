@@ -397,30 +397,81 @@ print_color $GREEN "✅ Build concluído"
 
 # 14. Configurar PM2 e iniciar aplicação
 show_progress $CURRENT_STEP $TOTAL_STEPS "Configurando PM2..."
-cat > /opt/$APP_NAME/ecosystem.config.js << EOL
+
+# Verificar se npm start existe no package.json
+if ! grep -q '"start"' /opt/$APP_NAME/package.json; then
+    print_color $YELLOW "⚠️  Script 'start' não encontrado no package.json. Usando 'npm run dev'..."
+    START_COMMAND="npm run dev"
+else
+    START_COMMAND="npm start"
+fi
+
+cat > /opt/$APP_NAME/ecosystem.config.js << 'EOL'
 module.exports = {
   apps: [{
-    name: '$APP_NAME',
+    name: 'REPLACE_APP_NAME',
     script: 'npm',
-    args: 'start',
+    args: 'REPLACE_START_COMMAND',
     instances: 1,
     autorestart: true,
     watch: false,
     max_memory_restart: '500M',
     env: {
       NODE_ENV: 'production',
-      PORT: '$APP_PORT'
+      PORT: 'REPLACE_APP_PORT'
     },
-    error_file: '/var/log/pm2/$APP_NAME-error.log',
-    out_file: '/var/log/pm2/$APP_NAME-out.log',
-    log_file: '/var/log/pm2/$APP_NAME-combined.log',
+    error_file: '/var/log/pm2/REPLACE_APP_NAME-error.log',
+    out_file: '/var/log/pm2/REPLACE_APP_NAME-out.log',
+    log_file: '/var/log/pm2/REPLACE_APP_NAME-combined.log',
     time: true
   }]
 };
 EOL
 
+# Substituir placeholders
+sed -i "s/REPLACE_APP_NAME/$APP_NAME/g" /opt/$APP_NAME/ecosystem.config.js
+sed -i "s/REPLACE_START_COMMAND/${START_COMMAND#npm }/g" /opt/$APP_NAME/ecosystem.config.js
+sed -i "s/REPLACE_APP_PORT/$APP_PORT/g" /opt/$APP_NAME/ecosystem.config.js
+
+# Verificar sintaxe do ecosystem.config.js
+node -c /opt/$APP_NAME/ecosystem.config.js || {
+    print_color $RED "❌ Erro na sintaxe do ecosystem.config.js"
+    cat /opt/$APP_NAME/ecosystem.config.js
+    exit 1
+}
+
+# Parar PM2 existentes se houver
+pm2 delete all || true
+pm2 kill || true
+
+# Aguardar um momento
+sleep 2
+
 # Iniciar aplicação
-pm2 start ecosystem.config.js
+print_color $CYAN "🚀 Iniciando aplicação com PM2..."
+pm2 start /opt/$APP_NAME/ecosystem.config.js
+
+# Verificar se iniciou corretamente
+sleep 3
+if pm2 list | grep -q "online"; then
+    print_color $GREEN "✅ Aplicação iniciada com sucesso"
+else
+    print_color $RED "❌ Falha ao iniciar aplicação. Verificando logs..."
+    pm2 logs --lines 20
+    print_color $YELLOW "⚠️  Tentando iniciar diretamente..."
+    
+    # Tentar iniciar diretamente
+    cd /opt/$APP_NAME
+    if [ -f "package.json" ] && grep -q '"start"' package.json; then
+        pm2 start npm --name "$APP_NAME" -- start
+    elif [ -f "package.json" ] && grep -q '"dev"' package.json; then
+        pm2 start npm --name "$APP_NAME" -- run dev
+    else
+        print_color $RED "❌ Não foi possível determinar como iniciar a aplicação"
+        exit 1
+    fi
+fi
+
 pm2 save
 pm2 startup systemd -u root --hp /root
 systemctl enable pm2-root
