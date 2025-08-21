@@ -86,10 +86,10 @@ fi
 print_color $BLUE "📋 COLETANDO INFORMAÇÕES DE CONFIGURAÇÃO"
 echo "----------------------------------------"
 
-GITHUB_URL=$(ask_with_default "URL do repositório GitHub" "https://github.com/dataqoda/familycare.git")
-GIT_USER_NAME=$(ask_with_default "Seu nome para configuração do Git" "Family Care Admin")
-GIT_USER_EMAIL=$(ask_with_default "Seu email para configuração do Git" "admin@familycare.com")
-DOMAIN_NAME=$(ask_with_default "Domínio personalizado (deixe vazio se não tiver)" "")
+GITHUB_URL=$(ask_with_default "URL do repositório GitHub" "https://github.com/dataqoda/FamilyCare.git")
+GIT_USER_NAME=$(ask_with_default "Seu nome para configuração do Git" "Data Qoda")
+GIT_USER_EMAIL=$(ask_with_default "Seu email para configuração do Git" "dataqoda@gmail.com")
+DOMAIN_NAME=$(ask_with_default "Domínio personalizado (deixe vazio se não tiver)" "portainer.ti.fac.unb.br")
 APP_NAME=$(ask_with_default "Nome da aplicação para PM2" "family-care")
 DB_NAME=$(ask_with_default "Nome do banco de dados" "familycare_db")
 DB_USER=$(ask_with_default "Usuário do banco de dados" "familycare_user")
