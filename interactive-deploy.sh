@@ -407,23 +407,23 @@ else
 fi
 
 # Criar ecosystem.config.js com sintaxe correta
-cat > /opt/$APP_NAME/ecosystem.config.js << EOL
+cat > /opt/$APP_NAME/ecosystem.config.js << 'EOL'
 module.exports = {
   apps: [{
-    name: '${APP_NAME}',
+    name: 'family-care',
     script: 'npm',
-    args: 'run ${START_SCRIPT}',
+    args: 'run start',
     instances: 1,
     autorestart: true,
     watch: false,
     max_memory_restart: '500M',
     env: {
       NODE_ENV: 'production',
-      PORT: ${APP_PORT}
+      PORT: 5000
     },
-    error_file: '/var/log/pm2/${APP_NAME}-error.log',
-    out_file: '/var/log/pm2/${APP_NAME}-out.log',
-    log_file: '/var/log/pm2/${APP_NAME}-combined.log',
+    error_file: '/var/log/pm2/family-care-error.log',
+    out_file: '/var/log/pm2/family-care-out.log',
+    log_file: '/var/log/pm2/family-care-combined.log',
     time: true
   }]
 };
@@ -441,18 +441,18 @@ else
     
     # Fallback: usar configuração simples
     rm -f /opt/$APP_NAME/ecosystem.config.js
-    cat > /opt/$APP_NAME/ecosystem.config.js << EOL
+    cat > /opt/$APP_NAME/ecosystem.config.js << 'EOL'
 module.exports = {
   apps: [{
-    name: "${APP_NAME}",
+    name: "family-care",
     script: "npm",
-    args: "run ${START_SCRIPT}",
+    args: "run start",
     instances: 1,
     autorestart: true,
     watch: false,
     env: {
       NODE_ENV: "production",
-      PORT: ${APP_PORT}
+      PORT: 5000
     }
   }]
 };
