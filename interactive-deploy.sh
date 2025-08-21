@@ -406,8 +406,8 @@ else
     START_SCRIPT="start"
 fi
 
-# Criar ecosystem.config.js com sintaxe correta
-cat > /opt/$APP_NAME/ecosystem.config.js << 'EOL'
+# Criar ecosystem.config.cjs (CommonJS) para projetos ES module
+cat > /opt/$APP_NAME/ecosystem.config.cjs << 'EOL'
 module.exports = {
   apps: [{
     name: 'family-care',
@@ -429,19 +429,19 @@ module.exports = {
 };
 EOL
 
-# Verificar sintaxe do ecosystem.config.js
-print_color $CYAN "🔍 Verificando sintaxe do ecosystem.config.js..."
-if node -c /opt/$APP_NAME/ecosystem.config.js; then
-    print_color $GREEN "✅ Sintaxe do ecosystem.config.js válida"
+# Verificar sintaxe do ecosystem.config.cjs
+print_color $CYAN "🔍 Verificando sintaxe do ecosystem.config.cjs..."
+if node -c /opt/$APP_NAME/ecosystem.config.cjs; then
+    print_color $GREEN "✅ Sintaxe do ecosystem.config.cjs válida"
 else
-    print_color $RED "❌ Erro na sintaxe do ecosystem.config.js"
+    print_color $RED "❌ Erro na sintaxe do ecosystem.config.cjs"
     print_color $YELLOW "📄 Conteúdo do arquivo:"
-    cat /opt/$APP_NAME/ecosystem.config.js
+    cat /opt/$APP_NAME/ecosystem.config.cjs
     print_color $YELLOW "🔧 Criando configuração PM2 alternativa..."
     
     # Fallback: usar configuração simples
-    rm -f /opt/$APP_NAME/ecosystem.config.js
-    cat > /opt/$APP_NAME/ecosystem.config.js << 'EOL'
+    rm -f /opt/$APP_NAME/ecosystem.config.cjs
+    cat > /opt/$APP_NAME/ecosystem.config.cjs << 'EOL'
 module.exports = {
   apps: [{
     name: "family-care",
@@ -459,8 +459,8 @@ module.exports = {
 EOL
     
     # Verificar novamente
-    if ! node -c /opt/$APP_NAME/ecosystem.config.js; then
-        print_color $RED "❌ Falha crítica na criação do ecosystem.config.js"
+    if ! node -c /opt/$APP_NAME/ecosystem.config.cjs; then
+        print_color $RED "❌ Falha crítica na criação do ecosystem.config.cjs"
         exit 1
     fi
 fi
@@ -482,13 +482,13 @@ cd /opt/$APP_NAME
 
 # Log do que está sendo executado
 print_color $YELLOW "📋 Configuração PM2:"
-cat /opt/$APP_NAME/ecosystem.config.js
+cat /opt/$APP_NAME/ecosystem.config.cjs
 
-# Tentar iniciar com ecosystem.config.js
-if pm2 start /opt/$APP_NAME/ecosystem.config.js; then
-    print_color $GREEN "✅ Aplicação iniciada com ecosystem.config.js"
+# Tentar iniciar com ecosystem.config.cjs
+if pm2 start /opt/$APP_NAME/ecosystem.config.cjs; then
+    print_color $GREEN "✅ Aplicação iniciada com ecosystem.config.cjs"
 else
-    print_color $RED "❌ Falha ao iniciar com ecosystem.config.js"
+    print_color $RED "❌ Falha ao iniciar com ecosystem.config.cjs"
     print_color $YELLOW "📋 Logs de erro do PM2:"
     pm2 logs --lines 10 2>/dev/null || true
     
