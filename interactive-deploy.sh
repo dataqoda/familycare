@@ -140,12 +140,12 @@ show_progress() {
     local description="$3"
     
     # Garantir que step seja um número válido
-    if ! [[ "$step" =~ ^[0-9]+$ ]] || [ -z "$step" ]; then
+    if [ -z "$step" ] || ! echo "$step" | grep -q '^[0-9]\+$'; then
         step=1
     fi
     
     # Garantir que total seja um número válido  
-    if ! [[ "$total" =~ ^[0-9]+$ ]] || [ -z "$total" ]; then
+    if [ -z "$total" ] || ! echo "$total" | grep -q '^[0-9]\+$'; then
         total=16
     fi
     
@@ -156,7 +156,7 @@ TOTAL_STEPS=16
 CURRENT_STEP=1
 
 # Validar que CURRENT_STEP é um número
-if ! [[ "$CURRENT_STEP" =~ ^[0-9]+$ ]]; then
+if [ -z "$CURRENT_STEP" ] || ! echo "$CURRENT_STEP" | grep -q '^[0-9]\+$'; then
     CURRENT_STEP=1
 fi
 
