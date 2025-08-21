@@ -144,17 +144,22 @@ show_progress() {
 TOTAL_STEPS=16
 CURRENT_STEP=1
 
+# Função para incrementar step de forma segura
+increment_step() {
+    CURRENT_STEP=$((CURRENT_STEP + 1))
+}
+
 # 1. Atualizar sistema
 show_progress $CURRENT_STEP $TOTAL_STEPS "Atualizando sistema..."
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -y
 apt-get upgrade -y
-((CURRENT_STEP++))
+increment_step
 
 # 2. Instalar ferramentas básicas
 show_progress $CURRENT_STEP $TOTAL_STEPS "Instalando ferramentas básicas..."
 apt-get install -y curl wget gnupg2 software-properties-common apt-transport-https ca-certificates lsb-release unzip git build-essential
-((CURRENT_STEP++))
+increment_step
 
 # 3. Criar usuário dedicado para a aplicação
 show_progress $CURRENT_STEP $TOTAL_STEPS "Criando usuário dedicado para a aplicação..."
@@ -165,7 +170,7 @@ if ! id "$APP_USER" &>/dev/null; then
 else
     print_color $YELLOW "⚠️  Usuário $APP_USER já existe"
 fi
-((CURRENT_STEP++))
+increment_step
 
 # 4. Instalar Node.js 20
 show_progress $CURRENT_STEP $TOTAL_STEPS "Instalando Node.js 20..."
@@ -173,7 +178,7 @@ curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
 apt-get install -y nodejs
 print_color $GREEN "✅ Node.js $(node --version) instalado"
 print_color $GREEN "✅ npm $(npm --version) instalado"
-((CURRENT_STEP++))
+increment_step
 
 # 5. Instalar PostgreSQL 16
 show_progress $CURRENT_STEP $TOTAL_STEPS "Instalando PostgreSQL 16..."
@@ -181,7 +186,7 @@ wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key a
 echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list
 apt-get update -y
 apt-get install -y postgresql-16 postgresql-client-16
-((CURRENT_STEP++))
+increment_step
 
 # 6. Configurar PostgreSQL
 show_progress $CURRENT_STEP $TOTAL_STEPS "Configurando PostgreSQL..."
@@ -216,7 +221,7 @@ EOL
 fi
 
 print_color $GREEN "✅ PostgreSQL configurado com banco '$DB_NAME'"
-((CURRENT_STEP++))
+increment_step
 
 # 7. Instalar Nginx
 show_progress $CURRENT_STEP $TOTAL_STEPS "Instalando e configurando Nginx..."
@@ -300,13 +305,13 @@ rm -f /etc/nginx/sites-enabled/default
 # Testar configuração
 nginx -t
 print_color $GREEN "✅ Nginx configurado"
-((CURRENT_STEP++))
+increment_step
 
 # 8. Instalar PM2 globalmente
 show_progress $CURRENT_STEP $TOTAL_STEPS "Instalando PM2..."
 npm install -g pm2@latest
 print_color $GREEN "✅ PM2 instalado globalmente"
-((CURRENT_STEP++))
+increment_step
 
 # 9. Configurar Firewall (se solicitado)
 if [ "$SETUP_FIREWALL" = "y" ]; then
@@ -319,7 +324,7 @@ if [ "$SETUP_FIREWALL" = "y" ]; then
     ufw allow 443
     print_color $GREEN "✅ Firewall configurado"
 fi
-((CURRENT_STEP++))
+increment_step
 
 # 10. Instalar fail2ban (se solicitado)
 if [ "$SETUP_FAIL2BAN" = "y" ]; then
@@ -351,12 +356,12 @@ EOL
     systemctl start fail2ban
     print_color $GREEN "✅ Fail2ban configurado"
 fi
-((CURRENT_STEP++))
+increment_step
 
 # 11. Instalar Certbot
 show_progress $CURRENT_STEP $TOTAL_STEPS "Instalando Certbot para SSL..."
 apt-get install -y certbot python3-certbot-nginx
-((CURRENT_STEP++))
+increment_step
 
 # 12. Criar estrutura de diretórios
 show_progress $CURRENT_STEP $TOTAL_STEPS "Criando estrutura de diretórios..."
@@ -368,7 +373,7 @@ mkdir -p "/home/$APP_USER/.pm2"
 # Definir permissões corretas
 chown -R "$APP_USER:$APP_USER" "/home/$APP_USER"
 chown -R "$APP_USER:$APP_USER" "/var/log/$APP_NAME"
-((CURRENT_STEP++))
+increment_step
 
 # 13. Configurar Git e clonar repositório como usuário dedicado
 show_progress $CURRENT_STEP $TOTAL_STEPS "Configurando Git e clonando repositório..."
@@ -385,7 +390,7 @@ git clone $GITHUB_URL .
 EOF
 
 print_color $GREEN "✅ Repositório clonado de $GITHUB_URL"
-((CURRENT_STEP++))
+increment_step
 
 # 14. Configurar aplicação
 show_progress $CURRENT_STEP $TOTAL_STEPS "Configurando aplicação..."
@@ -416,7 +421,7 @@ npm run build
 EOF
 
 print_color $GREEN "✅ Dependências instaladas e build concluído"
-((CURRENT_STEP++))
+increment_step
 
 # 15. Configurar PM2 para usuário dedicado
 show_progress $CURRENT_STEP $TOTAL_STEPS "Configurando PM2 para usuário dedicado..."
@@ -472,7 +477,7 @@ EOF
 sudo -u "$APP_USER" pm2 startup systemd -u "$APP_USER" --hp "/home/$APP_USER" | grep -E '^sudo' | bash
 
 print_color $GREEN "✅ PM2 configurado para usuário $APP_USER"
-((CURRENT_STEP++))
+increment_step
 
 # 16. Criar scripts de manutenção
 show_progress $CURRENT_STEP $TOTAL_STEPS "Criando scripts de manutenção..."
