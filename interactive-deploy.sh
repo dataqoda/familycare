@@ -24,7 +24,7 @@ handle_error() {
 }
 
 # Configurar trap para capturar erros
-trap 'handle_error $LINENO' ERR
+trap 'handle_error ${LINENO}' ERR
 
 # Função para perguntar com valor padrão
 ask_with_default() {
