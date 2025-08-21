@@ -138,6 +138,10 @@ show_progress() {
     local step="$1"
     local total="$2"
     local description="$3"
+    # Garantir que step seja um número válido
+    if ! [[ "$step" =~ ^[0-9]+$ ]]; then
+        step=1
+    fi
     print_color $CYAN "[$step/$total] $description"
 }
 
@@ -146,7 +150,7 @@ CURRENT_STEP=1
 
 # Função para incrementar step de forma segura
 increment_step() {
-    CURRENT_STEP=$(($CURRENT_STEP + 1))
+    CURRENT_STEP=$((CURRENT_STEP + 1))
 }
 
 # 1. Atualizar sistema
