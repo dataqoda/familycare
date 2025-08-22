@@ -7,7 +7,7 @@ import ImprovedPatientRegisterModal from "@/components/improved-patient-register
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
-import type { Patient, Appointment, PendingItem, RecentUpdate } from "@shared/schema";
+import type { Patient, Appointment, PendingItem, RecentUpdate, MedicalRecord } from "@shared/schema";
 
 export default function Dashboard() {
   const [, navigate] = useLocation();
@@ -23,9 +23,81 @@ export default function Dashboard() {
     queryKey: ["/api/appointments"],
   });
 
+  const { data: medicalRecords = [] } = useQuery<MedicalRecord[]>({
+    queryKey: ["/api/medical-records"],
+  });
+
   const { data: pendingItems = [] } = useQuery<PendingItem[]>({
     queryKey: ["/api/pending-items"],
   });
+
+  // Combinar pendências das duas fontes
+  const allPendingItems = [
+    ...pendingItems.map(item => ({
+      id: item.id,
+      patientId: item.patientId,
+      title: item.title,
+      description: item.description,
+      priority: item.priority,
+      completed: item.completed,
+      isFromMedicalRecord: false
+    })),
+    ...medicalRecords
+      .filter(record => record.type === 'pending')
+      .map(record => {
+        return {
+          id: record.id,
+          patientId: record.patientId,
+          title: record.title || record.description || 'Pendência',
+          description: record.description,
+          priority: 'medium' as const,
+          completed: false,
+          isFromMedicalRecord: true
+        };
+      })
+  ].filter(item => !item.completed);
+
+  // Combinar consultas das duas fontes e filtrar apenas futuras
+  const upcomingAppointments = [
+    ...appointments.map(apt => ({
+      id: apt.id,
+      patientName: apt.patientName,
+      specialty: apt.specialty,
+      doctor: apt.doctor,
+      date: apt.date,
+      time: apt.time,
+      location: apt.location,
+      isFromMedicalRecord: false
+    })),
+    ...medicalRecords
+      .filter(record => record.type === 'appointment')
+      .map(record => {
+        const patient = patients.find(p => p.id === record.patientId);
+        return {
+          id: record.id,
+          patientName: patient?.name || 'Paciente desconhecido',
+          specialty: record.specialty || 'Consulta médica',
+          doctor: record.doctor || 'Médico não informado',
+          date: record.date,
+          time: record.time || '00:00',
+          location: record.address || record.clinicHospital || 'Local não informado',
+          isFromMedicalRecord: true
+        };
+      })
+  ].filter(apt => {
+    // Filtrar apenas consultas futuras
+    try {
+      let dateStr = apt.date;
+      if (dateStr.includes('/')) {
+        const [day, month, year] = dateStr.split('/');
+        dateStr = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      }
+      const appointmentDate = new Date(`${dateStr}T${apt.time}:00`);
+      return appointmentDate > new Date();
+    } catch {
+      return true; // Se não conseguir parsear, mostrar mesmo assim
+    }
+  }).slice(0, 5); // Mostrar apenas as próximas 5
 
   const { data: recentUpdates = [] } = useQuery<RecentUpdate[]>({
     queryKey: ["/api/recent-updates"],
@@ -72,8 +144,8 @@ export default function Dashboard() {
                 </div>
                 
                 <div className="space-y-4">
-                  {appointments.length > 0 ? (
-                    appointments.map((appointment) => (
+                  {upcomingAppointments.length > 0 ? (
+                    upcomingAppointments.map((appointment) => (
                       <div key={appointment.id} className="p-4 bg-blue-50 rounded-lg border border-blue-100">
                         <h3 className="font-medium text-gray-900">{appointment.patientName}</h3>
                         <p className="text-sm text-gray-600">{appointment.specialty}</p>
@@ -172,9 +244,9 @@ export default function Dashboard() {
                 </div>
                 
                 <div className="space-y-4">
-                  {pendingItems.filter(item => !item.completed).length > 0 ? (
-                    pendingItems
-                      .filter(item => !item.completed)
+                  {allPendingItems.length > 0 ? (
+                    allPendingItems
+                      .slice(0, 5)
                       .map((item) => (
                         <div key={item.id} className="p-4 bg-orange-50 rounded-lg border border-orange-100">
                           <h3 className="font-medium text-gray-900">{item.title}</h3>
@@ -273,7 +345,7 @@ export default function Dashboard() {
                         <p className="text-sm text-gray-900">
                           <span className="font-medium">{update.patientName}</span> - {update.description}
                         </p>
-                        <p className="text-xs text-gray-500 mt-1">{formatTimeAgo(update.createdAt)}</p>
+                        <p className="text-xs text-gray-500 mt-1">{update.createdAt ? formatTimeAgo(update.createdAt) : 'Recente'}</p>
                       </div>
                     </div>
                   ))
