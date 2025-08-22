@@ -360,7 +360,7 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                             <img 
                               src={attachment.startsWith('/') ? attachment : `/uploads/${attachment}`}
                               alt={attachment}
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
                               onError={(e) => {
                                 // Fallback se a imagem não carregar
                                 const target = e.target as HTMLImageElement;
@@ -377,18 +377,9 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                           </div>
                         </div>
                         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-lg transition-opacity flex items-center justify-center">
-                          <Button 
-                            variant="secondary" 
-                            size="sm" 
-                            className="opacity-0 group-hover:opacity-100 transition-opacity"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedImage(attachment);
-                            }}
-                          >
-                            <Eye className="w-4 h-4 mr-1" />
-                            Ver
-                          </Button>
+                          <div className="bg-white/80 backdrop-blur-sm rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Eye className="w-4 h-4 text-gray-700" />
+                          </div>
                         </div>
                       </div>
                     ))}
