@@ -21,6 +21,7 @@ export default function AdvancedQuickRegisterModal({ open, onOpenChange, patient
   const [selectedPatient, setSelectedPatient] = useState<string>("");
   const [selectedType, setSelectedType] = useState<string>("");
   const [formData, setFormData] = useState<any>({});
+  const [attachments, setAttachments] = useState<string[]>([]);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -51,6 +52,7 @@ export default function AdvancedQuickRegisterModal({ open, onOpenChange, patient
     setSelectedPatient("");
     setSelectedType("");
     setFormData({});
+    setAttachments([]);
     onOpenChange(false);
   };
 
@@ -68,14 +70,29 @@ export default function AdvancedQuickRegisterModal({ open, onOpenChange, patient
       patientId: selectedPatient,
       type: selectedType,
       date: formData.date || new Date().toISOString().split('T')[0],
-      attachments: [],
+      attachments: attachments,
     };
 
     createRecordMutation.mutate({ ...baseData, ...formData });
   };
 
   const updateFormData = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev: any) => ({ ...prev, [field]: value }));
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      const fileNames = Array.from(files).map(file => file.name);
+      setAttachments(prev => [...prev, ...fileNames]);
+      
+      // Simular o upload salvando os nomes dos arquivos
+      // Em um ambiente real, você faria o upload real aqui
+      toast({
+        title: "Arquivo(s) adicionado(s)",
+        description: `${fileNames.length} arquivo(s) foram adicionados.`,
+      });
+    }
   };
 
   const typeOptions = [
@@ -133,7 +150,28 @@ export default function AdvancedQuickRegisterModal({ open, onOpenChange, patient
                 multiple
                 accept=".pdf,.png,.jpg,.jpeg"
                 className="text-sm"
+                onChange={handleFileUpload}
               />
+              {attachments.length > 0 && (
+                <div className="mt-2">
+                  <p className="text-sm text-gray-600 mb-2">Arquivos selecionados:</p>
+                  <ul className="text-sm text-gray-700">
+                    {attachments.map((file, index) => (
+                      <li key={index} className="flex items-center gap-2">
+                        <span>📎</span>
+                        <span>{file}</span>
+                        <button
+                          type="button"
+                          onClick={() => setAttachments(prev => prev.filter((_, i) => i !== index))}
+                          className="text-red-500 hover:text-red-700 ml-auto"
+                        >
+                          ✕
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         );

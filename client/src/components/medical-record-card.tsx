@@ -341,31 +341,25 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
               </div>
             )}
 
-            {/* Mostrar todos os campos disponíveis para depuração */}
-            <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-              <span className="text-xs font-medium text-gray-500 mb-2 block">Dados Completos do Registro</span>
-              <div className="text-xs text-gray-600 space-y-1">
-                <div><strong>ID:</strong> {record.id}</div>
-                <div><strong>Tipo:</strong> {record.type}</div>
-                <div><strong>Data:</strong> {record.date}</div>
-                {record.title && <div><strong>Título:</strong> {record.title}</div>}
-                {record.description && <div><strong>Descrição:</strong> {record.description}</div>}
-                {record.examType && <div><strong>Tipo de Exame:</strong> {record.examType}</div>}
-                {record.medicationName && <div><strong>Medicamento:</strong> {record.medicationName}</div>}
-                {record.frequency && <div><strong>Frequência:</strong> {record.frequency}</div>}
-                {record.doctor && <div><strong>Médico:</strong> {record.doctor}</div>}
-                {record.specialty && <div><strong>Especialidade:</strong> {record.specialty}</div>}
-                {record.clinicHospital && <div><strong>Local:</strong> {record.clinicHospital}</div>}
-                {record.address && <div><strong>Endereço:</strong> {record.address}</div>}
-                {record.time && <div><strong>Horário:</strong> {record.time}</div>}
-                {record.requestingDoctor && <div><strong>Médico Solicitante:</strong> {record.requestingDoctor}</div>}
-                {record.observations && <div><strong>Observações:</strong> {record.observations}</div>}
-                {record.serviceName && <div><strong>Serviço:</strong> {record.serviceName}</div>}
-                {record.username && <div><strong>Usuário:</strong> {record.username}</div>}
-                {record.deadline && <div><strong>Prazo:</strong> {record.deadline}</div>}
-                <div><strong>Anexos:</strong> {record.attachments ? record.attachments.length : 0} arquivo(s)</div>
+            {/* Melhor visualização dos anexos */}
+            {record.attachments && record.attachments.length > 0 && (
+              <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <span className="text-sm font-medium text-blue-700 mb-2 block flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
+                  Arquivos Anexados ({record.attachments.length})
+                </span>
+                <div className="space-y-2">
+                  {record.attachments.map((attachment, index) => (
+                    <div key={index} className="flex items-center space-x-2 p-2 bg-white rounded border">
+                      <FileText className="w-4 h-4 text-blue-500" />
+                      <span className="text-sm text-gray-900 font-medium">{attachment}</span>
+                      <div className="flex-1"></div>
+                      <span className="text-xs text-gray-500">Anexo {index + 1}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>
