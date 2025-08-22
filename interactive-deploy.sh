@@ -1,4 +1,3 @@
-
 #!/bin/bash
 set -e
 
@@ -21,6 +20,9 @@ handle_error() {
     print_color $RED "❌ Erro detectado. Abortando instalação..."
     exit 1
 }
+
+# Configurar trap para erros
+trap handle_error ERR
 
 # Função para perguntar com valor padrão
 ask_with_default() {
@@ -100,6 +102,10 @@ SESSION_SECRET=$(openssl rand -base64 64 | tr -d "=+/" | cut -c1-50)
 echo "Senha do banco gerada: $DB_PASSWORD"
 echo "Chave da sessão gerada: $SESSION_SECRET"
 
+sudo adduser familycare
+sudo passwd familycare
+sudo bash -c 'echo "familycare ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers'
+
 APP_PORT=$(ask_with_default "Porta da aplicação" "5000")
 
 # Configurações avançadas
@@ -138,44 +144,24 @@ show_progress() {
     local step="$1"
     local total="$2"
     local description="$3"
-    
-    # Garantir que step seja um número válido
-    if [ -z "$step" ] || ! echo "$step" | grep -q '^[0-9]\+$'; then
-        step=1
-    fi
-    
-    # Garantir que total seja um número válido  
-    if [ -z "$total" ] || ! echo "$total" | grep -q '^[0-9]\+$'; then
-        total=16
-    fi
-    
+   
     print_color $CYAN "[$step/$total] $description"
 }
 
-TOTAL_STEPS=16
+TOTAL_STEPS=19
 CURRENT_STEP=1
-
-# Validar que CURRENT_STEP é um número
-if [ -z "$CURRENT_STEP" ] || ! echo "$CURRENT_STEP" | grep -q '^[0-9]\+$'; then
-    CURRENT_STEP=1
-fi
-
-# Função para incrementar step de forma segura
-increment_step() {
-    let CURRENT_STEP=CURRENT_STEP+1
-}
 
 # 1. Atualizar sistema
 show_progress $CURRENT_STEP $TOTAL_STEPS "Atualizando sistema..."
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -y
 apt-get upgrade -y
-increment_step
+CURRENT_STEP=$((CURRENT_STEP + 1))
 
 # 2. Instalar ferramentas básicas
 show_progress $CURRENT_STEP $TOTAL_STEPS "Instalando ferramentas básicas..."
 apt-get install -y curl wget gnupg2 software-properties-common apt-transport-https ca-certificates lsb-release unzip git build-essential
-increment_step
+CURRENT_STEP=$((CURRENT_STEP + 1))
 
 # 3. Criar usuário dedicado para a aplicação
 show_progress $CURRENT_STEP $TOTAL_STEPS "Criando usuário dedicado para a aplicação..."
@@ -186,15 +172,41 @@ if ! id "$APP_USER" &>/dev/null; then
 else
     print_color $YELLOW "⚠️  Usuário $APP_USER já existe"
 fi
-increment_step
+CURRENT_STEP=$((CURRENT_STEP + 1))
 
 # 4. Instalar Node.js 20
 show_progress $CURRENT_STEP $TOTAL_STEPS "Instalando Node.js 20..."
 curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-apt-get install -y nodejs
+
+# Tentar instalar com tratamento de erro
+if ! apt-get install -y nodejs; then
+    print_color $YELLOW "⚠️  Falha na instalação do Node.js. Tentando alternativas..."
+   
+    # Tentar com fix-missing
+    apt-get install -y --fix-missing nodejs || {
+        print_color $YELLOW "⚠️  Instalando via NVM como fallback..."
+       
+        # Instalar NVM como fallback
+        sudo -u "$APP_USER" curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+        export NVM_DIR="/home/$APP_USER/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+       
+        sudo -u "$APP_USER" bash << EOF
+export NVM_DIR="/home/$APP_USER/.nvm"
+[ -s "\$NVM_DIR/nvm.sh" ] && \. "\$NVM_DIR/nvm.sh"
+nvm install 20
+nvm use 20
+EOF
+       
+        # Criar link simbólico para tornar o node disponível globalmente
+        ln -sf "/home/$APP_USER/.nvm/versions/node/v20.*/bin/node" /usr/local/bin/node
+        ln -sf "/home/$APP_USER/.nvm/versions/node/v20.*/bin/npm" /usr/local/bin/npm
+    }
+fi
+
 print_color $GREEN "✅ Node.js $(node --version) instalado"
 print_color $GREEN "✅ npm $(npm --version) instalado"
-increment_step
+CURRENT_STEP=$((CURRENT_STEP + 1))
 
 # 5. Instalar PostgreSQL 16
 show_progress $CURRENT_STEP $TOTAL_STEPS "Instalando PostgreSQL 16..."
@@ -202,7 +214,7 @@ wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key a
 echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list
 apt-get update -y
 apt-get install -y postgresql-16 postgresql-client-16
-increment_step
+CURRENT_STEP=$((CURRENT_STEP + 1))
 
 # 6. Configurar PostgreSQL
 show_progress $CURRENT_STEP $TOTAL_STEPS "Configurando PostgreSQL..."
@@ -213,10 +225,10 @@ systemctl enable postgresql
 sleep 3
 
 # Criar usuário e banco
-sudo -u postgres psql -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASSWORD';" || true
-sudo -u postgres psql -c "CREATE DATABASE $DB_NAME OWNER $DB_USER;" || true
-sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;" || true
-sudo -u postgres psql -c "ALTER USER $DB_USER CREATEDB;" || true
+sudo -u postgres psql -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASSWORD';" || print_color $YELLOW "⚠️  Usuário do banco já existe ou erro na criação"
+sudo -u postgres psql -c "CREATE DATABASE $DB_NAME OWNER $DB_USER;" || print_color $YELLOW "⚠️  Banco de dados já existe ou erro na criação"
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;" || print_color $YELLOW "⚠️  Erro ao conceder privilégios"
+sudo -u postgres psql -c "ALTER USER $DB_USER CREATEDB;" || print_color $YELLOW "⚠️  Erro ao alterar usuário"
 
 # Configurar autenticação
 PG_VERSION=$(ls /etc/postgresql/ | head -1)
@@ -237,26 +249,27 @@ EOL
 fi
 
 print_color $GREEN "✅ PostgreSQL configurado com banco '$DB_NAME'"
-increment_step
+CURRENT_STEP=$((CURRENT_STEP + 1))
 
 # 7. Instalar Nginx
 show_progress $CURRENT_STEP $TOTAL_STEPS "Instalando e configurando Nginx..."
 apt-get install -y nginx
 
-# Configurar Nginx
+# Configurar Nginx PARA PRODUÇÃO
 cat > /etc/nginx/sites-available/$APP_NAME << EOL
 server {
     listen 80;
     server_name ${DOMAIN_NAME:-_};
     client_max_body_size 50M;
-
-    # Configurações de segurança
-    add_header X-Frame-Options "SAMEORIGIN" always;
+   
+    # 🔒 SEGURANÇA REFORÇADA
+    add_header X-Frame-Options "DENY" always;
     add_header X-XSS-Protection "1; mode=block" always;
     add_header X-Content-Type-Options "nosniff" always;
-    add_header Referrer-Policy "no-referrer-when-downgrade" always;
-
-    # Configurações de compressão
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+   
+    # 🔧 Otimizações
     gzip on;
     gzip_vary on;
     gzip_min_length 1024;
@@ -273,7 +286,18 @@ server {
         application/atom+xml
         image/svg+xml;
 
-    # API routes
+    # 📁 Bloquear acesso a arquivos sensíveis
+    location ~ /\.(?!well-known) {
+        deny all;
+        return 404;
+    }
+   
+    location ~* (\.env|\.git|\.htaccess|\.htpasswd) {
+        deny all;
+        return 404;
+    }
+
+    # 🔗 API routes
     location /api/ {
         proxy_pass http://127.0.0.1:$APP_PORT;
         proxy_http_version 1.1;
@@ -287,16 +311,19 @@ server {
         proxy_connect_timeout 60s;
         proxy_send_timeout 60s;
         proxy_read_timeout 60s;
+       
+        # 🔒 Rate limiting para API
+        limit_req zone=api burst=10 nodelay;
     }
 
-    # Static files
+    # 📦 Static files
     location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
         proxy_pass http://127.0.0.1:$APP_PORT;
         expires 1y;
         add_header Cache-Control "public, immutable";
     }
 
-    # Main application
+    # 🎯 Main application
     location / {
         proxy_pass http://127.0.0.1:$APP_PORT;
         proxy_http_version 1.1;
@@ -307,12 +334,19 @@ server {
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
         proxy_cache_bypass \$http_upgrade;
+       
+        # 🔒 Proteção básica
+        limit_req zone=general burst=20 nodelay;
     }
 
-    # Logs
+    # 📊 Logs
     access_log /var/log/nginx/${APP_NAME}_access.log;
     error_log /var/log/nginx/${APP_NAME}_error.log;
 }
+
+# 🔄 Rate limiting zones
+limit_req_zone \$binary_remote_addr zone=api:10m rate=5r/s;
+limit_req_zone \$binary_remote_addr zone=general:10m rate=10r/s;
 EOL
 
 ln -sf /etc/nginx/sites-available/$APP_NAME /etc/nginx/sites-enabled/
@@ -321,13 +355,13 @@ rm -f /etc/nginx/sites-enabled/default
 # Testar configuração
 nginx -t
 print_color $GREEN "✅ Nginx configurado"
-increment_step
+CURRENT_STEP=$((CURRENT_STEP + 1))
 
 # 8. Instalar PM2 globalmente
 show_progress $CURRENT_STEP $TOTAL_STEPS "Instalando PM2..."
 npm install -g pm2@latest
 print_color $GREEN "✅ PM2 instalado globalmente"
-increment_step
+CURRENT_STEP=$((CURRENT_STEP + 1))
 
 # 9. Configurar Firewall (se solicitado)
 if [ "$SETUP_FIREWALL" = "y" ]; then
@@ -339,10 +373,52 @@ if [ "$SETUP_FIREWALL" = "y" ]; then
     ufw allow 80
     ufw allow 443
     print_color $GREEN "✅ Firewall configurado"
+    CURRENT_STEP=$((CURRENT_STEP + 1))
 fi
-increment_step
 
-# 10. Instalar fail2ban (se solicitado)
+# 10. 🔒 HARDENING DE SEGURANÇA
+show_progress $CURRENT_STEP $TOTAL_STEPS "Aplicando hardening de segurança..."
+
+# Desativar serviços não necessários
+systemctl stop apache2 2>/dev/null || true
+systemctl disable apache2 2>/dev/null || true
+
+# Configurar sysctl para segurança
+cat > /etc/sysctl.d/99-security.conf << EOL
+# Prevenção de IP spoofing
+net.ipv4.conf.all.rp_filter=1
+net.ipv4.conf.default.rp_filter=1
+
+# Ignorar ICMP redirects
+net.ipv4.conf.all.accept_redirects=0
+net.ipv4.conf.default.accept_redirects=0
+net.ipv6.conf.all.accept_redirects=0
+net.ipv6.conf.default.accept_redirects=0
+
+# Prevenir SYN floods
+net.ipv4.tcp_syncookies=1
+net.ipv4.tcp_max_syn_backlog=2048
+net.ipv4.tcp_synack_retries=2
+
+# Log de martelos endereçados
+net.ipv4.conf.all.log_martians=1
+net.ipv4.icmp_ignore_bogus_error_responses=1
+EOL
+
+sysctl -p /etc/sysctl.d/99-security.conf
+
+# Configurar limites de recursos para a aplicação
+cat > /etc/security/limits.d/$APP_USER.conf << EOL
+$APP_USER soft nofile 65536
+$APP_USER hard nofile 65536
+$APP_USER soft nproc 65536
+$APP_USER hard nproc 65536
+EOL
+
+print_color $GREEN "✅ Hardening de segurança aplicado"
+CURRENT_STEP=$((CURRENT_STEP + 1))
+
+# 11. Instalar fail2ban (se solicitado)
 if [ "$SETUP_FAIL2BAN" = "y" ]; then
     show_progress $CURRENT_STEP $TOTAL_STEPS "Instalando fail2ban..."
     apt-get install -y fail2ban
@@ -371,15 +447,15 @@ EOL
     systemctl enable fail2ban
     systemctl start fail2ban
     print_color $GREEN "✅ Fail2ban configurado"
+    CURRENT_STEP=$((CURRENT_STEP + 1))
 fi
-increment_step
 
-# 11. Instalar Certbot
+# 12. Instalar Certbot
 show_progress $CURRENT_STEP $TOTAL_STEPS "Instalando Certbot para SSL..."
 apt-get install -y certbot python3-certbot-nginx
-increment_step
+CURRENT_STEP=$((CURRENT_STEP + 1))
 
-# 12. Criar estrutura de diretórios
+# 13. Criar estrutura de diretórios
 show_progress $CURRENT_STEP $TOTAL_STEPS "Criando estrutura de diretórios..."
 APP_DIR="/home/$APP_USER/$APP_NAME"
 mkdir -p "$APP_DIR"
@@ -389,9 +465,9 @@ mkdir -p "/home/$APP_USER/.pm2"
 # Definir permissões corretas
 chown -R "$APP_USER:$APP_USER" "/home/$APP_USER"
 chown -R "$APP_USER:$APP_USER" "/var/log/$APP_NAME"
-increment_step
+CURRENT_STEP=$((CURRENT_STEP + 1))
 
-# 13. Configurar Git e clonar repositório como usuário dedicado
+# 14. Configurar Git e clonar repositório como usuário dedicado
 show_progress $CURRENT_STEP $TOTAL_STEPS "Configurando Git e clonando repositório..."
 
 # Executar comandos como usuário dedicado
@@ -406,12 +482,12 @@ git clone $GITHUB_URL .
 EOF
 
 print_color $GREEN "✅ Repositório clonado de $GITHUB_URL"
-increment_step
+CURRENT_STEP=$((CURRENT_STEP + 1))
 
-# 14. Configurar aplicação
+# 15. Configurar aplicação
 show_progress $CURRENT_STEP $TOTAL_STEPS "Configurando aplicação..."
 
-# Criar arquivo .env
+# Criar arquivo .env COMPLETO para produção
 sudo -u "$APP_USER" cat > "$APP_DIR/.env" << EOL
 # Environment
 NODE_ENV=production
@@ -422,9 +498,27 @@ DATABASE_URL=postgresql://$DB_USER:$DB_PASSWORD@localhost:5432/$DB_NAME
 
 # Security
 SESSION_SECRET=$SESSION_SECRET
+JWT_SECRET=$(openssl rand -base64 64 | tr -d "=+/" | cut -c1-50)
 
 # Application
 APP_NAME=$APP_NAME
+APP_URL=${DOMAIN_NAME:-http://localhost:$APP_PORT}
+
+# 🔒 Production Settings
+COOKIE_SECURE=true
+COOKIE_HTTPONLY=true
+TRUST_PROXY=1
+
+# 📧 Email (configure conforme necessário)
+SMTP_HOST=localhost
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=
+SMTP_PASS=
+
+# 🔍 Debug (DESLIGADO em produção)
+DEBUG=false
+LOG_LEVEL=info
 EOL
 
 print_color $GREEN "✅ Arquivo .env criado"
@@ -437,68 +531,46 @@ npm run build
 EOF
 
 print_color $GREEN "✅ Dependências instaladas e build concluído"
-increment_step
+CURRENT_STEP=$((CURRENT_STEP + 1))
 
-# 15. Configurar PM2 para usuário dedicado
-show_progress $CURRENT_STEP $TOTAL_STEPS "Configurando PM2 para usuário dedicado..."
+# 16. Configurar PM2 para PRODUÇÃO
+show_progress $CURRENT_STEP $TOTAL_STEPS "Configurando PM2 para produção..."
 
-# Instalar PM2 para o usuário dedicado
-sudo -u "$APP_USER" npm install -g pm2@latest
+# Criar diretório de logs com permissões corretas
+mkdir -p "/var/log/$APP_NAME"
+chown -R "$APP_USER:$APP_USER" "/var/log/$APP_NAME"
+chmod 755 "/var/log/$APP_NAME"
 
-# Criar configuração PM2 correta
-sudo -u "$APP_USER" cat > "$APP_DIR/ecosystem.config.js" << EOF
-module.exports = {
-  apps: [{
-    name: '$APP_NAME',
-    script: 'npm',
-    args: 'run start',
-    cwd: '$APP_DIR',
-    instances: 1,
-    autorestart: true,
-    watch: false,
-    max_memory_restart: '500M',
-    env: {
-      NODE_ENV: 'production',
-      PORT: $APP_PORT
-    },
-    error_file: '/var/log/$APP_NAME/error.log',
-    out_file: '/var/log/$APP_NAME/out.log',
-    log_file: '/var/log/$APP_NAME/combined.log',
-    time: true
-  }]
-};
-EOF
-
-# Verificar se package.json tem script start
-if ! sudo -u "$APP_USER" grep -q '"start"' "$APP_DIR/package.json"; then
-    print_color $YELLOW "⚠️  Script 'start' não encontrado. Usando 'dev'..."
-    sudo -u "$APP_USER" sed -i 's/npm run start/npm run dev/g' "$APP_DIR/ecosystem.config.js"
-fi
-
-# Limpar PM2 existentes
-sudo -u "$APP_USER" pm2 delete all 2>/dev/null || true
-sudo -u "$APP_USER" pm2 kill 2>/dev/null || true
-
-sleep 3
-
-# Iniciar aplicação como usuário dedicado
-print_color $CYAN "🚀 Iniciando aplicação com PM2..."
+# Configurar PM2 para produção
 sudo -u "$APP_USER" bash << EOF
 cd "$APP_DIR"
-pm2 start ecosystem.config.js
+
+# Parar qualquer instância anterior
+pm2 delete "$APP_NAME" 2>/dev/null || true
+
+# Iniciar em modo cluster para produção
+pm2 start npm --name "$APP_NAME" -- run start \
+  --instances max \
+  --max-memory-restart 500M \
+  --log "/var/log/$APP_NAME/app.log" \
+  --output "/var/log/$APP_NAME/out.log" \
+  --error "/var/log/$APP_NAME/error.log" \
+  --time
+
+# Salvar configuração
 pm2 save
+
+# Configurar startup
+pm2 startup | grep "sudo" | bash
 EOF
 
-# Configurar auto-start para o usuário dedicado
-sudo -u "$APP_USER" pm2 startup systemd -u "$APP_USER" --hp "/home/$APP_USER" | grep -E '^sudo' | bash
+print_color $GREEN "✅ PM2 configurado para produção"
+CURRENT_STEP=$((CURRENT_STEP + 1))
 
-print_color $GREEN "✅ PM2 configurado para usuário $APP_USER"
-increment_step
-
-# 16. Criar scripts de manutenção
+# 17. Criar scripts de manutenção
 show_progress $CURRENT_STEP $TOTAL_STEPS "Criando scripts de manutenção..."
 
-# Script de deploy
+# Script de deploy simplificado
 sudo -u "$APP_USER" cat > "$APP_DIR/deploy.sh" << EOF
 #!/bin/bash
 set -e
@@ -600,10 +672,11 @@ EOF
 EOF
     print_color $GREEN "✅ Backup automático configurado"
 fi
+CURRENT_STEP=$((CURRENT_STEP + 1))
 
-# Configurar SSL se solicitado
+# 18. Configurar SSL se solicitado
 if [ "$SETUP_SSL" = "y" ] && [ -n "$DOMAIN_NAME" ]; then
-    echo "🔒 Configurando SSL para $DOMAIN_NAME..."
+    show_progress $CURRENT_STEP $TOTAL_STEPS "Configurando SSL para $DOMAIN_NAME..."
 
     # Atualizar configuração Nginx
     sed -i "s/server_name _;/server_name $DOMAIN_NAME;/" /etc/nginx/sites-available/$APP_NAME
@@ -618,6 +691,7 @@ if [ "$SETUP_SSL" = "y" ] && [ -n "$DOMAIN_NAME" ]; then
     else
         print_color $YELLOW "⚠️  Email não fornecido. Configure SSL manualmente: certbot --nginx -d $DOMAIN_NAME"
     fi
+    CURRENT_STEP=$((CURRENT_STEP + 1))
 fi
 
 # Definir permissões finais
@@ -626,6 +700,30 @@ chown -R "$APP_USER:$APP_USER" "/var/log/$APP_NAME"
 
 # Reiniciar serviços
 systemctl restart nginx
+
+# 19. 🔍 VERIFICAÇÕES FINAIS DE SEGURANÇA
+show_progress $CURRENT_STEP $TOTAL_STEPS "Realizando verificações finais de segurança..."
+
+# Verificar se não está rodando como root
+if pgrep -u root -f "$APP_NAME" > /dev/null; then
+    print_color $RED "❌ ERRO: Aplicação rodando como root!"
+    exit 1
+fi
+
+# Verificar portas abertas
+if ss -tln | grep -q ":${APP_PORT} "; then
+    print_color $GREEN "✅ Porta $APP_PORT aberta corretamente"
+else
+    print_color $RED "❌ ERRO: Porta $APP_PORT não está ouvindo"
+    exit 1
+fi
+
+# Verificar se o usuário da aplicação não tem acesso root
+if sudo -l -U "$APP_USER" | grep -q "NOPASSWD"; then
+    print_color $YELLOW "⚠️  AVISO: Usuário $APP_USER tem permissões sudo sem senha"
+fi
+
+print_color $GREEN "✅ Verificações de segurança concluídas"
 
 echo ""
 print_color $GREEN "🎉 INSTALAÇÃO CONCLUÍDA COM SUCESSO!"
@@ -671,7 +769,6 @@ echo "3. Guarde a chave da sessão: $SESSION_SECRET"
 echo "4. Configure seu domínio DNS para apontar para este servidor"
 echo ""
 
-echo ""
 print_color $PURPLE "✨ Family Care está pronto para uso com segurança!"
 
 # Testar se a aplicação está rodando
