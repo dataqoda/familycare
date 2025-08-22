@@ -97,11 +97,25 @@ export default function Dashboard() {
                               const eventTitle = `Consulta - ${appointment.patientName}`;
                               const eventDetails = `Especialidade: ${appointment.specialty}\nMédico: ${appointment.doctor}\nLocal: ${appointment.location}`;
                               
-                              // Construir a data corretamente
-                              const [year, month, day] = appointment.date.split('-');
-                              const [hours, minutes] = appointment.time.split(':');
-                              const startDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), parseInt(hours), parseInt(minutes));
-                              const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // 1 hora depois
+                              // Converter formato brasileiro de data para ISO se necessário
+                              let dateStr = appointment.date;
+                              let timeStr = appointment.time;
+                              
+                              // Se a data está no formato DD/MM/YYYY, converter para YYYY-MM-DD
+                              if (dateStr.includes('/')) {
+                                const [day, month, year] = dateStr.split('/');
+                                dateStr = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+                              }
+                              
+                              // Garantir que o horário está no formato HH:MM
+                              if (timeStr && !timeStr.includes(':')) {
+                                if (timeStr.length === 4) {
+                                  timeStr = `${timeStr.substring(0, 2)}:${timeStr.substring(2, 4)}`;
+                                }
+                              }
+                              
+                              // Criar data usando formato ISO
+                              const startDate = new Date(`${dateStr}T${timeStr}:00`);
                               
                               // Verificar se a data é válida
                               if (isNaN(startDate.getTime())) {
@@ -109,6 +123,8 @@ export default function Dashboard() {
                                 alert('Erro: Data ou horário da consulta inválidos');
                                 return;
                               }
+                              
+                              const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // 1 hora depois
                               
                               // Formatar para Google Calendar (YYYYMMDDTHHMMSSZ)
                               const formatGoogleDate = (date: Date) => {

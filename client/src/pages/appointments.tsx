@@ -64,14 +64,51 @@ export default function AppointmentsPage() {
                       size="sm" 
                       className="flex-1"
                       onClick={() => {
-                        const eventTitle = `Consulta - ${appointment.patientName}`;
-                        const eventDetails = `Especialidade: ${appointment.specialty}\nMédico: ${appointment.doctor}\nLocal: ${appointment.location}`;
-                        const startDate = new Date(`${appointment.date}T${appointment.time}`);
-                        const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // 1 hora depois
-                        
-                        const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventTitle)}&dates=${startDate.toISOString().replace(/[-:]/g, '').split('.')[0]}Z/${endDate.toISOString().replace(/[-:]/g, '').split('.')[0]}Z&details=${encodeURIComponent(eventDetails)}`;
-                        
-                        window.open(googleCalendarUrl, '_blank');
+                        try {
+                          const eventTitle = `Consulta - ${appointment.patientName}`;
+                          const eventDetails = `Especialidade: ${appointment.specialty}\nMédico: ${appointment.doctor}\nLocal: ${appointment.location}`;
+                          
+                          // Converter formato brasileiro de data para ISO
+                          let dateStr = appointment.date;
+                          let timeStr = appointment.time;
+                          
+                          // Se a data está no formato DD/MM/YYYY, converter para YYYY-MM-DD
+                          if (dateStr.includes('/')) {
+                            const [day, month, year] = dateStr.split('/');
+                            dateStr = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+                          }
+                          
+                          // Garantir que o horário está no formato HH:MM
+                          if (timeStr && !timeStr.includes(':')) {
+                            // Se está no formato HHMM, converter para HH:MM
+                            if (timeStr.length === 4) {
+                              timeStr = `${timeStr.substring(0, 2)}:${timeStr.substring(2, 4)}`;
+                            }
+                          }
+                          
+                          const startDate = new Date(`${dateStr}T${timeStr}:00`);
+                          
+                          // Verificar se a data é válida
+                          if (isNaN(startDate.getTime())) {
+                            console.error('Data inválida:', appointment.date, appointment.time);
+                            alert('Erro: Data ou horário da consulta inválidos');
+                            return;
+                          }
+                          
+                          const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // 1 hora depois
+                          
+                          // Formatar para Google Calendar (YYYYMMDDTHHMMSSZ)
+                          const formatGoogleDate = (date: Date) => {
+                            return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+                          };
+                          
+                          const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventTitle)}&dates=${formatGoogleDate(startDate)}/${formatGoogleDate(endDate)}&details=${encodeURIComponent(eventDetails)}&location=${encodeURIComponent(appointment.location)}`;
+                          
+                          window.open(googleCalendarUrl, '_blank');
+                        } catch (error) {
+                          console.error('Erro ao criar evento no Google Calendar:', error);
+                          alert('Erro ao adicionar na agenda. Verifique os dados da consulta.');
+                        }
                       }}
                     >
                       📅 Google Agenda
