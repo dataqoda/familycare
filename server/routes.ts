@@ -3,6 +3,41 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertPatientSchema, insertAppointmentSchema, insertMedicalRecordSchema, insertPendingItemSchema, insertRecentUpdateSchema } from "@shared/schema";
 import { z } from "zod";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+
+// Configuração do multer para upload de arquivos
+const uploadStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = path.join(process.cwd(), 'uploads');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ 
+  storage: uploadStorage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+  fileFilter: (req, file, cb) => {
+    // Permitir apenas arquivos de imagem e documentos
+    const allowedTypes = /jpeg|jpg|png|gif|pdf|doc|docx/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+
+    if (mimetype && extname) {
+      return cb(null, true);
+    } else {
+      cb(new Error('Tipo de arquivo não permitido'));
+    }
+  }
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Patients routes
@@ -31,7 +66,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const validatedData = insertPatientSchema.parse(req.body);
       const patient = await storage.createPatient(validatedData);
-      
+
       // Create recent update
       await storage.createRecentUpdate({
         patientId: patient.id,
@@ -39,7 +74,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         description: "Novo paciente cadastrado",
         icon: "👤"
       });
-      
+
       res.status(201).json(patient);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -105,13 +140,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { patientId } = req.query;
       let records;
-      
+
       if (patientId) {
         records = await storage.getMedicalRecordsByPatient(patientId as string);
       } else {
         records = await storage.getMedicalRecords();
       }
-      
+
       res.json(records);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch medical records" });
@@ -122,7 +157,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const validatedData = insertMedicalRecordSchema.parse(req.body);
       const record = await storage.createMedicalRecord(validatedData);
-      
+
       // Create recent update
       const patient = await storage.getPatient(record.patientId);
       if (patient) {
@@ -134,7 +169,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           incident: "⚠️",
           pending: "📋"
         };
-        
+
         await storage.createRecentUpdate({
           patientId: patient.id,
           patientName: patient.name,
@@ -142,7 +177,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           icon: typeIcons[record.type as keyof typeof typeIcons] || "📝"
         });
       }
-      
+
       res.status(201).json(record);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -182,6 +217,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(updates);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch recent updates" });
+    }
+  });
+
+  // Upload de arquivos
+  app.post("/api/upload", upload.single('file'), (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "Nenhum arquivo enviado" });
+      }
+
+      res.json({
+        filename: req.file.filename,
+        originalName: req.file.originalname,
+        path: `/uploads/${req.file.filename}`,
+        size: req.file.size
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Erro no upload do arquivo" });
+    }
+  });
+
+  // Servir arquivos uploadados
+  app.get("/uploads/:filename", (req, res) => {
+    const filename = req.params.filename;
+    const filePath = path.join(process.cwd(), 'uploads', filename);
+
+    if (fs.existsSync(filePath)) {
+      res.sendFile(filePath);
+    } else {
+      res.status(404).json({ error: "Arquivo não encontrado" });
     }
   });
 
