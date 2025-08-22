@@ -8,10 +8,15 @@ import { ArrowLeft, Calendar, Phone, Shield, FileText, Edit } from "lucide-react
 import { useLocation } from "wouter";
 import MedicalRecordCard from "@/components/medical-record-card";
 import type { Patient, MedicalRecord } from "@shared/schema";
+import { useState } from "react";
+import EditPatientModal from "@/components/edit-patient-modal";
+
 
 export default function ImprovedPatientDetails() {
   const { id } = useParams();
   const [, navigate] = useLocation();
+  const [showEditModal, setShowEditModal] = useState(false);
+
 
   const { data: patient } = useQuery<Patient>({
     queryKey: ["/api/patients", id],
@@ -66,15 +71,16 @@ export default function ImprovedPatientDetails() {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={() => navigate("/")}
             className="mb-4"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Voltar ao Dashboard
           </Button>
-          
+
+
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center">
@@ -87,9 +93,12 @@ export default function ImprovedPatientDetails() {
                 </p>
               </div>
             </div>
-            <Button variant="outline" className="flex items-center space-x-2">
-              <Edit className="w-4 h-4" />
-              <span>Editar Paciente</span>
+            <Button
+              onClick={() => setShowEditModal(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <Edit className="w-4 h-4 mr-2" />
+              Editar Paciente
             </Button>
           </div>
         </div>
@@ -300,9 +309,8 @@ export default function ImprovedPatientDetails() {
                   history: { label: 'Histórico', icon: '📝', color: 'yellow' },
                   incident: { label: 'Incidentes', icon: '⚠️', color: 'red' },
                   pending: { label: 'Pendências', icon: '📋', color: 'orange' },
-                  credential: { label: 'Senhas', icon: '🔑', color: 'gray' },
                 };
-                
+
                 const typeInfo = typeLabels[type as keyof typeof typeLabels];
                 if (!typeInfo) return null;
 
@@ -396,6 +404,12 @@ export default function ImprovedPatientDetails() {
           </TabsContent>
         </Tabs>
       </div>
+
+      <EditPatientModal
+        open={showEditModal}
+        onOpenChange={setShowEditModal}
+        patient={patient}
+      />
     </div>
   );
 }

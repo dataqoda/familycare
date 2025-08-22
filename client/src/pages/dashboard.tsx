@@ -93,8 +93,14 @@ export default function Dashboard() {
                           size="sm" 
                           className="mt-3"
                           onClick={() => {
-                            // Add to calendar functionality would go here
-                            console.log("Add to calendar:", appointment);
+                            const eventTitle = `Consulta - ${appointment.patientName}`;
+                            const eventDetails = `Especialidade: ${appointment.specialty}\nMédico: ${appointment.doctor}\nLocal: ${appointment.location}`;
+                            const startDate = new Date(`${appointment.date}T${appointment.time}`);
+                            const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // 1 hora depois
+                            
+                            const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventTitle)}&dates=${startDate.toISOString().replace(/[-:]/g, '').split('.')[0]}Z/${endDate.toISOString().replace(/[-:]/g, '').split('.')[0]}Z&details=${encodeURIComponent(eventDetails)}`;
+                            
+                            window.open(googleCalendarUrl, '_blank');
                           }}
                         >
                           📅 Add na Agenda
@@ -109,7 +115,11 @@ export default function Dashboard() {
                 </div>
                 
                 <div className="mt-4 text-center">
-                  <Button variant="link" className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                  <Button 
+                    variant="link" 
+                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                    onClick={() => navigate("/appointments")}
+                  >
                     Ver todas as consultas →
                   </Button>
                 </div>
