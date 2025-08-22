@@ -2,44 +2,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
-// Proteção básica contra abuso
-const rateLimit = new Map();
-const MAX_REQUESTS_PER_MINUTE = 60; // 60 requests por minuto por IP
-const RATE_LIMIT_WINDOW = 60000; // 1 minuto
-
 const app = express();
-
-// Middleware de rate limiting simples
-app.use((req, res, next) => {
-  const ip = req.ip || req.connection.remoteAddress || 'unknown';
-  const now = Date.now();
-  const windowStart = Math.floor(now / RATE_LIMIT_WINDOW);
-  const key = `${ip}:${windowStart}`;
-  
-  const requests = rateLimit.get(key) || 0;
-  
-  if (requests >= MAX_REQUESTS_PER_MINUTE) {
-    return res.status(429).json({ 
-      message: "Muitas requisições. Tente novamente em 1 minuto.",
-      retryAfter: 60
-    });
-  }
-  
-  rateLimit.set(key, requests + 1);
-  
-  // Limpar cache antigo ocasionalmente
-  if (Math.random() < 0.01) {
-    const currentWindow = Math.floor(now / RATE_LIMIT_WINDOW);
-    for (const [k] of rateLimit.entries()) {
-      const window = parseInt(k.split(':')[1]);
-      if (window < currentWindow - 1) {
-        rateLimit.delete(k);
-      }
-    }
-  }
-  
-  next();
-});
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
