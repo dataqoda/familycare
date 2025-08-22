@@ -477,7 +477,7 @@ export default function AdvancedQuickRegisterModal({ open, onOpenChange, patient
         <DialogHeader>
           <DialogTitle>⚡ Registro Rápido</DialogTitle>
         </DialogHeader>
-        
+
         <div className="space-y-6">
           {/* Step 1: Select Patient */}
           <div>
@@ -495,7 +495,7 @@ export default function AdvancedQuickRegisterModal({ open, onOpenChange, patient
               </SelectContent>
             </Select>
           </div>
-          
+
           {/* Step 2: Select Type */}
           <div>
             <Label className="text-sm font-medium text-gray-700 mb-2">2. Escolher Tipo</Label>
@@ -517,14 +517,14 @@ export default function AdvancedQuickRegisterModal({ open, onOpenChange, patient
               ))}
             </div>
           </div>
-          
+
           {/* Step 3: Specific Fields */}
           <div>
             <Label className="text-sm font-medium text-gray-700 mb-2">3. Preencher Detalhes</Label>
             {renderSpecificFields()}
           </div>
         </div>
-        
+
         <div className="flex justify-end space-x-3 mt-6">
           <Button variant="outline" onClick={handleClose}>
             Cancelar

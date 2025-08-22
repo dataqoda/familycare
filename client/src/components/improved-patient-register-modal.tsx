@@ -181,14 +181,14 @@ export default function ImprovedPatientRegisterModal({ open, onOpenChange }: Imp
         <DialogHeader>
           <DialogTitle>➕ Cadastrar Novo Familiar</DialogTitle>
         </DialogHeader>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Informações Pessoais */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">
               📋 Informações Pessoais
             </h3>
-            
+
             <div>
               <Label htmlFor="name">Nome Completo *</Label>
               <Input
@@ -277,7 +277,7 @@ export default function ImprovedPatientRegisterModal({ open, onOpenChange }: Imp
                     <Plus className="w-4 h-4" />
                   </Button>
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-2">
                   {commonAllergies.map((allergy) => (
                     <Button
@@ -316,7 +316,7 @@ export default function ImprovedPatientRegisterModal({ open, onOpenChange }: Imp
             <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">
               📞 Contato de Emergência
             </h3>
-            
+
             <div>
               <Label htmlFor="emergencyContactName">Nome do Contato</Label>
               <Input
@@ -393,7 +393,7 @@ export default function ImprovedPatientRegisterModal({ open, onOpenChange }: Imp
             </div>
           </div>
         </div>
-        
+
         <div className="flex justify-end space-x-3 mt-6 pt-4 border-t">
           <Button variant="outline" onClick={handleClose}>
             Cancelar
