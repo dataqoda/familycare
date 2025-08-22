@@ -13,8 +13,38 @@ export default function PendingItemsPage() {
     queryKey: ["/api/pending-items"],
   });
 
-  const incompletePendingItems = pendingItems.filter(item => !item.completed);
-  const completedPendingItems = pendingItems.filter(item => item.completed);
+  const { data: medicalRecords = [] } = useQuery<any[]>({
+    queryKey: ["/api/medical-records"],
+  });
+
+  // Combinar pendências das duas fontes
+  const allPendingItems = [
+    ...pendingItems.map(item => ({
+      id: item.id,
+      patientId: item.patientId,
+      title: item.title,
+      description: item.description,
+      priority: item.priority,
+      completed: item.completed,
+      createdAt: item.createdAt,
+      isFromMedicalRecord: false
+    })),
+    ...medicalRecords
+      .filter(record => record.type === 'pending')
+      .map(record => ({
+        id: record.id,
+        patientId: record.patientId,
+        title: record.title || record.description || 'Pendência',
+        description: record.description,
+        priority: 'medium' as const,
+        completed: false,
+        createdAt: record.createdAt,
+        isFromMedicalRecord: true
+      }))
+  ];
+
+  const incompletePendingItems = allPendingItems.filter(item => !item.completed);
+  const completedPendingItems = allPendingItems.filter(item => item.completed);
 
   return (
     <div className="min-h-screen bg-gray-50">

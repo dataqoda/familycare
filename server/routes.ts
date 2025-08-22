@@ -210,6 +210,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete("/api/medical-records/:id", async (req, res) => {
+    try {
+      const deleted = await storage.deleteMedicalRecord(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ message: "Medical record not found" });
+      }
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete medical record" });
+    }
+  });
+
   // Recent Updates routes
   app.get("/api/recent-updates", async (req, res) => {
     try {
@@ -224,16 +236,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/upload", upload.single('file'), (req, res) => {
     try {
       if (!req.file) {
+        console.log("Nenhum arquivo recebido no upload");
         return res.status(400).json({ error: "Nenhum arquivo enviado" });
       }
 
-      res.json({
+      console.log("Arquivo recebido:", {
+        filename: req.file.filename,
+        originalname: req.file.originalname,
+        mimetype: req.file.mimetype,
+        size: req.file.size,
+        path: req.file.path
+      });
+
+      const response = {
         filename: req.file.filename,
         originalName: req.file.originalname,
         path: `/uploads/${req.file.filename}`,
         size: req.file.size
-      });
+      };
+
+      console.log("Resposta do upload:", response);
+      res.json(response);
     } catch (error) {
+      console.error("Erro no upload do arquivo:", error);
       res.status(500).json({ error: "Erro no upload do arquivo" });
     }
   });
@@ -243,9 +268,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const filename = req.params.filename;
     const filePath = path.join(process.cwd(), 'uploads', filename);
 
+    console.log("Requisição de arquivo:", {
+      filename,
+      filePath,
+      exists: fs.existsSync(filePath)
+    });
+
     if (fs.existsSync(filePath)) {
       res.sendFile(filePath);
     } else {
+      console.log("Arquivo não encontrado:", filePath);
       res.status(404).json({ error: "Arquivo não encontrado" });
     }
   });

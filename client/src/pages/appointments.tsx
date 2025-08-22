@@ -13,6 +13,45 @@ export default function AppointmentsPage() {
     queryKey: ["/api/appointments"],
   });
 
+  const { data: medicalRecords = [] } = useQuery<any[]>({
+    queryKey: ["/api/medical-records"],
+  });
+
+  const { data: patients = [] } = useQuery<any[]>({
+    queryKey: ["/api/patients"],
+  });
+
+  // Combinar consultas das duas fontes
+  const allAppointments = [
+    ...appointments.map(apt => ({
+      id: apt.id,
+      patientId: apt.patientId,
+      patientName: apt.patientName,
+      specialty: apt.specialty,
+      doctor: apt.doctor,
+      date: apt.date,
+      time: apt.time,
+      location: apt.location,
+      isFromMedicalRecord: false
+    })),
+    ...medicalRecords
+      .filter(record => record.type === 'appointment')
+      .map(record => {
+        const patient = patients.find(p => p.id === record.patientId);
+        return {
+          id: record.id,
+          patientId: record.patientId,
+          patientName: patient?.name || 'Paciente desconhecido',
+          specialty: record.specialty || 'Consulta médica',
+          doctor: record.doctor || 'Médico não informado',
+          date: record.date,
+          time: record.time || '00:00',
+          location: record.address || record.clinicHospital || 'Local não informado',
+          isFromMedicalRecord: true
+        };
+      })
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -31,8 +70,8 @@ export default function AppointmentsPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {appointments.length > 0 ? (
-            appointments.map((appointment) => (
+          {allAppointments.length > 0 ? (
+            allAppointments.map((appointment) => (
               <Card key={appointment.id} className="hover:shadow-lg transition-shadow duration-200">
                 <CardHeader>
                   <CardTitle className="text-lg">{appointment.patientName}</CardTitle>

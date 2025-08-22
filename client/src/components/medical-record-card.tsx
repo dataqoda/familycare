@@ -356,19 +356,19 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                       <div key={index} className="relative group">
                         <div className="aspect-square bg-gray-100 rounded-lg border overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
                              onClick={() => setSelectedImage(attachment)}>
-                          {attachment.includes('uploads/') || attachment.includes('http') ? (
-                            <img 
-                              src={attachment.startsWith('/') ? attachment : `/uploads/${attachment}`}
-                              alt={attachment}
-                              className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
-                              onError={(e) => {
-                                // Fallback se a imagem não carregar
-                                const target = e.target as HTMLImageElement;
-                                target.style.display = 'none';
-                                target.nextElementSibling?.classList.remove('hidden');
-                              }}
-                            />
-                          ) : null}
+                          <img 
+                            src={attachment.startsWith('http') ? attachment : 
+                                 attachment.startsWith('/uploads/') ? attachment : 
+                                 `/uploads/${attachment}`}
+                            alt={attachment}
+                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+                            onError={(e) => {
+                              // Fallback se a imagem não carregar
+                              const target = e.target as HTMLImageElement;
+                              target.style.display = 'none';
+                              target.nextElementSibling?.classList.remove('hidden');
+                            }}
+                          />
                           <div className="w-full h-full flex items-center justify-center text-center p-4 hidden">
                             <div>
                               <Image className="w-8 h-8 text-gray-400 mx-auto mb-2" />
@@ -421,19 +421,19 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
               <strong>Arquivo:</strong> {selectedImage}
             </div>
             <div className="w-full max-h-96 bg-gray-100 rounded-lg border overflow-hidden">
-              {selectedImage && (selectedImage.includes('uploads/') || selectedImage.includes('http')) ? (
-                <img 
-                  src={selectedImage.startsWith('/') ? selectedImage : `/uploads/${selectedImage}`}
-                  alt={selectedImage}
-                  className="w-full h-auto max-h-96 object-contain"
-                  onError={(e) => {
-                    // Fallback se a imagem não carregar
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                    target.nextElementSibling?.classList.remove('hidden');
-                  }}
-                />
-              ) : null}
+              <img 
+                src={selectedImage?.startsWith('http') ? selectedImage : 
+                     selectedImage?.startsWith('/uploads/') ? selectedImage : 
+                     `/uploads/${selectedImage}`}
+                alt={selectedImage || ''}
+                className="w-full h-auto max-h-96 object-contain"
+                onError={(e) => {
+                  // Fallback se a imagem não carregar
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  target.nextElementSibling?.classList.remove('hidden');
+                }}
+              />
               <div className="w-full h-96 flex items-center justify-center text-center text-gray-500 hidden">
                 <div>
                   <Image className="w-16 h-16 mx-auto mb-4 text-gray-400" />
