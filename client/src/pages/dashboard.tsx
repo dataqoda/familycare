@@ -93,14 +93,35 @@ export default function Dashboard() {
                           size="sm" 
                           className="mt-3"
                           onClick={() => {
-                            const eventTitle = `Consulta - ${appointment.patientName}`;
-                            const eventDetails = `Especialidade: ${appointment.specialty}\nMédico: ${appointment.doctor}\nLocal: ${appointment.location}`;
-                            const startDate = new Date(`${appointment.date}T${appointment.time}`);
-                            const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // 1 hora depois
-                            
-                            const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventTitle)}&dates=${startDate.toISOString().replace(/[-:]/g, '').split('.')[0]}Z/${endDate.toISOString().replace(/[-:]/g, '').split('.')[0]}Z&details=${encodeURIComponent(eventDetails)}`;
-                            
-                            window.open(googleCalendarUrl, '_blank');
+                            try {
+                              const eventTitle = `Consulta - ${appointment.patientName}`;
+                              const eventDetails = `Especialidade: ${appointment.specialty}\nMédico: ${appointment.doctor}\nLocal: ${appointment.location}`;
+                              
+                              // Construir a data corretamente
+                              const [year, month, day] = appointment.date.split('-');
+                              const [hours, minutes] = appointment.time.split(':');
+                              const startDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), parseInt(hours), parseInt(minutes));
+                              const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // 1 hora depois
+                              
+                              // Verificar se a data é válida
+                              if (isNaN(startDate.getTime())) {
+                                console.error('Data inválida:', appointment.date, appointment.time);
+                                alert('Erro: Data ou horário da consulta inválidos');
+                                return;
+                              }
+                              
+                              // Formatar para Google Calendar (YYYYMMDDTHHMMSSZ)
+                              const formatGoogleDate = (date: Date) => {
+                                return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+                              };
+                              
+                              const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventTitle)}&dates=${formatGoogleDate(startDate)}/${formatGoogleDate(endDate)}&details=${encodeURIComponent(eventDetails)}&location=${encodeURIComponent(appointment.location)}`;
+                              
+                              window.open(googleCalendarUrl, '_blank');
+                            } catch (error) {
+                              console.error('Erro ao criar evento no Google Calendar:', error);
+                              alert('Erro ao adicionar na agenda. Verifique os dados da consulta.');
+                            }
                           }}
                         >
                           📅 Add na Agenda
@@ -164,7 +185,11 @@ export default function Dashboard() {
                 </div>
                 
                 <div className="mt-4 text-center">
-                  <Button variant="link" className="text-orange-600 hover:text-orange-800 text-sm font-medium">
+                  <Button 
+                    variant="link" 
+                    className="text-orange-600 hover:text-orange-800 text-sm font-medium"
+                    onClick={() => navigate("/pending-items")}
+                  >
                     Ver todas as pendências →
                   </Button>
                 </div>

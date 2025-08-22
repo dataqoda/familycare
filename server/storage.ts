@@ -186,7 +186,7 @@ export class MemStorage implements IStorage {
   async updatePatient(id: string, updateData: Partial<InsertPatient>): Promise<Patient | undefined> {
     const patient = this.patients.get(id);
     if (!patient) return undefined;
-    
+
     const updatedPatient: Patient = { ...patient, ...updateData };
     this.patients.set(id, updatedPatient);
     return updatedPatient;
@@ -219,7 +219,7 @@ export class MemStorage implements IStorage {
   async updateAppointment(id: string, updateData: Partial<InsertAppointment>): Promise<Appointment | undefined> {
     const appointment = this.appointments.get(id);
     if (!appointment) return undefined;
-    
+
     const updatedAppointment: Appointment = { ...appointment, ...updateData };
     this.appointments.set(id, updatedAppointment);
     return updatedAppointment;
@@ -252,7 +252,7 @@ export class MemStorage implements IStorage {
   async updateMedicalRecord(id: string, updateData: Partial<InsertMedicalRecord>): Promise<MedicalRecord | undefined> {
     const record = this.medicalRecords.get(id);
     if (!record) return undefined;
-    
+
     const updatedRecord: MedicalRecord = { ...record, ...updateData };
     this.medicalRecords.set(id, updatedRecord);
     return updatedRecord;
@@ -285,7 +285,7 @@ export class MemStorage implements IStorage {
   async updatePendingItem(id: string, updateData: Partial<InsertPendingItem>): Promise<PendingItem | undefined> {
     const item = this.pendingItems.get(id);
     if (!item) return undefined;
-    
+
     const updatedItem: PendingItem = { ...item, ...updateData };
     this.pendingItems.set(id, updatedItem);
     return updatedItem;
