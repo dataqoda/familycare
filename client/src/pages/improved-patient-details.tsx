@@ -24,6 +24,7 @@ export default function ImprovedPatientDetails() {
   const [activeRecordTab, setActiveRecordTab] = useState("all");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
+  const [filter, setFilter] = useState('all'); // State for filtering medical records
 
 
   const { data: patient } = useQuery<Patient>({
@@ -925,7 +926,8 @@ export default function ImprovedPatientDetails() {
       <QuickRegisterModal 
         open={showQuickRegister} 
         onOpenChange={setShowQuickRegister}
-        patients={[patient].filter(Boolean) || []}entId={patient?.id}
+        patients={[patient].filter(Boolean) || []}
+        patientId={patient?.id}
       />
 
       <PasswordPromptModal
