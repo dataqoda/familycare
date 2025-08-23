@@ -24,16 +24,27 @@ const uploadStorage = multer.diskStorage({
 
 const upload = multer({ 
   storage: uploadStorage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+  limits: { 
+    fileSize: 50 * 1024 * 1024, // 50MB limit
+    files: 10
+  },
   fileFilter: (req, file, cb) => {
+    console.log('Arquivo sendo filtrado:', {
+      originalname: file.originalname,
+      mimetype: file.mimetype,
+      size: file.size
+    });
+    
     // Permitir apenas arquivos de imagem e documentos
-    const allowedTypes = /jpeg|jpg|png|gif|pdf|doc|docx/;
+    const allowedTypes = /jpeg|jpg|png|gif|bmp|webp|pdf|doc|docx/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = allowedTypes.test(file.mimetype);
 
     if (mimetype && extname) {
+      console.log('Arquivo aceito:', file.originalname);
       return cb(null, true);
     } else {
+      console.log('Arquivo rejeitado:', file.originalname, 'mimetype:', file.mimetype);
       cb(new Error('Tipo de arquivo não permitido'));
     }
   }
@@ -291,28 +302,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
 
     if (fs.existsSync(filePath)) {
-      // Adicionar headers CORS
-      res.header('Access-Control-Allow-Origin', '*');
-      res.header('Access-Control-Allow-Methods', 'GET');
-      res.header('Access-Control-Allow-Headers', 'Content-Type');
-      
-      // Definir o tipo de conteúdo baseado na extensão
-      const ext = path.extname(filename).toLowerCase();
-      const mimeTypes: { [key: string]: string } = {
-        '.jpg': 'image/jpeg',
-        '.jpeg': 'image/jpeg',
-        '.png': 'image/png',
-        '.gif': 'image/gif',
-        '.pdf': 'application/pdf',
-        '.doc': 'application/msword',
-        '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-      };
-      
-      if (mimeTypes[ext]) {
-        res.setHeader('Content-Type', mimeTypes[ext]);
+      try {
+        const stats = fs.statSync(filePath);
+        console.log("Estatísticas do arquivo:", {
+          size: stats.size,
+          modified: stats.mtime
+        });
+
+        // Adicionar headers CORS
+        res.header('Access-Control-Allow-Origin', '*');
+        res.header('Access-Control-Allow-Methods', 'GET');
+        res.header('Access-Control-Allow-Headers', 'Content-Type');
+        
+        // Definir o tipo de conteúdo baseado na extensão
+        const ext = path.extname(filename).toLowerCase();
+        const mimeTypes: { [key: string]: string } = {
+          '.jpg': 'image/jpeg',
+          '.jpeg': 'image/jpeg',
+          '.png': 'image/png',
+          '.gif': 'image/gif',
+          '.bmp': 'image/bmp',
+          '.webp': 'image/webp',
+          '.pdf': 'application/pdf',
+          '.doc': 'application/msword',
+          '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        };
+        
+        if (mimeTypes[ext]) {
+          res.setHeader('Content-Type', mimeTypes[ext]);
+        }
+        
+        // Adicionar headers para cache
+        res.setHeader('Cache-Control', 'public, max-age=31536000');
+        res.setHeader('Content-Length', stats.size);
+        
+        res.sendFile(filePath);
+      } catch (error) {
+        console.error("Erro ao ler arquivo:", error);
+        res.status(500).json({ error: "Erro interno do servidor" });
       }
-      
-      res.sendFile(filePath);
     } else {
       console.log("Arquivo não encontrado:", filePath);
       res.status(404).json({ error: "Arquivo não encontrado" });

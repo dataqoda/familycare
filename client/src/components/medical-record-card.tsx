@@ -490,8 +490,18 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                                  `http://localhost:5000/uploads/${attachment}`}
                             alt={attachment}
                             className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+                            onLoad={() => {
+                              console.log('Imagem carregada com sucesso:', attachment);
+                            }}
                             onError={(e) => {
-                              console.error('Erro ao carregar imagem:', attachment);
+                              const imageUrl = attachment.startsWith('http') ? attachment : 
+                                             attachment.startsWith('/uploads/') ? `http://localhost:5000${attachment}` : 
+                                             `http://localhost:5000/uploads/${attachment}`;
+                              console.error('Erro ao carregar imagem:', {
+                                attachment,
+                                imageUrl,
+                                error: e
+                              });
                               // Fallback se a imagem não carregar
                               const target = e.target as HTMLImageElement;
                               target.style.display = 'none';
@@ -501,7 +511,7 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                           <div className="w-full h-full flex items-center justify-center text-center p-4 hidden">
                             <div>
                               <Image className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                              <p className="text-xs text-gray-500 break-all">{attachment}</p>
+                              <p className="text-xs text-gray-500 break-all">{attachment.split('/').pop() || attachment}</p>
                             </div>
                           </div>
                         </div>
