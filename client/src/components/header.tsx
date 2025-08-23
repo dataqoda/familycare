@@ -1,5 +1,6 @@
+
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { Menu, UserPlus, FileText, Plus } from "lucide-react";
 
 interface HeaderProps {
   onQuickRegister: () => void;
@@ -9,61 +10,80 @@ interface HeaderProps {
 
 export default function Header({ onQuickRegister, onPatientRegister, onMenuToggle }: HeaderProps) {
   return (
-    <header className="bg-gradient-to-r from-purple-700 via-purple-600 to-blue-600 shadow-xl border-0 sticky top-0 z-10">
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between py-4 sm:py-5">
-          {/* Left side - Logo and menu */}
-          <div className="flex items-center min-w-0 flex-1">
+    <header className="relative bg-gradient-to-r from-purple-600 via-purple-700 to-blue-700 shadow-2xl border-b border-purple-200/20 overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5"></div>
+      <div className="absolute -top-24 -right-24 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
+      <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-purple-300/20 rounded-full blur-2xl"></div>
+      
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-20 sm:h-24">
+          {/* Menu Button + Logo */}
+          <div className="flex items-center space-x-6">
             <Button
               variant="ghost"
-              size="sm"
-              className="lg:hidden mr-3 p-2 text-white hover:bg-white/20 rounded-xl transition-all duration-200"
+              size="icon"
               onClick={onMenuToggle}
+              className="lg:hidden w-12 h-12 text-white hover:bg-white/20 hover:text-white rounded-2xl backdrop-blur-sm transition-all duration-300 transform hover:scale-110"
             >
-              <Menu className="w-6 h-6" />
+              <Menu className="h-6 w-6" />
             </Button>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-lg">
-                  <span className="text-2xl sm:text-3xl">👨‍👩‍👧‍👦</span>
-                </div>
-                <div>
-                  <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-white truncate">
-                    Prontuário Familiar
-                  </h1>
-                  <p className="hidden sm:block text-xs sm:text-sm text-purple-100 mt-0.5">
-                    Gerencie a saúde de toda a família em um só lugar
-                  </p>
-                </div>
+            
+            <div className="flex items-center space-x-4">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white/20 backdrop-blur-lg rounded-3xl flex items-center justify-center shadow-xl ring-2 ring-white/30 transition-transform duration-300 hover:scale-110">
+                <span className="text-3xl sm:text-4xl">👨‍👩‍👧‍👦</span>
+              </div>
+              <div className="hidden sm:block">
+                <h1 className="text-2xl sm:text-3xl font-bold text-white bg-gradient-to-r from-white to-purple-100 bg-clip-text text-transparent">
+                  Prontuário Familiar
+                </h1>
+                <p className="text-sm sm:text-base text-purple-100/90 font-medium tracking-wide">
+                  Gerencie a saúde de toda a família em um só lugar
+                </p>
               </div>
             </div>
           </div>
 
-          {/* Right side - Action buttons */}
-          <div className="flex items-center gap-2 sm:gap-3 ml-3">
-            <Button 
-              size="sm"
-              className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white border border-white/30 text-xs sm:text-sm px-3 sm:px-5 py-2 sm:py-2.5 h-9 sm:h-10 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+          {/* Mobile Title (only visible on small screens) */}
+          <div className="sm:hidden flex-1 text-center">
+            <h1 className="text-xl font-bold text-white">
+              Prontuário Familiar
+            </h1>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center space-x-3 sm:space-x-4">
+            <Button
               onClick={onQuickRegister}
+              className="group relative overflow-hidden bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 border border-blue-400/30"
             >
-              <span className="hidden sm:inline flex items-center gap-2">
-                ⚡ <span className="font-medium">Registro Rápido</span>
-              </span>
-              <span className="sm:hidden">⚡</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="relative flex items-center space-x-2">
+                <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="hidden sm:inline font-semibold">Registro Rápido</span>
+                <span className="sm:hidden font-semibold text-sm">Registro</span>
+              </div>
             </Button>
-            <Button 
-              size="sm"
-              className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-xs sm:text-sm px-3 sm:px-5 py-2 sm:py-2.5 h-9 sm:h-10 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+            
+            <Button
               onClick={onPatientRegister}
+              className="group relative overflow-hidden bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 border border-green-400/30"
             >
-              <span className="hidden sm:inline flex items-center gap-2">
-                ➕ <span className="font-medium">Cadastrar</span>
-              </span>
-              <span className="sm:hidden">➕</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="relative flex items-center space-x-2">
+                <UserPlus className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="hidden sm:inline font-semibold">Cadastrar</span>
+                <span className="sm:hidden font-semibold text-sm">
+                  <Plus className="w-4 h-4" />
+                </span>
+              </div>
             </Button>
           </div>
         </div>
       </div>
+
+      {/* Bottom gradient line */}
+      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-400 via-blue-400 to-green-400 opacity-60"></div>
     </header>
   );
 }
