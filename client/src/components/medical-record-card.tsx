@@ -440,26 +440,21 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                 </div>
               </div>
             </div>
-            <div className="flex items-center space-x-1" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center space-x-2" onClick={(e) => e.stopPropagation()}>
               <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowDetails(true)}
-              >
-                <Eye className="w-4 h-4" />
-              </Button>
-              <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
                 onClick={handleEdit}
+                className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100 hover:border-blue-300 hover:text-blue-800 transition-all duration-200 shadow-sm hover:shadow-md"
               >
                 <Edit className="w-4 h-4" />
               </Button>
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
                 onClick={handleDelete}
                 disabled={deleteRecordMutation.isPending}
+                className="bg-red-50 border-red-200 text-red-700 hover:bg-red-100 hover:border-red-300 hover:text-red-800 transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Trash2 className="w-4 h-4" />
               </Button>
