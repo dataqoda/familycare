@@ -19,6 +19,8 @@ export default function ImprovedPatientDetails() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showQuickRegister, setShowQuickRegister] = useState(false);
   const [showEditPatient, setShowEditPatient] = useState(false);
+  const [activeTab, setActiveTab] = useState("personal");
+  const [activeRecordTab, setActiveRecordTab] = useState("all");
 
 
   const { data: patient } = useQuery<Patient>({
@@ -137,7 +139,7 @@ export default function ImprovedPatientDetails() {
           </Card>
         </div>
 
-        <Tabs defaultValue="personal" className="space-y-8">
+        <Tabs defaultValue="personal" className="space-y-8" value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid grid-cols-2 sm:grid-cols-4 w-full max-w-4xl mx-auto bg-white/80 backdrop-blur-sm border-0 shadow-lg p-1 sm:p-2 rounded-xl gap-1 sm:gap-0">
             <TabsTrigger value="personal" className="rounded-lg font-medium text-xs sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg p-2 sm:p-3">
               <span className="hidden sm:inline">📋 Informações Pessoais</span>
@@ -349,7 +351,13 @@ export default function ImprovedPatientDetails() {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-                    <div className="text-center p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+                    <div 
+                      className="text-center p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                      onClick={() => {
+                        setActiveTab("records");
+                        setActiveRecordTab("exam");
+                      }}
+                    >
                       <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-600 mb-1 sm:mb-2">
                         {recordsByType.exam?.length || 0}
                       </div>
@@ -358,7 +366,13 @@ export default function ImprovedPatientDetails() {
                         <span className="sm:hidden">📋</span>
                       </div>
                     </div>
-                    <div className="text-center p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+                    <div 
+                      className="text-center p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                      onClick={() => {
+                        setActiveTab("records");
+                        setActiveRecordTab("medication");
+                      }}
+                    >
                       <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-600 mb-1 sm:mb-2">
                         {recordsByType.medication?.length || 0}
                       </div>
@@ -367,7 +381,13 @@ export default function ImprovedPatientDetails() {
                         <span className="sm:hidden">💊</span>
                       </div>
                     </div>
-                    <div className="text-center p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+                    <div 
+                      className="text-center p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                      onClick={() => {
+                        setActiveTab("records");
+                        setActiveRecordTab("appointment");
+                      }}
+                    >
                       <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-purple-600 mb-1 sm:mb-2">
                         {recordsByType.appointment?.length || 0}
                       </div>
@@ -376,7 +396,13 @@ export default function ImprovedPatientDetails() {
                         <span className="sm:hidden">📅</span>
                       </div>
                     </div>
-                    <div className="text-center p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+                    <div 
+                      className="text-center p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                      onClick={() => {
+                        setActiveTab("records");
+                        setActiveRecordTab("history");
+                      }}
+                    >
                       <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-yellow-600 mb-1 sm:mb-2">
                         {recordsByType.history?.length || 0}
                       </div>
@@ -385,7 +411,13 @@ export default function ImprovedPatientDetails() {
                         <span className="sm:hidden">📝</span>
                       </div>
                     </div>
-                    <div className="text-center p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-red-50 to-red-100 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+                    <div 
+                      className="text-center p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-red-50 to-red-100 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                      onClick={() => {
+                        setActiveTab("records");
+                        setActiveRecordTab("incident");
+                      }}
+                    >
                       <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-red-600 mb-1 sm:mb-2">
                         {recordsByType.incident?.length || 0}
                       </div>
@@ -394,7 +426,13 @@ export default function ImprovedPatientDetails() {
                         <span className="sm:hidden">⚠️</span>
                       </div>
                     </div>
-                    <div className="text-center p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+                    <div 
+                      className="text-center p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                      onClick={() => {
+                        setActiveTab("records");
+                        setActiveRecordTab("pending");
+                      }}
+                    >
                       <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-orange-600 mb-1 sm:mb-2">
                         {recordsByType.pending?.length || 0}
                       </div>
@@ -410,7 +448,7 @@ export default function ImprovedPatientDetails() {
           </TabsContent>
 
           <TabsContent value="records" className="space-y-6">
-            <Tabs defaultValue="all" className="space-y-6">
+            <Tabs value={activeRecordTab} onValueChange={setActiveRecordTab} className="space-y-6">
               <TabsList className="bg-white/80 backdrop-blur-sm border-0 shadow-md rounded-xl p-1 sm:p-2 flex flex-wrap justify-center sm:justify-start gap-1 h-auto min-h-[40px]">
                 <TabsTrigger value="all" className="rounded-lg text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 flex-shrink-0">
                   <span className="hidden sm:inline">Todos</span>
