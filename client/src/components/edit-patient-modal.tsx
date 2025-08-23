@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Shield } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Patient } from "@shared/schema";
 
@@ -41,6 +42,8 @@ export default function EditPatientModal({ open, onOpenChange, patient }: EditPa
     insuranceCardBackUrl: "",
     idCardFrontUrl: "",
     idCardBackUrl: "",
+    sensitiveDataPasswordActive: false,
+    sensitiveDataPassword: "",
   });
 
   const [allergyInput, setAllergyInput] = useState("");
@@ -64,6 +67,8 @@ export default function EditPatientModal({ open, onOpenChange, patient }: EditPa
         insuranceCardBackUrl: patient.insuranceCardBackUrl || "",
         idCardFrontUrl: patient.idCardFrontUrl || "",
         idCardBackUrl: patient.idCardBackUrl || "",
+        sensitiveDataPasswordActive: patient.sensitiveDataPasswordActive || false,
+        sensitiveDataPassword: patient.sensitiveDataPassword || "",
       });
     }
   }, [patient, open]);
@@ -431,6 +436,57 @@ export default function EditPatientModal({ open, onOpenChange, patient }: EditPa
               placeholder="Observações importantes sobre o paciente..."
               rows={3}
             />
+          </div>
+
+          <div className="border-t pt-6">
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <Shield className="w-5 h-5 text-gray-600" />
+                <Label className="text-base font-semibold">Segurança e Privacidade</Label>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <Label className="text-sm font-medium">Proteger dados sensíveis com senha?</Label>
+                    <p className="text-xs text-gray-500">Exigirá uma senha para ver exames, histórico, etc.</p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="sensitiveDataPassword"
+                      checked={formData.sensitiveDataPasswordActive}
+                      onChange={(e) => {
+                        const isActive = e.target.checked;
+                        setFormData(prev => ({ 
+                          ...prev, 
+                          sensitiveDataPasswordActive: isActive,
+                          sensitiveDataPassword: isActive ? prev.sensitiveDataPassword : ""
+                        }));
+                      }}
+                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+
+                {formData.sensitiveDataPasswordActive && (
+                  <div className="space-y-2 ml-4">
+                    <Label htmlFor="sensitivePassword" className="text-sm">Senha de Acesso Sensível</Label>
+                    <Input
+                      id="sensitivePassword"
+                      type="password"
+                      value={formData.sensitiveDataPassword}
+                      onChange={(e) => setFormData(prev => ({ ...prev, sensitiveDataPassword: e.target.value }))}
+                      placeholder="Use uma senha fácil de lembrar. Esta senha será solicitada para ver dados sensíveis."
+                      className="text-sm"
+                    />
+                    <p className="text-xs text-gray-500">
+                      Use uma senha fácil de lembrar. Esta senha será solicitada para ver dados sensíveis.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
           <div className="flex justify-end space-x-2 pt-4">

@@ -4,13 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Calendar, Phone, Shield, FileText, Edit, User, MapPin, Clock, Droplet, AlertTriangle, Plus } from "lucide-react";
+import { ArrowLeft, Calendar, Phone, Shield, FileText, Edit, User, MapPin, Clock, Droplet, AlertTriangle, Plus, Lock } from "lucide-react";
 import { useLocation } from "wouter";
 import MedicalRecordCard from "@/components/medical-record-card";
 import type { Patient, MedicalRecord } from "@shared/schema";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import EditPatientModal from "@/components/edit-patient-modal";
 import QuickRegisterModal from "@/components/quick-register-modal";
+import PasswordPromptModal from "@/components/password-prompt-modal";
 
 
 export default function ImprovedPatientDetails() {
@@ -21,6 +22,8 @@ export default function ImprovedPatientDetails() {
   const [showEditPatient, setShowEditPatient] = useState(false);
   const [activeTab, setActiveTab] = useState("personal");
   const [activeRecordTab, setActiveRecordTab] = useState("all");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
 
 
   const { data: patient } = useQuery<Patient>({
@@ -32,6 +35,36 @@ export default function ImprovedPatientDetails() {
     queryKey: ["/api/medical-records"],
     select: (data) => data.filter(record => record.patientId === id),
     enabled: !!id,
+  });
+
+  const sensitiveRecordTypes = ["exam", "history", "credential"];
+
+  const isSensitiveRecordType = useCallback((type: string) => {
+    return sensitiveRecordTypes.includes(type);
+  }, []);
+
+  const requestSensitiveAccess = () => {
+    if (!patient?.sensitiveDataPasswordActive) {
+      setIsAuthenticated(true);
+      return;
+    }
+    setShowPasswordPrompt(true);
+  };
+
+  const handlePasswordSubmit = (password: string) => {
+    if (password === patient?.sensitiveDataPassword) {
+      setIsAuthenticated(true);
+      setShowPasswordPrompt(false);
+    } else {
+      alert("Senha incorreta!");
+    }
+  };
+
+  const filteredMedicalRecords = medicalRecords.filter(record => {
+    if (patient?.sensitiveDataPasswordActive && isSensitiveRecordType(record.type) && !isAuthenticated) {
+      return false;
+    }
+    return true;
   });
 
   if (!patient) {
@@ -62,6 +95,14 @@ export default function ImprovedPatientDetails() {
     acc[record.type].push(record);
     return acc;
   }, {} as Record<string, MedicalRecord[]>);
+
+  const allRecordsByType = {
+    ...recordsByType,
+    credential: recordsByType.credential || [],
+    exam: recordsByType.exam || [],
+    history: recordsByType.history || [],
+  };
+
 
   const calculateAge = (birthDate: string) => {
     const birth = new Date(birthDate);
@@ -350,95 +391,104 @@ export default function ImprovedPatientDetails() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div 
-                      className="text-center p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                      className="text-center p-4 bg-blue-50 rounded-lg relative"
                       onClick={() => {
                         setActiveTab("records");
                         setActiveRecordTab("exam");
                       }}
                     >
-                      <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-600 mb-1 sm:mb-2">
-                        {recordsByType.exam?.length || 0}
+                      <div className="text-2xl font-bold text-blue-600">
+                        {allRecordsByType.exam?.length || 0}
                       </div>
-                      <div className="text-xs sm:text-sm text-gray-700 font-medium">
-                        <span className="hidden sm:inline">📋 Exames</span>
-                        <span className="sm:hidden">📋</span>
+                      <div className="text-sm text-gray-600 flex items-center justify-center space-x-1">
+                        <span>📋 Exames</span>
+                        {patient?.sensitiveDataPasswordActive && (
+                          <span className={`text-xs ${isAuthenticated ? 'text-green-600' : 'text-red-500'}`}>
+                            {isAuthenticated ? '🔓' : '🔒'}
+                          </span>
+                        )}
                       </div>
                     </div>
                     <div 
-                      className="text-center p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                      className="text-center p-4 bg-green-50 rounded-lg"
                       onClick={() => {
                         setActiveTab("records");
                         setActiveRecordTab("medication");
                       }}
                     >
-                      <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-600 mb-1 sm:mb-2">
+                      <div className="text-2xl font-bold text-green-600">
                         {recordsByType.medication?.length || 0}
                       </div>
-                      <div className="text-xs sm:text-sm text-gray-700 font-medium">
-                        <span className="hidden sm:inline">💊 Medicações</span>
-                        <span className="sm:hidden">💊</span>
-                      </div>
+                      <div className="text-sm text-gray-600">💊 Medicações</div>
                     </div>
                     <div 
-                      className="text-center p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                      className="text-center p-4 bg-purple-50 rounded-lg"
                       onClick={() => {
                         setActiveTab("records");
                         setActiveRecordTab("appointment");
                       }}
                     >
-                      <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-purple-600 mb-1 sm:mb-2">
+                      <div className="text-2xl font-bold text-purple-600">
                         {recordsByType.appointment?.length || 0}
                       </div>
-                      <div className="text-xs sm:text-sm text-gray-700 font-medium">
-                        <span className="hidden sm:inline">📅 Consultas</span>
-                        <span className="sm:hidden">📅</span>
-                      </div>
+                      <div className="text-sm text-gray-600">📅 Consultas</div>
                     </div>
                     <div 
-                      className="text-center p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                      className="text-center p-4 bg-yellow-50 rounded-lg relative"
                       onClick={() => {
                         setActiveTab("records");
                         setActiveRecordTab("history");
                       }}
                     >
-                      <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-yellow-600 mb-1 sm:mb-2">
-                        {recordsByType.history?.length || 0}
+                      <div className="text-2xl font-bold text-yellow-600">
+                        {allRecordsByType.history?.length || 0}
                       </div>
-                      <div className="text-xs sm:text-sm text-gray-700 font-medium">
-                        <span className="hidden sm:inline">📝 Histórico</span>
-                        <span className="sm:hidden">📝</span>
+                      <div className="text-sm text-gray-600 flex items-center justify-center space-x-1">
+                        <span>📝 Histórico</span>
+                        {patient?.sensitiveDataPasswordActive && (
+                          <span className={`text-xs ${isAuthenticated ? 'text-green-600' : 'text-red-500'}`}>
+                            {isAuthenticated ? '🔓' : '🔒'}
+                          </span>
+                        )}
                       </div>
                     </div>
                     <div 
-                      className="text-center p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-red-50 to-red-100 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                      className="text-center p-4 bg-red-50 rounded-lg"
                       onClick={() => {
                         setActiveTab("records");
                         setActiveRecordTab("incident");
                       }}
                     >
-                      <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-red-600 mb-1 sm:mb-2">
+                      <div className="text-2xl font-bold text-red-600">
                         {recordsByType.incident?.length || 0}
                       </div>
-                      <div className="text-xs sm:text-sm text-gray-700 font-medium">
-                        <span className="hidden sm:inline">⚠️ Incidentes</span>
-                        <span className="sm:hidden">⚠️</span>
-                      </div>
+                      <div className="text-sm text-gray-600">⚠️ Incidentes</div>
                     </div>
                     <div 
-                      className="text-center p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                      className="text-center p-4 bg-orange-50 rounded-lg"
                       onClick={() => {
                         setActiveTab("records");
                         setActiveRecordTab("pending");
                       }}
                     >
-                      <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-orange-600 mb-1 sm:mb-2">
+                      <div className="text-2xl font-bold text-orange-600">
                         {recordsByType.pending?.length || 0}
                       </div>
-                      <div className="text-xs sm:text-sm text-gray-700 font-medium">
-                        <span className="hidden sm:inline">📋 Pendências</span>
-                        <span className="sm:hidden">📋</span>
+                      <div className="text-sm text-gray-600">📋 Pendências</div>
+                    </div>
+                    <div className="text-center p-4 bg-indigo-50 rounded-lg relative">
+                      <div className="text-2xl font-bold text-indigo-600">
+                        {allRecordsByType.credential?.length || 0}
+                      </div>
+                      <div className="text-sm text-gray-600 flex items-center justify-center space-x-1">
+                        <span>🔑 Senhas</span>
+                        {patient?.sensitiveDataPasswordActive && (
+                          <span className={`text-xs ${isAuthenticated ? 'text-green-600' : 'text-red-500'}`}>
+                            {isAuthenticated ? '🔓' : '🔒'}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -449,14 +499,29 @@ export default function ImprovedPatientDetails() {
 
           <TabsContent value="records" className="space-y-6">
             <Tabs value={activeRecordTab} onValueChange={setActiveRecordTab} className="space-y-6">
-              <TabsList className="bg-white/80 backdrop-blur-sm border-0 shadow-md rounded-xl p-1 sm:p-2 flex flex-wrap justify-center sm:justify-start gap-1 h-auto min-h-[40px]">
+              <TabsList className="grid grid-cols-2 sm:grid-cols-4 w-full max-w-4xl mx-auto bg-white/80 backdrop-blur-sm border-0 shadow-md rounded-xl p-1 sm:p-2 flex flex-wrap justify-center sm:justify-start gap-1 h-auto min-h-[40px]">
                 <TabsTrigger value="all" className="rounded-lg text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 flex-shrink-0">
                   <span className="hidden sm:inline">Todos</span>
                   <span className="sm:hidden">📋 Todos</span>
                 </TabsTrigger>
-                <TabsTrigger value="exam" className="rounded-lg text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 flex-shrink-0">
-                  <span className="hidden sm:inline">📋 Exames</span>
-                  <span className="sm:hidden">📋</span>
+                <TabsTrigger 
+                  value="exam" 
+                  className="relative rounded-lg text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 flex-shrink-0"
+                  onClick={(e) => {
+                    e.preventDefault(); // Prevent default tab switch if sensitive
+                    if (isSensitiveRecordType('exam') && patient?.sensitiveDataPasswordActive && !isAuthenticated) {
+                      requestSensitiveAccess();
+                    } else {
+                      setActiveRecordTab('exam');
+                    }
+                  }}
+                >
+                  📋 Exames
+                  {patient?.sensitiveDataPasswordActive && isSensitiveRecordType('exam') && (
+                    <span className={`ml-1 ${isAuthenticated ? 'text-green-600' : 'text-red-500'}`}>
+                      {isAuthenticated ? '🔓' : '🔒'}
+                    </span>
+                  )}
                 </TabsTrigger>
                 <TabsTrigger value="medication" className="rounded-lg text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 flex-shrink-0">
                   <span className="hidden sm:inline">💊 Medicações</span>
@@ -466,9 +531,24 @@ export default function ImprovedPatientDetails() {
                   <span className="hidden sm:inline">📅 Consultas</span>
                   <span className="sm:hidden">📅</span>
                 </TabsTrigger>
-                <TabsTrigger value="history" className="rounded-lg text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 flex-shrink-0">
-                  <span className="hidden sm:inline">📝 Histórico</span>
-                  <span className="sm:hidden">📝</span>
+                <TabsTrigger 
+                  value="history"
+                  className="relative rounded-lg text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 flex-shrink-0"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (isSensitiveRecordType('history') && patient?.sensitiveDataPasswordActive && !isAuthenticated) {
+                      requestSensitiveAccess();
+                    } else {
+                      setActiveRecordTab('history');
+                    }
+                  }}
+                >
+                  📝 Histórico
+                  {patient?.sensitiveDataPasswordActive && isSensitiveRecordType('history') && (
+                    <span className={`ml-1 ${isAuthenticated ? 'text-green-600' : 'text-red-500'}`}>
+                      {isAuthenticated ? '🔓' : '🔒'}
+                    </span>
+                  )}
                 </TabsTrigger>
                 <TabsTrigger value="incident" className="rounded-lg text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 flex-shrink-0">
                   <span className="hidden sm:inline">⚠️ Incidentes</span>
@@ -478,105 +558,106 @@ export default function ImprovedPatientDetails() {
                   <span className="hidden sm:inline">📋 Pendências</span>
                   <span className="sm:hidden">📋</span>
                 </TabsTrigger>
-                <TabsTrigger value="credential" className="rounded-lg text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 flex-shrink-0">
-                  <span className="hidden sm:inline">🔑 Senhas</span>
-                  <span className="sm:hidden">🔑</span>
+                <TabsTrigger 
+                  value="credential"
+                  className="relative rounded-lg text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 flex-shrink-0"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (isSensitiveRecordType('credential') && patient?.sensitiveDataPasswordActive && !isAuthenticated) {
+                      requestSensitiveAccess();
+                    } else {
+                      setActiveRecordTab('credential');
+                    }
+                  }}
+                >
+                  🔑 Senha
+                  {patient?.sensitiveDataPasswordActive && isSensitiveRecordType('credential') && (
+                    <span className={`ml-1 ${isAuthenticated ? 'text-green-600' : 'text-red-500'}`}>
+                      {isAuthenticated ? '🔓' : '🔒'}
+                    </span>
+                  )}
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="all" className="space-y-4">
-                {medicalRecords.length > 0 ? (
-                  <div className="space-y-4">
-                    {medicalRecords
-                      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                      .map((record) => (
-                        <MedicalRecordCard key={record.id} record={record} />
-                      ))}
-                  </div>
-                ) : (
-                  <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-gray-50">
-                    <CardContent className="text-center py-16">
-                      <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center">
-                        <FileText className="w-10 h-10 text-gray-400" />
+              <TabsContent value="all" className="mt-6">
+                <div className="space-y-6">
+                  {patient?.sensitiveDataPasswordActive && !isAuthenticated && (
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+                      <div className="flex items-center space-x-2">
+                        <Shield className="w-5 h-5 text-amber-600" />
+                        <p className="text-sm text-amber-800">
+                          <strong>Alguns dados estão protegidos:</strong> Exames, Histórico e Senhas estão ocultos. 
+                          <button 
+                            onClick={requestSensitiveAccess}
+                            className="ml-2 text-amber-900 underline hover:no-underline"
+                          >
+                            Clique aqui para inserir a senha
+                          </button>
+                        </p>
                       </div>
-                      <h3 className="text-xl font-semibold text-gray-900 mb-3">Nenhum registro encontrado</h3>
-                      <p className="text-gray-500">Este paciente ainda não possui registros médicos.</p>
-                    </CardContent>
-                  </Card>
-                )}
+                    </div>
+                  )}
+                  {filteredMedicalRecords.length > 0 ? (
+                    <div className="space-y-6">
+                      {filteredMedicalRecords
+                        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                        .map((record) => (
+                          <MedicalRecordCard key={record.id} record={record} />
+                        ))}
+                    </div>
+                  ) : (
+                    <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-gray-50">
+                      <CardContent className="text-center py-16">
+                        <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center">
+                          <FileText className="w-10 h-10 text-gray-400" />
+                        </div>
+                        <h3 className="text-xl font-semibold text-gray-900 mb-3">Nenhum registro encontrado</h3>
+                        <p className="text-gray-500">Este paciente ainda não possui registros médicos.</p>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
               </TabsContent>
 
               {['exam', 'medication', 'appointment', 'history', 'incident', 'pending', 'credential'].map((type) => {
                 const records = recordsByType[type] || [];
-                const typeConfig = {
-                  exam: { 
-                    icon: '📋', 
-                    title: 'Nenhum exame encontrado', 
-                    description: 'Este paciente ainda não possui nenhum exame médico registrado.',
-                    buttonText: 'Adicionar Primeiro Exame'
-                  },
-                  medication: { 
-                    icon: '💊', 
-                    title: 'Nenhuma medicação encontrada', 
-                    description: 'Este paciente ainda não possui nenhuma medicação ou prescrição registrada.',
-                    buttonText: 'Adicionar Primeira Medicação'
-                  },
-                  appointment: { 
-                    icon: '📅', 
-                    title: 'Nenhuma consulta encontrada', 
-                    description: 'Este paciente ainda não possui nenhuma consulta médica registrada.',
-                    buttonText: 'Agendar Primeira Consulta'
-                  },
-                  history: { 
-                    icon: '📝', 
-                    title: 'Nenhum histórico encontrado', 
-                    description: 'Este paciente ainda não possui nenhum histórico médico registrado.',
-                    buttonText: 'Adicionar Primeiro Histórico'
-                  },
-                  incident: { 
-                    icon: '⚠️', 
-                    title: 'Nenhum incidente encontrado', 
-                    description: 'Este paciente ainda não possui nenhum incidente médico registrado.',
-                    buttonText: 'Registrar Primeiro Incidente'
-                  },
-                  pending: { 
-                    icon: '📋', 
-                    title: 'Nenhuma pendência encontrada', 
-                    description: 'Este paciente ainda não possui nenhuma pendência médica registrada.',
-                    buttonText: 'Criar Primeira Pendência'
-                  },
-                  credential: { 
-                    icon: '🔑', 
-                    title: 'Nenhuma senha encontrada', 
-                    description: 'Este paciente ainda não possui nenhuma senha ou credencial registrada.',
-                    buttonText: 'Salvar Primeira Senha'
-                  }
-                };
-
-                const config = typeConfig[type as keyof typeof typeConfig];
-                if (!config) return null;
 
                 return (
-                  <TabsContent key={type} value={type} className="space-y-4">
-                    {records.length > 0 ? (
-                      <div className="space-y-4">
-                        {records
-                          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                          .map((record) => (
-                            <MedicalRecordCard key={record.id} record={record} />
-                          ))}
-                      </div>
-                    ) : (
-                      <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-gray-50">
-                        <CardContent className="text-center py-16">
-                          <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center">
-                            <FileText className="w-10 h-10 text-gray-400" />
-                          </div>
-                          <h3 className="text-xl font-semibold text-gray-900 mb-3">{config.title}</h3>
-                          <p className="text-gray-500">{config.description}</p>
-                        </CardContent>
-                      </Card>
-                    )}
+                  <TabsContent key={type} value={type} className="mt-6">
+                    <div className="space-y-4">
+                      {/* Verificar se o tipo é sensível e se está protegido */}
+                      {isSensitiveRecordType(type) && patient?.sensitiveDataPasswordActive && !isAuthenticated ? (
+                        <div className="text-center py-12">
+                          <Shield className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                          <h3 className="text-lg font-semibold text-gray-700 mb-2">Dados Protegidos</h3>
+                          <p className="text-gray-500 mb-4">
+                            Este conteúdo está protegido por senha.
+                          </p>
+                          <Button onClick={requestSensitiveAccess} variant="outline">
+                            <Lock className="w-4 h-4 mr-2" />
+                            Inserir Senha
+                          </Button>
+                        </div>
+                      ) : records.length > 0 ? (
+                        <div className="space-y-4">
+                          {records
+                            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                            .map((record) => (
+                              <MedicalRecordCard key={record.id} record={record} />
+                            ))}
+                        </div>
+                      ) : (
+                        <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-gray-50">
+                          <CardContent className="text-center py-16">
+                            <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center">
+                              <FileText className="w-10 h-10 text-gray-400" />
+                            </div>
+                            <h3 className="text-xl font-semibold text-gray-900 mb-3">Nenhum registro encontrado</h3>
+                            <p className="text-gray-500">Este paciente ainda não possui nenhum registro deste tipo.</p>
+                          </CardContent>
+                        </Card>
+                      )}
+                    </div>
                   </TabsContent>
                 );
               })}
@@ -584,61 +665,107 @@ export default function ImprovedPatientDetails() {
           </TabsContent>
 
           <TabsContent value="summary" className="space-y-6">
-            {Object.keys(recordsByType).length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {Object.entries(recordsByType).map(([type, records]) => {
-                  const typeLabels = {
-                    exam: { label: 'Exames', icon: '📋', color: 'blue' },
-                    medication: { label: 'Medicações', icon: '💊', color: 'green' },
-                    appointment: { label: 'Consultas', icon: '📅', color: 'purple' },
-                    history: { label: 'Histórico', icon: '📝', color: 'yellow' },
-                    incident: { label: 'Incidentes', icon: '⚠️', color: 'red' },
-                    pending: { label: 'Pendências', icon: '📋', color: 'orange' },
-                  };
-
-                  const typeInfo = typeLabels[type as keyof typeof typeLabels];
-                  if (!typeInfo) return null;
-
-                  return (
-                    <Card key={type} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-white to-gray-50">
-                      <CardHeader className="pb-4">
-                        <CardTitle className="flex items-center space-x-3">
-                          <div className={`w-10 h-10 bg-gradient-to-br from-${typeInfo.color}-500 to-${typeInfo.color}-600 rounded-xl flex items-center justify-center`}>
-                            <span className="text-white">{typeInfo.icon}</span>
-                          </div>
-                          <span>{typeInfo.label}</span>
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="text-4xl font-bold mb-4 text-gray-900">{records.length}</div>
-                        <div className="space-y-3">
-                          {records.slice(0, 3).map((record) => (
-                            <div key={record.id} className="text-sm text-gray-600 truncate bg-gray-50 p-3 rounded-lg">
-                              {record.title || record.description}
-                            </div>
-                          ))}
-                          {records.length > 3 && (
-                            <div className="text-sm text-gray-500 bg-gray-100 p-2 rounded-lg text-center">
-                              +{records.length - 3} mais
-                            </div>
-                          )}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div 
+                className="text-center p-4 bg-blue-50 rounded-lg relative"
+                onClick={() => {
+                  setActiveTab("records");
+                  setActiveRecordTab("exam");
+                }}
+              >
+                <div className="text-2xl font-bold text-blue-600">
+                  {allRecordsByType.exam?.length || 0}
+                </div>
+                <div className="text-sm text-gray-600 flex items-center justify-center space-x-1">
+                  <span>📋 Exames</span>
+                  {patient?.sensitiveDataPasswordActive && (
+                    <span className={`text-xs ${isAuthenticated ? 'text-green-600' : 'text-red-500'}`}>
+                      {isAuthenticated ? '🔓' : '🔒'}
+                    </span>
+                  )}
+                </div>
               </div>
-            ) : (
-              <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-gray-50">
-                <CardContent className="text-center py-16">
-                  <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center">
-                    <FileText className="w-10 h-10 text-blue-600" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Nenhum resumo disponível</h3>
-                  <p className="text-gray-500">Este paciente ainda não possui registros médicos para gerar um resumo.</p>
-                </CardContent>
-              </Card>
-            )}
+              <div 
+                className="text-center p-4 bg-green-50 rounded-lg"
+                onClick={() => {
+                  setActiveTab("records");
+                  setActiveRecordTab("medication");
+                }}
+              >
+                <div className="text-2xl font-bold text-green-600">
+                  {recordsByType.medication?.length || 0}
+                </div>
+                <div className="text-sm text-gray-600">💊 Medicações</div>
+              </div>
+              <div 
+                className="text-center p-4 bg-purple-50 rounded-lg"
+                onClick={() => {
+                  setActiveTab("records");
+                  setActiveRecordTab("appointment");
+                }}
+              >
+                <div className="text-2xl font-bold text-purple-600">
+                  {recordsByType.appointment?.length || 0}
+                </div>
+                <div className="text-sm text-gray-600">📅 Consultas</div>
+              </div>
+              <div 
+                className="text-center p-4 bg-yellow-50 rounded-lg relative"
+                onClick={() => {
+                  setActiveTab("records");
+                  setActiveRecordTab("history");
+                }}
+              >
+                <div className="text-2xl font-bold text-yellow-600">
+                  {allRecordsByType.history?.length || 0}
+                </div>
+                <div className="text-sm text-gray-600 flex items-center justify-center space-x-1">
+                  <span>📝 Histórico</span>
+                  {patient?.sensitiveDataPasswordActive && (
+                    <span className={`text-xs ${isAuthenticated ? 'text-green-600' : 'text-red-500'}`}>
+                      {isAuthenticated ? '🔓' : '🔒'}
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div 
+                className="text-center p-4 bg-red-50 rounded-lg"
+                onClick={() => {
+                  setActiveTab("records");
+                  setActiveRecordTab("incident");
+                }}
+              >
+                <div className="text-2xl font-bold text-red-600">
+                  {recordsByType.incident?.length || 0}
+                </div>
+                <div className="text-sm text-gray-600">⚠️ Incidentes</div>
+              </div>
+              <div 
+                className="text-center p-4 bg-orange-50 rounded-lg"
+                onClick={() => {
+                  setActiveTab("records");
+                  setActiveRecordTab("pending");
+                }}
+              >
+                <div className="text-2xl font-bold text-orange-600">
+                  {recordsByType.pending?.length || 0}
+                </div>
+                <div className="text-sm text-gray-600">📋 Pendências</div>
+              </div>
+              <div className="text-center p-4 bg-indigo-50 rounded-lg relative">
+                <div className="text-2xl font-bold text-indigo-600">
+                  {allRecordsByType.credential?.length || 0}
+                </div>
+                <div className="text-sm text-gray-600 flex items-center justify-center space-x-1">
+                  <span>🔑 Senhas</span>
+                  {patient?.sensitiveDataPasswordActive && (
+                    <span className={`text-xs ${isAuthenticated ? 'text-green-600' : 'text-red-500'}`}>
+                      {isAuthenticated ? '🔓' : '🔒'}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="timeline" className="space-y-6">
@@ -652,47 +779,70 @@ export default function ImprovedPatientDetails() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {medicalRecords.length > 0 ? (
+                {filteredMedicalRecords.length > 0 ? (
                   <div className="space-y-6">
-                    {medicalRecords
+                    {filteredMedicalRecords
                       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                      .map((record, index) => (
-                        <div key={record.id} className="flex items-start space-x-6 relative">
-                          <div className="flex-shrink-0">
-                            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-                              <span className="text-white">
-                                {record.type === 'exam' ? '📋' :
-                                 record.type === 'medication' ? '💊' :
-                                 record.type === 'appointment' ? '📅' :
-                                 record.type === 'history' ? '📝' :
-                                 record.type === 'incident' ? '⚠️' :
-                                 record.type === 'credential' ? '🔑' : '📋'}
-                              </span>
+                      .map((record, index) => {
+                        const isSensitive = isSensitiveRecordType(record.type);
+                        if (isSensitive && patient?.sensitiveDataPasswordActive && !isAuthenticated) {
+                          return (
+                            <div key={record.id} className="flex items-start space-x-6 relative bg-gray-100 p-4 rounded-lg shadow-sm">
+                              <div className="flex-shrink-0">
+                                <div className="w-12 h-12 bg-gray-300 rounded-xl flex items-center justify-center shadow-lg">
+                                  <Shield className="w-6 h-6 text-gray-600" />
+                                </div>
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center justify-between mb-2">
+                                  <h4 className="text-base font-semibold text-gray-900">Conteúdo Protegido</h4>
+                                </div>
+                                <p className="text-sm text-gray-600">Este registro está protegido por senha.</p>
+                              </div>
+                              {index < filteredMedicalRecords.length - 1 && (
+                                <div className="absolute left-6 mt-12 w-px h-6 bg-gradient-to-b from-blue-200 to-transparent"></div>
+                              )}
                             </div>
-                          </div>
-                          <div className="flex-1 min-w-0 bg-white/70 backdrop-blur-sm rounded-lg p-4 shadow-md">
-                            <div className="flex items-center justify-between mb-2">
-                              <h4 className="text-base font-semibold text-gray-900">
-                                {record.title || record.description}
-                              </h4>
-                              <Badge variant="secondary" className="text-xs">
-                                {record.date}
-                              </Badge>
+                          );
+                        }
+                        return (
+                          <div key={record.id} className="flex items-start space-x-6 relative">
+                            <div className="flex-shrink-0">
+                              <div className={`w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg`}>
+                                <span className="text-white">
+                                  {record.type === 'exam' ? '📋' :
+                                   record.type === 'medication' ? '💊' :
+                                   record.type === 'appointment' ? '📅' :
+                                   record.type === 'history' ? '📝' :
+                                   record.type === 'incident' ? '⚠️' :
+                                   record.type === 'credential' ? '🔑' : '📋'}
+                                </span>
+                              </div>
                             </div>
-                            <p className="text-sm text-gray-600">
-                              {record.type === 'exam' ? 'Exame' :
-                               record.type === 'medication' ? 'Medicação' :
-                               record.type === 'appointment' ? 'Consulta' :
-                               record.type === 'history' ? 'Histórico' :
-                               record.type === 'incident' ? 'Incidente' :
-                               record.type === 'credential' ? 'Senha' : 'Pendência'}
-                            </p>
+                            <div className="flex-1 min-w-0 bg-white/70 backdrop-blur-sm rounded-lg p-4 shadow-md">
+                              <div className="flex items-center justify-between mb-2">
+                                <h4 className="text-base font-semibold text-gray-900">
+                                  {record.title || record.description}
+                                </h4>
+                                <Badge variant="secondary" className="text-xs">
+                                  {record.date}
+                                </Badge>
+                              </div>
+                              <p className="text-sm text-gray-600">
+                                {record.type === 'exam' ? 'Exame' :
+                                 record.type === 'medication' ? 'Medicação' :
+                                 record.type === 'appointment' ? 'Consulta' :
+                                 record.type === 'history' ? 'Histórico' :
+                                 record.type === 'incident' ? 'Incidente' :
+                                 record.type === 'credential' ? 'Senha' : 'Pendência'}
+                              </p>
+                            </div>
+                            {index < filteredMedicalRecords.length - 1 && (
+                              <div className="absolute left-6 mt-12 w-px h-6 bg-gradient-to-b from-blue-200 to-transparent"></div>
+                            )}
                           </div>
-                          {index < medicalRecords.length - 1 && (
-                            <div className="absolute left-6 mt-12 w-px h-6 bg-gradient-to-b from-blue-200 to-transparent"></div>
-                          )}
-                        </div>
-                      ))}
+                        );
+                      })}
                   </div>
                 ) : (
                   <div className="text-center py-16">
@@ -710,16 +860,23 @@ export default function ImprovedPatientDetails() {
       </div>
 
       {/* Modals */}
-      <QuickRegisterModal
-        open={showQuickRegister}
-        onOpenChange={setShowQuickRegister}
-        patients={patient ? [patient] : []}
-      />
-
-      <EditPatientModal
-        open={showEditPatient}
+      <EditPatientModal 
+        open={showEditPatient} 
         onOpenChange={setShowEditPatient}
         patient={patient}
+      />
+
+      <QuickRegisterModal 
+        open={showQuickRegister} 
+        onOpenChange={setShowQuickRegister}
+        patientId={patient?.id}
+      />
+
+      <PasswordPromptModal
+        open={showPasswordPrompt}
+        onOpenChange={setShowPasswordPrompt}
+        onPasswordSubmit={handlePasswordSubmit}
+        patientName={patient?.name || ""}
       />
     </div>
   );

@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import type { Patient, InsertMedicalRecord } from "@shared/schema";
+import { Shield } from "lucide-react";
 
 interface QuickRegisterModalProps {
   open: boolean;
@@ -22,6 +23,9 @@ export default function QuickRegisterModal({ open, onOpenChange, patients }: Qui
   const [selectedType, setSelectedType] = useState<string>("");
   const [date, setDate] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+  const [sensitiveDataPasswordActive, setSensitiveDataPasswordActive] = useState<boolean>(false);
+  const [sensitiveDataPassword, setSensitiveDataPassword] = useState<string>("");
+
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -53,6 +57,8 @@ export default function QuickRegisterModal({ open, onOpenChange, patients }: Qui
     setSelectedType("");
     setDate("");
     setDescription("");
+    setSensitiveDataPasswordActive(false);
+    setSensitiveDataPassword("");
     onOpenChange(false);
   };
 
@@ -72,6 +78,8 @@ export default function QuickRegisterModal({ open, onOpenChange, patients }: Qui
       date,
       description,
       attachments: [],
+      // TODO: Add sensitive data protection logic here if needed for the record itself
+      // For now, the password is set on the patient profile level in other components
     });
   };
 
@@ -90,7 +98,7 @@ export default function QuickRegisterModal({ open, onOpenChange, patients }: Qui
         <DialogHeader>
           <DialogTitle>⚡ Registro Rápido</DialogTitle>
         </DialogHeader>
-        
+
         <div className="space-y-4">
           {/* Step 1: Select Patient */}
           <div>
@@ -99,8 +107,8 @@ export default function QuickRegisterModal({ open, onOpenChange, patients }: Qui
               <SelectTrigger>
                 <SelectValue placeholder="Escolha um familiar..." />
               </SelectTrigger>
-              <SelectContent 
-                side="bottom" 
+              <SelectContent
+                side="bottom"
                 avoidCollisions={false}
                 className="z-[100] max-h-[150px] overflow-auto"
               >
@@ -112,7 +120,7 @@ export default function QuickRegisterModal({ open, onOpenChange, patients }: Qui
               </SelectContent>
             </Select>
           </div>
-          
+
           {/* Step 2: Select Type */}
           <div>
             <Label className="text-sm font-medium text-gray-700 mb-2">2. Escolher Tipo</Label>
@@ -131,7 +139,7 @@ export default function QuickRegisterModal({ open, onOpenChange, patients }: Qui
               ))}
             </div>
           </div>
-          
+
           {/* Step 3: Fill Details */}
           <div>
             <Label className="text-sm font-medium text-gray-700 mb-2">3. Preencher Detalhes</Label>
@@ -159,13 +167,63 @@ export default function QuickRegisterModal({ open, onOpenChange, patients }: Qui
               </div>
             </div>
           </div>
+
+          <div className="border-t pt-6">
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <Shield className="w-5 h-5 text-gray-600" />
+                <Label className="text-base font-semibold">Segurança e Privacidade</Label>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <Label className="text-sm font-medium">Proteger dados sensíveis com senha?</Label>
+                    <p className="text-xs text-gray-500">Exigirá uma senha para ver exames, histórico, etc.</p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="sensitiveDataPassword"
+                      checked={sensitiveDataPasswordActive}
+                      onChange={(e) => {
+                        const isActive = e.target.checked;
+                        setSensitiveDataPasswordActive(isActive);
+                        if (!isActive) {
+                          setSensitiveDataPassword(""); // Clear password if checkbox is unchecked
+                        }
+                      }}
+                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+
+                {sensitiveDataPasswordActive && (
+                  <div className="space-y-2 ml-4">
+                    <Label htmlFor="sensitivePassword" className="text-sm">Senha de Acesso Sensível</Label>
+                    <Input
+                      id="sensitivePassword"
+                      type="password"
+                      value={sensitiveDataPassword}
+                      onChange={(e) => setSensitiveDataPassword(e.target.value)}
+                      placeholder="Use uma senha fácil de lembrar. Esta senha será solicitada para ver dados sensíveis."
+                      className="text-sm"
+                    />
+                    <p className="text-xs text-gray-500">
+                      Use uma senha fácil de lembrar. Esta senha será solicitada para ver dados sensíveis.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
-        
+
         <div className="flex justify-end space-x-3 mt-6">
           <Button variant="outline" onClick={handleClose}>
             Cancelar
           </Button>
-          <Button 
+          <Button
             className="bg-purple-600 hover:bg-purple-700"
             onClick={handleSave}
             disabled={createRecordMutation.isPending}
