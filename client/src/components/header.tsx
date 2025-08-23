@@ -19,7 +19,7 @@ export default function Header({ onQuickRegister, onPatientRegister, onMenuToggl
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20 sm:h-24">
           {/* Menu Button + Logo */}
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-4 sm:space-x-6">
             <Button
               variant="ghost"
               size="icon"
@@ -29,15 +29,15 @@ export default function Header({ onQuickRegister, onPatientRegister, onMenuToggl
               <Menu className="h-6 w-6" />
             </Button>
             
-            <div className="flex items-center space-x-4">
-              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white/20 backdrop-blur-lg rounded-3xl flex items-center justify-center shadow-xl ring-2 ring-white/30 transition-transform duration-300 hover:scale-110">
-                <span className="text-3xl sm:text-4xl">👨‍👩‍👧‍👦</span>
+            <div className="flex items-center space-x-3 sm:space-x-4">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-white/20 backdrop-blur-lg rounded-3xl flex items-center justify-center shadow-xl ring-2 ring-white/30 transition-transform duration-300 hover:scale-110">
+                <span className="text-2xl sm:text-3xl lg:text-4xl">👨‍👩‍👧‍👦</span>
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-2xl sm:text-3xl font-bold text-white bg-gradient-to-r from-white to-purple-100 bg-clip-text text-transparent">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white bg-gradient-to-r from-white to-purple-100 bg-clip-text text-transparent leading-tight">
                   Prontuário Familiar
                 </h1>
-                <p className="text-sm sm:text-base text-purple-100/90 font-medium tracking-wide">
+                <p className="text-xs sm:text-sm lg:text-base text-purple-100/90 font-medium tracking-wide">
                   Gerencie a saúde de toda a família em um só lugar
                 </p>
               </div>
@@ -45,8 +45,8 @@ export default function Header({ onQuickRegister, onPatientRegister, onMenuToggl
           </div>
 
           {/* Mobile Title (only visible on small screens) */}
-          <div className="sm:hidden flex-1 text-center">
-            <h1 className="text-xl font-bold text-white">
+          <div className="sm:hidden flex-1 text-center px-2">
+            <h1 className="text-lg font-bold text-white truncate">
               Prontuário Familiar
             </h1>
           </div>
