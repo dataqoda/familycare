@@ -87,36 +87,36 @@ export default function ImprovedPatientDetails() {
             Voltar ao Dashboard
           </Button>
 
-          {/* Header do Paciente - Modernizado */}
+          {/* Header do Paciente - Modernizado e Responsivo */}
           <Card className="mb-8 border-0 shadow-xl bg-gradient-to-r from-white via-white to-purple-50/50 overflow-hidden">
-            <CardContent className="p-8">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-6">
-                  <div className="relative">
-                    <div className="w-24 h-24 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center shadow-xl ring-4 ring-purple-100">
-                      <span className="text-4xl text-white font-bold">{patient.photoUrl}</span>
+            <CardContent className="p-4 sm:p-6 lg:p-8">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+                <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
+                  <div className="relative mx-auto sm:mx-0">
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center shadow-xl ring-4 ring-purple-100">
+                      <span className="text-2xl sm:text-4xl text-white font-bold">{patient.photoUrl}</span>
                     </div>
-                    <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white flex items-center justify-center">
+                    <div className="absolute -bottom-2 -right-2 w-6 h-6 sm:w-8 sm:h-8 bg-green-500 rounded-full border-4 border-white flex items-center justify-center">
                       <span className="text-white text-xs">✓</span>
                     </div>
                   </div>
-                  <div>
-                    <h1 className="text-4xl font-bold text-gray-900 mb-2">{patient.name}</h1>
-                    <div className="flex items-center space-x-4">
-                      <p className="text-xl text-gray-600">
+                  <div className="text-center sm:text-left">
+                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">{patient.name}</h1>
+                    <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-4">
+                      <p className="text-lg sm:text-xl text-gray-600">
                         {calculateAge(patient.birthDate)} anos
                       </p>
-                      <span className="text-gray-400">•</span>
-                      <p className="text-lg text-gray-500">
+                      <span className="hidden sm:inline text-gray-400">•</span>
+                      <p className="text-sm sm:text-lg text-gray-500">
                         Nascido em {formatDate(patient.birthDate)}
                       </p>
                     </div>
-                    <div className="flex items-center space-x-3 mt-3">
-                      <Badge variant="secondary" className="bg-purple-100 text-purple-800 px-3 py-1">
+                    <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 mt-3">
+                      <Badge variant="secondary" className="bg-purple-100 text-purple-800 px-3 py-1 text-xs sm:text-sm justify-center sm:justify-start">
                         <Droplet className="w-3 h-3 mr-1" />
                         {patient.bloodType || "Tipo não informado"}
                       </Badge>
-                      <Badge variant="secondary" className="bg-blue-100 text-blue-800 px-3 py-1">
+                      <Badge variant="secondary" className="bg-blue-100 text-blue-800 px-3 py-1 text-xs sm:text-sm justify-center sm:justify-start">
                         <User className="w-3 h-3 mr-1" />
                         {patient.doctor || "Médico não informado"}
                       </Badge>
@@ -125,7 +125,7 @@ export default function ImprovedPatientDetails() {
                 </div>
                 <Button
                   onClick={() => setShowEditModal(true)}
-                  className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                  className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-sm sm:text-base w-full sm:w-auto"
                 >
                   <Edit className="w-4 h-4 mr-2" />
                   Editar Paciente
@@ -136,18 +136,22 @@ export default function ImprovedPatientDetails() {
         </div>
 
         <Tabs defaultValue="personal" className="space-y-8">
-          <TabsList className="grid grid-cols-4 w-full max-w-2xl mx-auto bg-white/80 backdrop-blur-sm border-0 shadow-lg p-2 rounded-xl">
-            <TabsTrigger value="personal" className="rounded-lg font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
-              📋 Informações Pessoais
+          <TabsList className="grid grid-cols-2 sm:grid-cols-4 w-full max-w-4xl mx-auto bg-white/80 backdrop-blur-sm border-0 shadow-lg p-1 sm:p-2 rounded-xl gap-1 sm:gap-0">
+            <TabsTrigger value="personal" className="rounded-lg font-medium text-xs sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg p-2 sm:p-3">
+              <span className="hidden sm:inline">📋 Informações Pessoais</span>
+              <span className="sm:hidden">📋 Pessoais</span>
             </TabsTrigger>
-            <TabsTrigger value="records" className="rounded-lg font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-green-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
-              📄 Registros Médicos
+            <TabsTrigger value="records" className="rounded-lg font-medium text-xs sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-green-600 data-[state=active]:text-white data-[state=active]:shadow-lg p-2 sm:p-3">
+              <span className="hidden sm:inline">📄 Registros Médicos</span>
+              <span className="sm:hidden">📄 Registros</span>
             </TabsTrigger>
-            <TabsTrigger value="summary" className="rounded-lg font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
-              📊 Resumo
+            <TabsTrigger value="summary" className="rounded-lg font-medium text-xs sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg p-2 sm:p-3">
+              <span className="hidden sm:inline">📊 Resumo</span>
+              <span className="sm:hidden">📊 Resumo</span>
             </TabsTrigger>
-            <TabsTrigger value="timeline" className="rounded-lg font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
-              📅 Linha do Tempo
+            <TabsTrigger value="timeline" className="rounded-lg font-medium text-xs sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg p-2 sm:p-3">
+              <span className="hidden sm:inline">📅 Linha do Tempo</span>
+              <span className="sm:hidden">📅 Timeline</span>
             </TabsTrigger>
           </TabsList>
 
@@ -244,11 +248,11 @@ export default function ImprovedPatientDetails() {
 
                   <div className="border-t pt-6">
                     <h4 className="font-semibold text-gray-800 mb-6 text-lg">Documentos do Plano de Saúde</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                       {/* Carteirinha */}
                       <div className="space-y-4">
-                        <h5 className="font-medium text-gray-700 text-base">Carteirinha do Plano de Saúde</h5>
-                        <div className="grid grid-cols-2 gap-3">
+                        <h5 className="font-medium text-gray-700 text-sm sm:text-base">Carteirinha do Plano de Saúde</h5>
+                        <div className="grid grid-cols-2 gap-2 sm:gap-3">
                           <div>
                             <label className="text-xs text-gray-500 block mb-2 font-medium">Frente</label>
                             {patient.insuranceCardFrontUrl ? (
@@ -256,13 +260,13 @@ export default function ImprovedPatientDetails() {
                                 <img 
                                   src={patient.insuranceCardFrontUrl} 
                                   alt="Carteirinha - Frente"
-                                  className="w-full h-32 object-cover cursor-pointer group-hover:scale-105 transition-transform duration-300"
+                                  className="w-full h-24 sm:h-32 object-cover cursor-pointer group-hover:scale-105 transition-transform duration-300"
                                   onClick={() => window.open(patient.insuranceCardFrontUrl, '_blank')}
                                 />
                               </div>
                             ) : (
-                              <div className="border-2 border-dashed border-gray-300 rounded-xl h-32 flex items-center justify-center text-gray-400 bg-gray-50/50">
-                                <span className="text-xs text-center">Não enviado</span>
+                              <div className="border-2 border-dashed border-gray-300 rounded-xl h-24 sm:h-32 flex items-center justify-center text-gray-400 bg-gray-50/50">
+                                <span className="text-xs text-center px-2">Não enviado</span>
                               </div>
                             )}
                           </div>
@@ -273,13 +277,13 @@ export default function ImprovedPatientDetails() {
                                 <img 
                                   src={patient.insuranceCardBackUrl} 
                                   alt="Carteirinha - Verso"
-                                  className="w-full h-32 object-cover cursor-pointer group-hover:scale-105 transition-transform duration-300"
+                                  className="w-full h-24 sm:h-32 object-cover cursor-pointer group-hover:scale-105 transition-transform duration-300"
                                   onClick={() => window.open(patient.insuranceCardBackUrl, '_blank')}
                                 />
                               </div>
                             ) : (
-                              <div className="border-2 border-dashed border-gray-300 rounded-xl h-32 flex items-center justify-center text-gray-400 bg-gray-50/50">
-                                <span className="text-xs text-center">Não enviado</span>
+                              <div className="border-2 border-dashed border-gray-300 rounded-xl h-24 sm:h-32 flex items-center justify-center text-gray-400 bg-gray-50/50">
+                                <span className="text-xs text-center px-2">Não enviado</span>
                               </div>
                             )}
                           </div>
@@ -288,8 +292,8 @@ export default function ImprovedPatientDetails() {
 
                       {/* Documento de Identidade */}
                       <div className="space-y-4">
-                        <h5 className="font-medium text-gray-700 text-base">Documento de Identidade (RG)</h5>
-                        <div className="grid grid-cols-2 gap-3">
+                        <h5 className="font-medium text-gray-700 text-sm sm:text-base">Documento de Identidade (RG)</h5>
+                        <div className="grid grid-cols-2 gap-2 sm:gap-3">
                           <div>
                             <label className="text-xs text-gray-500 block mb-2 font-medium">Frente</label>
                             {patient.idCardFrontUrl ? (
@@ -297,13 +301,13 @@ export default function ImprovedPatientDetails() {
                                 <img 
                                   src={patient.idCardFrontUrl} 
                                   alt="RG - Frente"
-                                  className="w-full h-32 object-cover cursor-pointer group-hover:scale-105 transition-transform duration-300"
+                                  className="w-full h-24 sm:h-32 object-cover cursor-pointer group-hover:scale-105 transition-transform duration-300"
                                   onClick={() => window.open(patient.idCardFrontUrl, '_blank')}
                                 />
                               </div>
                             ) : (
-                              <div className="border-2 border-dashed border-gray-300 rounded-xl h-32 flex items-center justify-center text-gray-400 bg-gray-50/50">
-                                <span className="text-xs text-center">Não enviado</span>
+                              <div className="border-2 border-dashed border-gray-300 rounded-xl h-24 sm:h-32 flex items-center justify-center text-gray-400 bg-gray-50/50">
+                                <span className="text-xs text-center px-2">Não enviado</span>
                               </div>
                             )}
                           </div>
@@ -314,13 +318,13 @@ export default function ImprovedPatientDetails() {
                                 <img 
                                   src={patient.idCardBackUrl} 
                                   alt="RG - Verso"
-                                  className="w-full h-32 object-cover cursor-pointer group-hover:scale-105 transition-transform duration-300"
+                                  className="w-full h-24 sm:h-32 object-cover cursor-pointer group-hover:scale-105 transition-transform duration-300"
                                   onClick={() => window.open(patient.idCardBackUrl, '_blank')}
                                 />
                               </div>
                             ) : (
-                              <div className="border-2 border-dashed border-gray-300 rounded-xl h-32 flex items-center justify-center text-gray-400 bg-gray-50/50">
-                                <span className="text-xs text-center">Não enviado</span>
+                              <div className="border-2 border-dashed border-gray-300 rounded-xl h-24 sm:h-32 flex items-center justify-center text-gray-400 bg-gray-50/50">
+                                <span className="text-xs text-center px-2">Não enviado</span>
                               </div>
                             )}
                           </div>
@@ -342,42 +346,60 @@ export default function ImprovedPatientDetails() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                    <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
-                      <div className="text-3xl font-bold text-blue-600 mb-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+                    <div className="text-center p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+                      <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-600 mb-1 sm:mb-2">
                         {recordsByType.exam?.length || 0}
                       </div>
-                      <div className="text-sm text-gray-700 font-medium">📋 Exames</div>
+                      <div className="text-xs sm:text-sm text-gray-700 font-medium">
+                        <span className="hidden sm:inline">📋 Exames</span>
+                        <span className="sm:hidden">📋</span>
+                      </div>
                     </div>
-                    <div className="text-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
-                      <div className="text-3xl font-bold text-green-600 mb-2">
+                    <div className="text-center p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+                      <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-600 mb-1 sm:mb-2">
                         {recordsByType.medication?.length || 0}
                       </div>
-                      <div className="text-sm text-gray-700 font-medium">💊 Medicações</div>
+                      <div className="text-xs sm:text-sm text-gray-700 font-medium">
+                        <span className="hidden sm:inline">💊 Medicações</span>
+                        <span className="sm:hidden">💊</span>
+                      </div>
                     </div>
-                    <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
-                      <div className="text-3xl font-bold text-purple-600 mb-2">
+                    <div className="text-center p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+                      <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-purple-600 mb-1 sm:mb-2">
                         {recordsByType.appointment?.length || 0}
                       </div>
-                      <div className="text-sm text-gray-700 font-medium">📅 Consultas</div>
+                      <div className="text-xs sm:text-sm text-gray-700 font-medium">
+                        <span className="hidden sm:inline">📅 Consultas</span>
+                        <span className="sm:hidden">📅</span>
+                      </div>
                     </div>
-                    <div className="text-center p-6 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
-                      <div className="text-3xl font-bold text-yellow-600 mb-2">
+                    <div className="text-center p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+                      <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-yellow-600 mb-1 sm:mb-2">
                         {recordsByType.history?.length || 0}
                       </div>
-                      <div className="text-sm text-gray-700 font-medium">📝 Histórico</div>
+                      <div className="text-xs sm:text-sm text-gray-700 font-medium">
+                        <span className="hidden sm:inline">📝 Histórico</span>
+                        <span className="sm:hidden">📝</span>
+                      </div>
                     </div>
-                    <div className="text-center p-6 bg-gradient-to-br from-red-50 to-red-100 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
-                      <div className="text-3xl font-bold text-red-600 mb-2">
+                    <div className="text-center p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-red-50 to-red-100 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+                      <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-red-600 mb-1 sm:mb-2">
                         {recordsByType.incident?.length || 0}
                       </div>
-                      <div className="text-sm text-gray-700 font-medium">⚠️ Incidentes</div>
+                      <div className="text-xs sm:text-sm text-gray-700 font-medium">
+                        <span className="hidden sm:inline">⚠️ Incidentes</span>
+                        <span className="sm:hidden">⚠️</span>
+                      </div>
                     </div>
-                    <div className="text-center p-6 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
-                      <div className="text-3xl font-bold text-orange-600 mb-2">
+                    <div className="text-center p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+                      <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-orange-600 mb-1 sm:mb-2">
                         {recordsByType.pending?.length || 0}
                       </div>
-                      <div className="text-sm text-gray-700 font-medium">📋 Pendências</div>
+                      <div className="text-xs sm:text-sm text-gray-700 font-medium">
+                        <span className="hidden sm:inline">📋 Pendências</span>
+                        <span className="sm:hidden">📋</span>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
