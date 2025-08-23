@@ -80,17 +80,46 @@ export default function AdvancedQuickRegisterModal({ open, onOpenChange, patient
     setFormData((prev: any) => ({ ...prev, [field]: value }));
   };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
-    if (files) {
-      const fileNames = Array.from(files).map(file => file.name);
-      setAttachments(prev => [...prev, ...fileNames]);
+    if (files && files.length > 0) {
+      const newAttachments = [...attachments];
 
-      // Simular o upload salvando os nomes dos arquivos
-      // Em um ambiente real, você faria o upload real aqui
+      for (const file of files) {
+        try {
+          const formData = new FormData();
+          formData.append('file', file);
+
+          const response = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData
+          });
+
+          if (!response.ok) {
+            throw new Error('Erro no upload');
+          }
+
+          const result = await response.json();
+          // CORRIGIDO: Usar o filename gerado pelo servidor (não o originalName)
+          console.log('📁 Arquivo enviado:', {
+            nomeGerado: result.filename,
+            nomeOriginal: result.originalName
+          });
+          newAttachments.push(result.filename); // Salvar o nome gerado pelo multer
+        } catch (error) {
+          console.error('Erro no upload do arquivo:', error);
+          toast({
+            title: "Erro no upload",
+            description: `Erro ao enviar o arquivo ${file.name}`,
+            variant: "destructive",
+          });
+        }
+      }
+      setAttachments(newAttachments);
+
       toast({
         title: "Arquivo(s) adicionado(s)",
-        description: `${fileNames.length} arquivo(s) foram adicionados.`,
+        description: `${files.length} arquivo(s) foram adicionados.`,
       });
     }
   };
@@ -557,8 +586,8 @@ export default function AdvancedQuickRegisterModal({ open, onOpenChange, patient
                   key={option.value}
                   variant="outline"
                   className={`p-3 text-sm justify-start border-2 transition-all duration-300 ${
-                    selectedType === option.value 
-                      ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white border-purple-500 shadow-lg transform scale-105' 
+                    selectedType === option.value
+                      ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white border-purple-500 shadow-lg transform scale-105'
                       : 'bg-white/70 backdrop-blur-sm border-gray-200 hover:border-purple-300 hover:bg-purple-50 hover:shadow-md'
                   }`}
                   onClick={() => {
@@ -597,8 +626,8 @@ export default function AdvancedQuickRegisterModal({ open, onOpenChange, patient
         </div>
 
         <div className="flex justify-end space-x-3 mt-8 pt-4 border-t border-gray-200">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={handleClose}
             className="px-6 py-2 border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-300"
           >

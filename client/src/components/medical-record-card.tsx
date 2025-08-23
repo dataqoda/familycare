@@ -593,23 +593,23 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                       <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
                         <div className="flex items-center space-x-2">
                           {getFileIcon(attachment)}
-                          <span className="text-sm text-gray-700">{attachment.split('/').pop() || attachment}</span>
+                          {/* Mostrar nome mais amigável, mas manter funcionalidade */}
+                          <div>
+                            <span className="text-sm text-gray-700">
+                              {attachment.includes('file-') ? 
+                                `Documento ${index + 1}` : 
+                                (attachment.split('/').pop() || attachment)
+                              }
+                            </span>
+                            <p className="text-xs text-gray-500">{attachment}</p>
+                          </div>
                         </div>
                         <Button 
                           variant="ghost" 
                           size="sm"
                           onClick={() => {
-                            let fileUrl;
-                            if (attachment.startsWith('http')) {
-                              fileUrl = attachment;
-                            } else if (attachment.startsWith('/uploads/')) {
-                              fileUrl = `http://localhost:5000${attachment}`;
-                            } else if (attachment.includes('/')) {
-                              const fileName = attachment.split('/').pop();
-                              fileUrl = `http://localhost:5000/uploads/${fileName}`;
-                            } else {
-                              fileUrl = `http://localhost:5000/uploads/${attachment}`;
-                            }
+                            // O attachment agora já contém o nome gerado correto
+                            const fileUrl = `http://localhost:5000/uploads/${attachment}`;
                             console.log('📥 Baixando arquivo:', { attachment, fileUrl });
                             window.open(fileUrl, '_blank');
                           }}

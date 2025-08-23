@@ -268,21 +268,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       console.log("Arquivo recebido:", {
-        filename: req.file.filename,
-        originalname: req.file.originalname,
+        filename: req.file.filename, // Este é o nome gerado (correto para salvar)
+        originalname: req.file.originalname, // Este é o nome original
         mimetype: req.file.mimetype,
         size: req.file.size,
         path: req.file.path
       });
 
+      // IMPORTANTE: Retornamos o filename gerado pelo multer, não o originalname
       const response = {
-        filename: req.file.filename,
-        originalName: req.file.originalname,
-        path: `/uploads/${req.file.filename}`,
+        filename: req.file.filename, // Nome gerado (ex: file-1755950603694-876126295.png)
+        originalName: req.file.originalname, // Nome original (ex: imagem.png)
+        path: `/uploads/${req.file.filename}`, // Caminho com nome gerado
         size: req.file.size
       };
 
-      console.log("Resposta do upload:", response);
+      console.log("✅ Resposta do upload (nome correto para salvar):", response);
       res.json(response);
     } catch (error) {
       console.error("Erro no upload do arquivo:", error);
