@@ -410,7 +410,10 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
 
   return (
     <>
-      <Card className="w-full">
+      <Card 
+        className="w-full cursor-pointer hover:shadow-lg transition-shadow duration-300"
+        onClick={() => setShowDetails(true)}
+      >
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -437,7 +440,7 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                 </div>
               </div>
             </div>
-            <div className="flex items-center space-x-1">
+            <div className="flex items-center space-x-1" onClick={(e) => e.stopPropagation()}>
               <Button
                 variant="ghost"
                 size="sm"
