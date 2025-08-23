@@ -85,7 +85,7 @@ export default function AdvancedQuickRegisterModal({ open, onOpenChange, patient
     if (files) {
       const fileNames = Array.from(files).map(file => file.name);
       setAttachments(prev => [...prev, ...fileNames]);
-      
+
       // Simular o upload salvando os nomes dos arquivos
       // Em um ambiente real, você faria o upload real aqui
       toast({

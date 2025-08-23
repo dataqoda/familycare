@@ -399,51 +399,54 @@ export default function Dashboard() {
                   variant="outline" 
                   className="flex-1"
                   onClick={() => {
-                    try {
-                      const eventTitle = `Consulta - ${selectedAppointment.patientName}`;
-                      const eventDetails = `Especialidade: ${selectedAppointment.specialty}\nMédico: ${selectedAppointment.doctor}\nLocal: ${selectedAppointment.location}`;
+                    const eventTitle = `Consulta - ${selectedAppointment.patientName}`;
+                    const eventDetails = `Especialidade: ${selectedAppointment.specialty}\nMédico: ${selectedAppointment.doctor}\nLocal: ${selectedAppointment.location}`;
 
-                      let dateStr = selectedAppointment.date;
-                      let timeStr = selectedAppointment.time;
+                    let dateStr = selectedAppointment.date;
+                    let timeStr = selectedAppointment.time;
 
-                      if (dateStr.includes('/')) {
-                        const [day, month, year] = dateStr.split('/');
-                        dateStr = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-                      }
-
-                      if (timeStr && !timeStr.includes(':')) {
-                        if (timeStr.length === 4) {
-                          timeStr = `${timeStr.substring(0, 2)}:${timeStr.substring(2, 4)}`;
-                        }
-                      }
-
-                      const startDate = new Date(`${dateStr}T${timeStr}:00`);
-
-                      if (isNaN(startDate.getTime())) {
-                        console.error('Data inválida:', selectedAppointment.date, selectedAppointment.time);
-                        alert('Erro: Data ou horário da consulta inválidos');
-                        return;
-                      }
-
-                      const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
-
-                      const formatGoogleDate = (date: Date) => {
-                        return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-                      };
-
-                      const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventTitle)}&dates=${formatGoogleDate(startDate)}/${formatGoogleDate(endDate)}&details=${encodeURIComponent(eventDetails)}&location=${encodeURIComponent(selectedAppointment.location)}`;
-
-                      window.open(googleCalendarUrl, '_blank');
-                    } catch (error) {
-                      console.error('Erro ao criar evento no Google Calendar:', error);
-                      alert('Erro ao adicionar na agenda. Verifique os dados da consulta.');
+                    if (dateStr.includes('/')) {
+                      const [day, month, year] = dateStr.split('/');
+                      dateStr = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
                     }
+
+                    if (timeStr && !timeStr.includes(':')) {
+                      if (timeStr.length === 4) {
+                        timeStr = `${timeStr.substring(0, 2)}:${timeStr.substring(2, 4)}`;
+                      }
+                    }
+
+                    const startDate = new Date(`${dateStr}T${timeStr}:00`);
+
+                    if (isNaN(startDate.getTime())) {
+                      console.error('Data inválida:', selectedAppointment.date, selectedAppointment.time);
+                      alert('Erro: Data ou horário da consulta inválidos');
+                      return;
+                    }
+
+                    const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
+
+                    const formatGoogleDate = (date: Date) => {
+                      return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+                    };
+
+                    const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventTitle)}&dates=${formatGoogleDate(startDate)}/${formatGoogleDate(endDate)}&details=${encodeURIComponent(eventDetails)}&location=${encodeURIComponent(selectedAppointment.location)}`;
+
+                    window.open(googleCalendarUrl, '_blank');
                   }}
                 >
                   📅 Adicionar à Agenda
                 </Button>
                 <Button 
-                  onClick={() => navigate(`/patient/${selectedAppointment.patientId}`)}
+                  onClick={() => {
+                    // Use patientId from appointment, or find by name as fallback
+                    const patientId = selectedAppointment.patientId || patients.find(p => p.name === selectedAppointment.patientName)?.id;
+                    if (patientId) {
+                      navigate(`/patient/${patientId}`);
+                    } else {
+                      alert('Paciente não encontrado');
+                    }
+                  }}
                   className="flex-1"
                 >
                   Ver Paciente
