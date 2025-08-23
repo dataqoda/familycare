@@ -170,7 +170,7 @@ export default function Dashboard() {
                           </div>
                           <div className="flex items-center mt-2 text-sm text-gray-500">
                             <span className="mr-2">📍</span>
-                            <span>{appointment.location}</span>
+                            <span>{appointment.location || "Local não informado"}</span>
                           </div>
                         </div>
                       ))

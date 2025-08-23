@@ -304,11 +304,11 @@ export default function AdvancedQuickRegisterModal({ open, onOpenChange, patient
               />
             </div>
             <div>
-              <Label>Endereço</Label>
+              <Label>Endereço/Local</Label>
               <Input
                 value={formData.address || ""}
                 onChange={(e) => updateFormData("address", e.target.value)}
-                placeholder="Endereço completo"
+                placeholder="Endereço completo ou link do Google Maps"
               />
             </div>
             <div>
