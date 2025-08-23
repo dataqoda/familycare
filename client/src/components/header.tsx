@@ -9,7 +9,7 @@ interface HeaderProps {
 
 export default function Header({ onQuickRegister, onPatientRegister, onMenuToggle }: HeaderProps) {
   return (
-    <header className="bg-gradient-to-r from-purple-700 via-purple-600 to-blue-600 shadow-xl border-0 sticky top-0 z-50">
+    <header className="bg-gradient-to-r from-purple-700 via-purple-600 to-blue-600 shadow-xl border-0 sticky top-0 z-10">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between py-4 sm:py-5">
           {/* Left side - Logo and menu */}

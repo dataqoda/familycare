@@ -20,7 +20,7 @@ export default function Sidebar({ patients, isOpen, onToggle, onPatientClick }: 
       )}
       
       {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 w-72 bg-gradient-to-b from-white to-gray-50 shadow-xl transform transition-transform duration-300 ease-in-out z-30 ${
+      <div className={`fixed inset-y-0 left-0 w-72 bg-gradient-to-b from-white to-gray-50 shadow-xl transform transition-transform duration-300 ease-in-out z-50 ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
       } lg:translate-x-0 border-r border-gray-200`}>
         <div className="flex flex-col h-full">
