@@ -409,15 +409,39 @@ export default function ImprovedPatientDetails() {
 
           <TabsContent value="records" className="space-y-6">
             <Tabs defaultValue="all" className="space-y-6">
-              <TabsList className="bg-white/80 backdrop-blur-sm border-0 shadow-md rounded-xl p-2">
-                <TabsTrigger value="all" className="rounded-lg">Todos</TabsTrigger>
-                <TabsTrigger value="exam" className="rounded-lg">📋 Exames</TabsTrigger>
-                <TabsTrigger value="medication" className="rounded-lg">💊 Medicações</TabsTrigger>
-                <TabsTrigger value="appointment" className="rounded-lg">📅 Consultas</TabsTrigger>
-                <TabsTrigger value="history" className="rounded-lg">📝 Histórico</TabsTrigger>
-                <TabsTrigger value="incident" className="rounded-lg">⚠️ Incidentes</TabsTrigger>
-                <TabsTrigger value="pending" className="rounded-lg">📋 Pendências</TabsTrigger>
-                <TabsTrigger value="credential" className="rounded-lg">🔑 Senhas</TabsTrigger>
+              <TabsList className="bg-white/80 backdrop-blur-sm border-0 shadow-md rounded-xl p-1 sm:p-2 flex flex-wrap justify-center sm:justify-start gap-1 h-auto min-h-[40px]">
+                <TabsTrigger value="all" className="rounded-lg text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 flex-shrink-0">
+                  <span className="hidden sm:inline">Todos</span>
+                  <span className="sm:hidden">📋 Todos</span>
+                </TabsTrigger>
+                <TabsTrigger value="exam" className="rounded-lg text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 flex-shrink-0">
+                  <span className="hidden sm:inline">📋 Exames</span>
+                  <span className="sm:hidden">📋</span>
+                </TabsTrigger>
+                <TabsTrigger value="medication" className="rounded-lg text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 flex-shrink-0">
+                  <span className="hidden sm:inline">💊 Medicações</span>
+                  <span className="sm:hidden">💊</span>
+                </TabsTrigger>
+                <TabsTrigger value="appointment" className="rounded-lg text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 flex-shrink-0">
+                  <span className="hidden sm:inline">📅 Consultas</span>
+                  <span className="sm:hidden">📅</span>
+                </TabsTrigger>
+                <TabsTrigger value="history" className="rounded-lg text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 flex-shrink-0">
+                  <span className="hidden sm:inline">📝 Histórico</span>
+                  <span className="sm:hidden">📝</span>
+                </TabsTrigger>
+                <TabsTrigger value="incident" className="rounded-lg text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 flex-shrink-0">
+                  <span className="hidden sm:inline">⚠️ Incidentes</span>
+                  <span className="sm:hidden">⚠️</span>
+                </TabsTrigger>
+                <TabsTrigger value="pending" className="rounded-lg text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 flex-shrink-0">
+                  <span className="hidden sm:inline">📋 Pendências</span>
+                  <span className="sm:hidden">📋</span>
+                </TabsTrigger>
+                <TabsTrigger value="credential" className="rounded-lg text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 flex-shrink-0">
+                  <span className="hidden sm:inline">🔑 Senhas</span>
+                  <span className="sm:hidden">🔑</span>
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="all" className="space-y-4">
