@@ -390,10 +390,10 @@ export default function Dashboard() {
                           )}
                           <div className="flex items-center gap-3">
                             <span className={`text-xs px-3 py-1 rounded-full font-medium ${
-                              item.priority === 'high' 
-                                ? 'bg-red-100 text-red-800' 
-                                : item.priority === 'medium' 
-                                ? 'bg-yellow-100 text-yellow-800' 
+                              item.priority === 'high'
+                                ? 'bg-red-100 text-red-800'
+                                : item.priority === 'medium'
+                                ? 'bg-yellow-100 text-yellow-800'
                                 : 'bg-green-100 text-green-800'
                             }`}>
                               {item.priority === 'high' ? '🔴 Alta' :
@@ -456,7 +456,7 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                 {patients.map((patient) => (
                   <Card
                     key={patient.id}
@@ -555,8 +555,8 @@ export default function Dashboard() {
               </div>
 
               <div className="mt-6 text-center">
-                <Button 
-                  variant="link" 
+                <Button
+                  variant="link"
                   className="text-blue-600 hover:text-blue-800 text-sm font-medium"
                   onClick={() => navigate("/recent-updates")}
                 >

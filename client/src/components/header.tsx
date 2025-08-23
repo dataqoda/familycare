@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Menu, UserPlus, FileText, Plus } from "lucide-react";
 
@@ -10,12 +9,12 @@ interface HeaderProps {
 
 export default function Header({ onQuickRegister, onPatientRegister, onMenuToggle }: HeaderProps) {
   return (
-    <header className="relative bg-gradient-to-r from-purple-600 via-purple-700 to-blue-700 shadow-2xl border-b border-purple-200/20 overflow-hidden">
+    <header className="relative bg-gradient-to-r from-purple-600 via-purple-700 to-blue-700 shadow-2xl border-b border-purple-200/20 overflow-hidden header-landscape">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5"></div>
       <div className="absolute -top-24 -right-24 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
       <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-purple-300/20 rounded-full blur-2xl"></div>
-      
+
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20 sm:h-24">
           {/* Menu Button + Logo */}
@@ -28,7 +27,7 @@ export default function Header({ onQuickRegister, onPatientRegister, onMenuToggl
             >
               <Menu className="h-6 w-6" />
             </Button>
-            
+
             <div className="flex items-center space-x-3 sm:space-x-4">
               <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-white/20 backdrop-blur-lg rounded-3xl flex items-center justify-center shadow-xl ring-2 ring-white/30 transition-transform duration-300 hover:scale-110">
                 <span className="text-2xl sm:text-3xl lg:text-4xl">👨‍👩‍👧‍👦</span>
@@ -64,7 +63,7 @@ export default function Header({ onQuickRegister, onPatientRegister, onMenuToggl
                 <span className="sm:hidden font-semibold text-sm">Registro</span>
               </div>
             </Button>
-            
+
             <Button
               onClick={onPatientRegister}
               className="group relative overflow-hidden bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 border border-green-400/30"

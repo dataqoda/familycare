@@ -69,7 +69,7 @@ export default function AppointmentsPage() {
           <p className="text-gray-600 mt-2">Visualize todas as consultas agendadas</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
           {allAppointments.length > 0 ? (
             allAppointments.map((appointment) => (
               <Card key={appointment.id} className="hover:shadow-lg transition-shadow duration-200">
