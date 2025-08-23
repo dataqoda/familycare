@@ -121,19 +121,57 @@ export default function Dashboard() {
         };
       })
   ].filter(apt => {
-    // Filtrar apenas consultas futuras
+    // Filtrar apenas consultas futuras ou recentes (últimos 30 dias para teste)
     try {
       let dateStr = apt.date;
+      
+      // Converter formato brasileiro DD/MM/YYYY para YYYY-MM-DD se necessário
       if (dateStr.includes('/')) {
-        const [day, month, year] = dateStr.split('/');
-        dateStr = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+        const dateParts = dateStr.split('/');
+        if (dateParts.length === 3) {
+          const [day, month, year] = dateParts;
+          dateStr = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+        }
       }
-      const appointmentDate = new Date(`${dateStr}T${apt.time}:00`);
-      return appointmentDate > new Date();
-    } catch {
+      
+      // Converter formato YYYY-MM-DD para objeto Date
+      const appointmentDate = new Date(`${dateStr}T${apt.time || '00:00'}:00`);
+      const now = new Date();
+      
+      // Mostrar consultas futuras ou dos últimos 30 dias (para demonstração)
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(now.getDate() - 30);
+      
+      return appointmentDate >= thirtyDaysAgo;
+    } catch (error) {
+      console.log('Erro ao processar data da consulta:', apt.date, error);
       return true; // Se não conseguir parsear, mostrar mesmo assim
     }
-  }).slice(0, 5); // Mostrar apenas as próximas 5
+  })
+  .sort((a, b) => {
+    // Ordenar por data (mais próximas primeiro)
+    try {
+      let dateA = a.date;
+      let dateB = b.date;
+      
+      if (dateA.includes('/')) {
+        const [day, month, year] = dateA.split('/');
+        dateA = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      }
+      if (dateB.includes('/')) {
+        const [day, month, year] = dateB.split('/');
+        dateB = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      }
+      
+      const dateObjA = new Date(`${dateA}T${a.time || '00:00'}:00`);
+      const dateObjB = new Date(`${dateB}T${b.time || '00:00'}:00`);
+      
+      return dateObjA.getTime() - dateObjB.getTime();
+    } catch {
+      return 0;
+    }
+  })
+  .slice(0, 5); // Mostrar apenas as próximas 5
 
   const { data: recentUpdates = [] } = useQuery<RecentUpdate[]>({
     queryKey: ["/api/recent-updates"],
