@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
@@ -261,21 +261,25 @@ export default function AdvancedQuickRegisterModal({ open, onOpenChange, patient
       case "appointment":
         return (
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <Label>Data *</Label>
+                <Label htmlFor="date" className="text-sm sm:text-base">Data *</Label>
                 <Input
+                  id="date"
                   type="date"
                   value={formData.date || ""}
                   onChange={(e) => updateFormData("date", e.target.value)}
+                  className="text-sm sm:text-base"
                 />
               </div>
               <div>
-                <Label>Hora *</Label>
+                <Label htmlFor="time" className="text-sm sm:text-base">Hora *</Label>
                 <Input
+                  id="time"
                   type="time"
                   value={formData.time || ""}
                   onChange={(e) => updateFormData("time", e.target.value)}
+                  className="text-sm sm:text-base"
                 />
               </div>
             </div>
@@ -511,9 +515,9 @@ export default function AdvancedQuickRegisterModal({ open, onOpenChange, patient
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto mx-4 sm:mx-auto">
         <DialogHeader>
-          <DialogTitle>⚡ Registro Rápido</DialogTitle>
+          <DialogTitle className="text-lg sm:text-xl">⚡ Registro Rápido</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
