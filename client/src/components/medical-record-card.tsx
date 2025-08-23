@@ -737,7 +737,7 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                     <Input
                       id="edit-time"
                       type="time"
-                      value={(record as any).time || ''}
+                      value={(editFormData as any).time || ''}
                       onChange={(e) => setEditFormData(prev => ({ ...prev, time: e.target.value }))}
                     />
                   </div>
@@ -745,7 +745,7 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                     <Label htmlFor="edit-doctor">Médico</Label>
                     <Input
                       id="edit-doctor"
-                      value={(record as any).doctor || ''}
+                      value={(editFormData as any).doctor || ''}
                       onChange={(e) => setEditFormData(prev => ({ ...prev, doctor: e.target.value }))}
                       placeholder="Nome do médico"
                     />
@@ -756,7 +756,7 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                     <Label htmlFor="edit-specialty">Especialidade</Label>
                     <Input
                       id="edit-specialty"
-                      value={(record as any).specialty || ''}
+                      value={(editFormData as any).specialty || ''}
                       onChange={(e) => setEditFormData(prev => ({ ...prev, specialty: e.target.value }))}
                       placeholder="Especialidade médica"
                     />
@@ -765,7 +765,7 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                     <Label htmlFor="edit-clinic">Local</Label>
                     <Input
                       id="edit-clinic"
-                      value={(record as any).clinicHospital || ''}
+                      value={(editFormData as any).clinicHospital || ''}
                       onChange={(e) => setEditFormData(prev => ({ ...prev, clinicHospital: e.target.value }))}
                       placeholder="Clínica/Hospital"
                     />
@@ -775,9 +775,19 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                   <Label htmlFor="edit-address">Endereço</Label>
                   <Input
                     id="edit-address"
-                    value={(record as any).address || ''}
+                    value={(editFormData as any).address || ''}
                     onChange={(e) => setEditFormData(prev => ({ ...prev, address: e.target.value }))}
                     placeholder="Endereço completo"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-map-url">Link do Mapa (Google Maps)</Label>
+                  <Input
+                    id="edit-map-url"
+                    type="url"
+                    value={(editFormData as any).mapUrl || ''}
+                    onChange={(e) => setEditFormData(prev => ({ ...prev, mapUrl: e.target.value }))}
+                    placeholder="https://maps.google.com/..."
                   />
                 </div>
               </div>
@@ -790,7 +800,7 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                   <div className="space-y-2">
                     <Label htmlFor="edit-exam-type">Tipo de Exame</Label>
                     <Select 
-                      value={(record as any).examType || ''} 
+                      value={(editFormData as any).examType || ''} 
                       onValueChange={(value) => setEditFormData(prev => ({ ...prev, examType: value }))}
                     >
                       <SelectTrigger>
@@ -807,7 +817,7 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                     <Label htmlFor="edit-requesting-doctor">Médico Solicitante</Label>
                     <Input
                       id="edit-requesting-doctor"
-                      value={(record as any).requestingDoctor || ''}
+                      value={(editFormData as any).requestingDoctor || ''}
                       onChange={(e) => setEditFormData(prev => ({ ...prev, requestingDoctor: e.target.value }))}
                       placeholder="Nome do médico"
                     />
@@ -817,7 +827,7 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                   <Label htmlFor="edit-observations">Observações</Label>
                   <Textarea
                     id="edit-observations"
-                    value={(record as any).observations || ''}
+                    value={(editFormData as any).observations || ''}
                     onChange={(e) => setEditFormData(prev => ({ ...prev, observations: e.target.value }))}
                     placeholder="Observações do exame"
                     rows={3}
@@ -834,7 +844,7 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                     <Label htmlFor="edit-medication-name">Nome do Medicamento</Label>
                     <Input
                       id="edit-medication-name"
-                      value={(record as any).medicationName || ''}
+                      value={(editFormData as any).medicationName || ''}
                       onChange={(e) => setEditFormData(prev => ({ ...prev, medicationName: e.target.value }))}
                       placeholder="Nome do medicamento"
                     />
@@ -843,7 +853,7 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                     <Label htmlFor="edit-frequency">Frequência</Label>
                     <Input
                       id="edit-frequency"
-                      value={(record as any).frequency || ''}
+                      value={(editFormData as any).frequency || ''}
                       onChange={(e) => setEditFormData(prev => ({ ...prev, frequency: e.target.value }))}
                       placeholder="Ex: 2x ao dia"
                     />
@@ -853,7 +863,7 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                   <div className="space-y-2">
                     <Label htmlFor="edit-usage-type">Tipo de Uso</Label>
                     <Select 
-                      value={(record as any).usageType || ''} 
+                      value={(editFormData as any).usageType || ''} 
                       onValueChange={(value) => setEditFormData(prev => ({ ...prev, usageType: value }))}
                     >
                       <SelectTrigger>
@@ -869,7 +879,7 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                     <Label htmlFor="edit-duration">Duração</Label>
                     <Input
                       id="edit-duration"
-                      value={(record as any).duration || ''}
+                      value={(editFormData as any).duration || ''}
                       onChange={(e) => setEditFormData(prev => ({ ...prev, duration: e.target.value }))}
                       placeholder="Ex: 7 dias"
                     />
@@ -879,7 +889,7 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                   <Label htmlFor="edit-indication">Indicação</Label>
                   <Textarea
                     id="edit-indication"
-                    value={(record as any).indication || ''}
+                    value={(editFormData as any).indication || ''}
                     onChange={(e) => setEditFormData(prev => ({ ...prev, indication: e.target.value }))}
                     placeholder="Indicação médica"
                     rows={2}
@@ -896,7 +906,7 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                     <Label htmlFor="edit-service-name">Nome do Serviço</Label>
                     <Input
                       id="edit-service-name"
-                      value={(record as any).serviceName || ''}
+                      value={(editFormData as any).serviceName || ''}
                       onChange={(e) => setEditFormData(prev => ({ ...prev, serviceName: e.target.value }))}
                       placeholder="Nome do serviço"
                     />
@@ -905,7 +915,7 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                     <Label htmlFor="edit-username">Usuário</Label>
                     <Input
                       id="edit-username"
-                      value={(record as any).username || ''}
+                      value={(editFormData as any).username || ''}
                       onChange={(e) => setEditFormData(prev => ({ ...prev, username: e.target.value }))}
                       placeholder="Nome de usuário"
                     />
@@ -916,7 +926,7 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                   <Input
                     id="edit-service-url"
                     type="url"
-                    value={(record as any).serviceUrl || ''}
+                    value={(editFormData as any).serviceUrl || ''}
                     onChange={(e) => setEditFormData(prev => ({ ...prev, serviceUrl: e.target.value }))}
                     placeholder="https://exemplo.com"
                   />
@@ -925,7 +935,7 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                   <Label htmlFor="edit-additional-notes">Notas Adicionais</Label>
                   <Textarea
                     id="edit-additional-notes"
-                    value={(record as any).additionalNotes || ''}
+                    value={(editFormData as any).additionalNotes || ''}
                     onChange={(e) => setEditFormData(prev => ({ ...prev, additionalNotes: e.target.value }))}
                     placeholder="Notas ou observações"
                     rows={2}
