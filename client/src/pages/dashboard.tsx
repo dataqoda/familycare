@@ -169,76 +169,115 @@ export default function Dashboard() {
           onMenuToggle={() => setSidebarOpen(!sidebarOpen)}
         />
 
-        <main className="max-w-7xl mx-auto py-4 sm:py-8 px-4">
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6 sm:mb-8 justify-center px-4">
+        <main className="max-w-7xl mx-auto py-6 sm:py-8 px-3 sm:px-6 lg:px-8">
+          {/* Welcome Section */}
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
+              Bem-vindo ao seu Prontuário 👋
+            </h2>
+            <p className="text-gray-600 text-sm sm:text-base max-w-2xl mx-auto">
+              Mantenha toda a informação médica da sua família organizada e sempre à mão
+            </p>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-8 sm:mb-12 max-w-lg mx-auto">
             <Button
               onClick={() => setShowAddPatient(true)}
-              className="bg-primary hover:bg-primary/90 text-white px-4 sm:px-6 py-2 rounded-lg transition-colors duration-200 text-sm sm:text-base"
+              className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-6 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
             >
-              <UserPlus className="w-4 h-4 mr-2" />
-              Adicionar Paciente
+              <UserPlus className="w-5 h-5 mr-3" />
+              <span className="font-medium">Adicionar Paciente</span>
             </Button>
             <Button
               onClick={() => setShowQuickRegister(true)}
-              className="bg-secondary hover:bg-secondary/90 text-white px-4 sm:px-6 py-2 rounded-lg transition-colors duration-200 text-sm sm:text-base"
+              className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
             >
-              <FileText className="w-4 h-4 mr-2" />
-              Registro Rápido
+              <FileText className="w-5 h-5 mr-3" />
+              <span className="font-medium">Registro Rápido</span>
             </Button>
           </div>
 
           {/* Próximas Consultas */}
-          <div className="mb-8 sm:mb-12">
-            <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-gray-800 text-center px-4">
-              Próximas Consultas
-            </h2>
-            {upcomingAppointments.length === 0 ? (
-              <Card className="p-6 sm:p-8 text-center mx-4">
-                <Calendar className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 sm:mb-4 text-gray-400" />
-                <p className="text-gray-600 mb-3 sm:mb-4 text-sm sm:text-base">Nenhuma consulta agendada</p>
+          <section className="mb-12 sm:mb-16">
+            <div className="flex items-center justify-between mb-6 sm:mb-8">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+                📅 Próximas Consultas
+              </h2>
+              {upcomingAppointments.length > 0 && (
                 <Button
-                  onClick={() => setShowQuickRegister(true)}
-                  className="bg-primary hover:bg-primary/90 text-white text-sm sm:text-base px-4 sm:px-6"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate("/appointments")}
+                  className="text-xs sm:text-sm"
                 >
-                  Agendar Consulta
+                  Ver todas
                 </Button>
+              )}
+            </div>
+
+            {upcomingAppointments.length === 0 ? (
+              <Card className="border-dashed border-2 border-gray-200 bg-gray-50/50">
+                <CardContent className="p-8 sm:p-12 text-center">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                    <Calendar className="w-8 h-8 sm:w-10 sm:h-10 text-gray-400" />
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
+                    Nenhuma consulta agendada
+                  </h3>
+                  <p className="text-gray-600 mb-6 text-sm sm:text-base max-w-sm mx-auto">
+                    Comece organizando suas consultas médicas em um só lugar
+                  </p>
+                  <Button
+                    onClick={() => setShowQuickRegister(true)}
+                    className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Agendar Primeira Consulta
+                  </Button>
+                </CardContent>
               </Card>
             ) : (
-              <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 px-4">
+              <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 {upcomingAppointments.map((appointment) => (
                   <Card
                     key={`${appointment.patientName}-${appointment.date}-${appointment.time}`}
-                    className="cursor-pointer hover:shadow-md transition-shadow duration-200"
+                    className="cursor-pointer hover:shadow-lg transition-all duration-300 border-0 shadow-md bg-white hover:scale-105"
                     onClick={() => setSelectedAppointment(appointment)}
                   >
-                    <CardContent className="p-3 sm:p-4">
-                      <div className="flex items-center space-x-3 mb-3">
-                        <Avatar className="w-8 h-8 sm:w-10 sm:h-10">
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="flex items-center space-x-3 mb-4">
+                        <Avatar className="w-10 h-10 sm:w-12 sm:h-12 ring-2 ring-purple-100">
                           <AvatarImage
                             src={patients.find(p => p.id === appointment.patientId)?.avatar}
                             alt={appointment.patientName}
                           />
-                          <AvatarFallback className="bg-primary/10 text-primary text-xs sm:text-sm">
+                          <AvatarFallback className="bg-gradient-to-br from-purple-500 to-purple-600 text-white text-sm sm:text-base font-semibold">
                             {appointment.patientName.charAt(0)}
                           </AvatarFallback>
                         </Avatar>
                         <div className="min-w-0 flex-1">
-                          <h3 className="font-semibold text-xs sm:text-sm truncate">{appointment.patientName}</h3>
-                          <p className="text-gray-600 text-xs truncate">Dr. {appointment.doctor}</p>
+                          <h3 className="font-semibold text-sm sm:text-base text-gray-900 truncate">
+                            {appointment.patientName}
+                          </h3>
+                          <p className="text-gray-500 text-xs sm:text-sm truncate">
+                            Dr. {appointment.doctor}
+                          </p>
                         </div>
                       </div>
-                      <div className="space-y-1 sm:space-y-2">
-                        <div className="flex items-center text-gray-600">
-                          <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-2 flex-shrink-0" />
-                          <span className="text-xs sm:text-sm">{formatDate(appointment.date)}</span>
+                      
+                      <div className="space-y-2">
+                        <div className="flex items-center text-gray-600 bg-gray-50 rounded-lg p-2">
+                          <Calendar className="w-4 h-4 mr-3 text-purple-500 flex-shrink-0" />
+                          <span className="text-sm font-medium">{formatDate(appointment.date)}</span>
                         </div>
-                        <div className="flex items-center text-gray-600">
-                          <Clock className="w-3 h-3 sm:w-4 sm:h-4 mr-2 flex-shrink-0" />
-                          <span className="text-xs sm:text-sm">{appointment.time}</span>
+                        <div className="flex items-center text-gray-600 bg-gray-50 rounded-lg p-2">
+                          <Clock className="w-4 h-4 mr-3 text-blue-500 flex-shrink-0" />
+                          <span className="text-sm font-medium">{appointment.time}</span>
                         </div>
-                        <div className="flex items-center text-gray-600">
-                          <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-2 flex-shrink-0" />
-                          <span className="text-xs sm:text-sm truncate">{appointment.location}</span>
+                        <div className="flex items-center text-gray-600 bg-gray-50 rounded-lg p-2">
+                          <MapPin className="w-4 h-4 mr-3 text-green-500 flex-shrink-0" />
+                          <span className="text-sm font-medium truncate">{appointment.location}</span>
                         </div>
                       </div>
                     </CardContent>
@@ -246,60 +285,84 @@ export default function Dashboard() {
                 ))}
               </div>
             )}
-          </div>
+          </section>
 
           {/* Pendências */}
-          <Card className="rounded-xl shadow-sm border border-gray-200 mx-4 mb-8">
-            <CardContent className="p-4 sm:p-6">
-              <div className="flex items-center mb-4 sm:mb-4">
-                <span className="text-xl sm:text-2xl mr-3">⚠️</span>
-                <h2 className="text-lg font-semibold text-gray-900">Pendências</h2>
-              </div>
+          <section className="mb-12 sm:mb-16">
+            <div className="flex items-center justify-between mb-6 sm:mb-8">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+                ⚠️ Pendências
+              </h2>
+              {allPendingItems.length > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate("/pending-items")}
+                  className="text-xs sm:text-sm"
+                >
+                  Ver todas
+                </Button>
+              )}
+            </div>
 
-              <div className="space-y-4">
-                {allPendingItems.length > 0 ? (
-                  allPendingItems
-                    .slice(0, 5)
-                    .map((item) => (
-                      <div
-                        key={item.id}
-                        className="p-4 bg-orange-50 rounded-lg border border-orange-100 cursor-pointer hover:bg-orange-100 transition-colors"
-                        onClick={() => setSelectedPendingItem(item)}
-                      >
-                        <h3 className="font-medium text-gray-900 text-sm sm:text-base">{item.title}</h3>
-                        {item.description && (
-                          <p className="text-xs sm:text-sm text-gray-600 mt-1">{item.description}</p>
-                        )}
-                        <div className="flex items-center justify-between mt-2">
-                          <span className={`text-xs px-2 py-1 rounded-full ${
-                            item.priority === 'high' ? 'bg-red-100 text-red-800' :
-                            item.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-green-100 text-green-800'
-                          }`}>
-                            Prioridade {item.priority === 'high' ? 'Alta' :
-                               item.priority === 'medium' ? 'Média' : 'Baixa'}
-                          </span>
+            {allPendingItems.length === 0 ? (
+              <Card className="border-dashed border-2 border-gray-200 bg-gray-50/50">
+                <CardContent className="p-8 sm:p-12 text-center">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
+                    <AlertTriangle className="w-8 h-8 sm:w-10 sm:h-10 text-green-600" />
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
+                    Tudo em dia! 🎉
+                  </h3>
+                  <p className="text-gray-600 text-sm sm:text-base">
+                    Não há pendências médicas no momento
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-3 sm:space-y-4">
+                {allPendingItems.slice(0, 5).map((item) => (
+                  <Card
+                    key={item.id}
+                    className="cursor-pointer hover:shadow-lg transition-all duration-300 border-l-4 border-l-orange-400 bg-gradient-to-r from-orange-50 to-white"
+                    onClick={() => setSelectedPendingItem(item)}
+                  >
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-gray-900 text-sm sm:text-base mb-1">
+                            {item.title}
+                          </h3>
+                          {item.description && (
+                            <p className="text-xs sm:text-sm text-gray-600 mb-3 line-clamp-2">
+                              {item.description}
+                            </p>
+                          )}
+                          <div className="flex items-center gap-3">
+                            <span className={`text-xs px-3 py-1 rounded-full font-medium ${
+                              item.priority === 'high' 
+                                ? 'bg-red-100 text-red-800' 
+                                : item.priority === 'medium' 
+                                ? 'bg-yellow-100 text-yellow-800' 
+                                : 'bg-green-100 text-green-800'
+                            }`}>
+                              {item.priority === 'high' ? '🔴 Alta' :
+                               item.priority === 'medium' ? '🟡 Média' : '🟢 Baixa'}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="ml-4 flex-shrink-0">
+                          <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                            <AlertTriangle className="w-4 h-4 text-orange-600" />
+                          </div>
                         </div>
                       </div>
-                    ))
-                ) : (
-                  <div className="text-center py-8">
-                    <p className="text-gray-500">Nenhuma pendência encontrada.</p>
-                  </div>
-                )}
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
-
-              <div className="mt-4 text-center">
-                <Button
-                  variant="link"
-                  className="text-orange-600 hover:text-orange-800 text-sm font-medium"
-                  onClick={() => navigate("/pending-items")}
-                >
-                  Ver todas as pendências →
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+            )}
+          </section>
 
           {/* Pacientes Cadastrados */}
           <Card className="rounded-xl shadow-sm border border-gray-200 mx-4 mb-8">
