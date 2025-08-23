@@ -32,8 +32,8 @@ export default function EditPatientModal({ open, onOpenChange, patient }: EditPa
     doctor: "",
     photoUrl: "👤",
     allergies: [] as string[],
-    emergencyContact: "",
-    emergencyPhone: "",
+    emergencyContactName: "",
+    emergencyContactPhone: "",
     observations: "",
   });
 
@@ -48,8 +48,8 @@ export default function EditPatientModal({ open, onOpenChange, patient }: EditPa
         doctor: patient.doctor || "",
         photoUrl: patient.photoUrl || "👤",
         allergies: patient.allergies || [],
-        emergencyContact: patient.emergencyContact || "",
-        emergencyPhone: patient.emergencyPhone || "",
+        emergencyContactName: patient.emergencyContactName || "",
+        emergencyContactPhone: patient.emergencyContactPhone || "",
         observations: patient.observations || "",
       });
     }
@@ -237,21 +237,21 @@ export default function EditPatientModal({ open, onOpenChange, patient }: EditPa
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="emergencyContact">Contato de Emergência</Label>
+              <Label htmlFor="emergencyContactName">Contato de Emergência</Label>
               <Input
-                id="emergencyContact"
-                value={formData.emergencyContact}
-                onChange={(e) => setFormData(prev => ({ ...prev, emergencyContact: e.target.value }))}
+                id="emergencyContactName"
+                value={formData.emergencyContactName}
+                onChange={(e) => setFormData(prev => ({ ...prev, emergencyContactName: e.target.value }))}
                 placeholder="Nome do contato"
               />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="emergencyPhone">Telefone de Emergência</Label>
+              <Label htmlFor="emergencyContactPhone">Telefone de Emergência</Label>
               <Input
-                id="emergencyPhone"
-                value={formData.emergencyPhone}
-                onChange={(e) => setFormData(prev => ({ ...prev, emergencyPhone: e.target.value }))}
+                id="emergencyContactPhone"
+                value={formData.emergencyContactPhone}
+                onChange={(e) => setFormData(prev => ({ ...prev, emergencyContactPhone: e.target.value }))}
                 placeholder="(11) 99999-9999"
               />
             </div>
