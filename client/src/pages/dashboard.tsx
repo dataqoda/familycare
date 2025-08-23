@@ -209,21 +209,32 @@ export default function Dashboard() {
 
         <main className="max-w-7xl mx-auto py-6 sm:py-8 px-3 sm:px-6 lg:px-8">
           {/* Welcome Section */}
-          <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
-              Bem-vindo ao seu Prontuário 👋
-            </h2>
-            <p className="text-gray-600 text-sm sm:text-base max-w-2xl mx-auto">
-              Mantenha toda a informação médica da sua família organizada e sempre à mão
-            </p>
+          <div className="relative text-center mb-12 sm:mb-16">
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-100/50 via-blue-100/50 to-green-100/50 rounded-3xl blur-3xl opacity-60 -z-10 transform scale-110"></div>
+            <div className="relative bg-gradient-to-br from-white/80 via-purple-50/50 to-blue-50/50 backdrop-blur-sm rounded-3xl p-8 sm:p-12 border border-purple-100/30 shadow-xl">
+              <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-purple-500 to-blue-600 rounded-2xl shadow-lg mb-6 transform hover:scale-110 transition-transform duration-300">
+                <span className="text-3xl sm:text-4xl">👋</span>
+              </div>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-purple-700 via-blue-600 to-green-600 bg-clip-text text-transparent mb-4">
+                Bem-vindo ao seu Prontuário
+              </h2>
+              <p className="text-gray-600 text-base sm:text-lg max-w-3xl mx-auto font-medium leading-relaxed">
+                Mantenha toda a informação médica da sua família organizada e sempre à mão
+              </p>
+            </div>
           </div>
 
           {/* Próximas Consultas */}
           <section className="mb-12 sm:mb-16">
             <div className="flex items-center justify-between mb-6 sm:mb-8">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
-                📅 Próximas Consultas
-              </h2>
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                  <span className="text-xl sm:text-2xl">📅</span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-700 to-purple-700 bg-clip-text text-transparent">
+                  Próximas Consultas
+                </h2>
+              </div>
               {upcomingAppointments.length > 0 && (
                 <Button
                   variant="outline"
@@ -310,9 +321,14 @@ export default function Dashboard() {
           {/* Pendências */}
           <section className="mb-12 sm:mb-16">
             <div className="flex items-center justify-between mb-6 sm:mb-8">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
-                ⚠️ Pendências
-              </h2>
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center shadow-lg">
+                  <span className="text-xl sm:text-2xl">⚠️</span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-orange-700 to-red-700 bg-clip-text text-transparent">
+                  Pendências
+                </h2>
+              </div>
               {allPendingItems.length > 0 && (
                 <Button
                   variant="outline"
@@ -387,9 +403,14 @@ export default function Dashboard() {
           {/* Pacientes Cadastrados */}
           <section className="mb-12 sm:mb-16">
             <div className="flex items-center justify-between mb-6 sm:mb-8">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
-                👨‍👩‍👧‍👦 Pacientes Cadastrados
-              </h2>
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
+                  <span className="text-xl sm:text-2xl">👨‍👩‍👧‍👦</span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-green-700 to-emerald-700 bg-clip-text text-transparent">
+                  Pacientes Cadastrados
+                </h2>
+              </div>
               <Button
                 onClick={() => setShowPatientRegister(true)}
                 className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
@@ -477,11 +498,16 @@ export default function Dashboard() {
           </section>
 
           {/* Últimas Atualizações */}
-          <Card className="rounded-xl shadow-sm border border-gray-200 mx-4">
-            <CardContent className="p-4 sm:p-6">
-              <div className="flex items-center mb-4 sm:mb-6">
-                <span className="text-xl sm:text-2xl mr-3">📝</span>
-                <h2 className="text-lg font-semibold text-gray-900">Últimas Atualizações</h2>
+          <Card className="relative overflow-hidden rounded-3xl shadow-xl border-0 bg-gradient-to-br from-white via-gray-50/50 to-purple-50/30 backdrop-blur-sm">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-100/20 via-transparent to-blue-100/20"></div>
+            <CardContent className="relative p-6 sm:p-8">
+              <div className="flex items-center gap-4 mb-6 sm:mb-8">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-purple-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+                  <span className="text-2xl sm:text-3xl">📝</span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-700 to-blue-700 bg-clip-text text-transparent">
+                  Últimas Atualizações
+                </h2>
               </div>
 
               <div className="space-y-4">
