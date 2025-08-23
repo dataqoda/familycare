@@ -486,11 +486,12 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                              onClick={() => setSelectedImage(attachment)}>
                           <img 
                             src={attachment.startsWith('http') ? attachment : 
-                                 attachment.startsWith('/uploads/') ? `/uploads/${attachment}` : 
-                                 `/uploads/${attachment}`}
+                                 attachment.startsWith('/uploads/') ? `http://localhost:5000${attachment}` : 
+                                 `http://localhost:5000/uploads/${attachment}`}
                             alt={attachment}
                             className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
                             onError={(e) => {
+                              console.error('Erro ao carregar imagem:', attachment);
                               // Fallback se a imagem não carregar
                               const target = e.target as HTMLImageElement;
                               target.style.display = 'none';
@@ -521,9 +522,18 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                       <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
                         <div className="flex items-center space-x-2">
                           {getFileIcon(attachment)}
-                          <span className="text-sm text-gray-700">{attachment}</span>
+                          <span className="text-sm text-gray-700">{attachment.split('/').pop() || attachment}</span>
                         </div>
-                        <Button variant="ghost" size="sm">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => {
+                            const fileUrl = attachment.startsWith('http') ? attachment : 
+                                          attachment.startsWith('/uploads/') ? `http://localhost:5000${attachment}` : 
+                                          `http://localhost:5000/uploads/${attachment}`;
+                            window.open(fileUrl, '_blank');
+                          }}
+                        >
                           <Download className="w-4 h-4" />
                         </Button>
                       </div>

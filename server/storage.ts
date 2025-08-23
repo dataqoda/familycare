@@ -394,11 +394,22 @@ export class MemStorage implements IStorage {
     ];
 
     // Create medical records
-    sampleMedicalRecords.forEach(recordData => {
+    sampleMedicalRecords.forEach((recordData, index) => {
+      let attachments: string[] = [];
+      
+      // Adicionar anexos de exemplo para alguns registros
+      if (index === 0) { // Primeiro exame de João Silva
+        attachments = ['imagem.png', 'documento.pdf'];
+      } else if (index === 7) { // Mamografia de Maria Silva
+        attachments = ['file-1755952130246-895406567.jpg'];
+      } else if (index === 13) { // Exame oftalmológico de Ana Silva
+        attachments = ['file-1755952144423-604867207.jpg'];
+      }
+      
       const record: MedicalRecord = {
         id: randomUUID(),
         ...recordData,
-        attachments: [],
+        attachments,
         createdAt: new Date()
       };
       this.medicalRecords.set(record.id, record);
