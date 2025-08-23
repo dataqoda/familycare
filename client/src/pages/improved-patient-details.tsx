@@ -543,7 +543,10 @@ export default function ImprovedPatientDetails() {
 
           <TabsContent value="records" className="space-y-6">
             <Tabs value={activeRecordTab} onValueChange={setActiveRecordTab} className="space-y-6">
-              <TabsList className="flex flex-wrap justify-center w-full max-w-6xl mx-auto bg-white/80 backdrop-blur-sm border-0 shadow-md rounded-xl p-1 sm:p-2 gap-1 h-auto min-h-[40px]">
+              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-white to-gray-50/30 max-w-6xl mx-auto">
+                <CardContent className="p-4 sm:p-6">
+                  <TabsList className="flex flex-wrap justify-center w-full bg-gray-100 rounded-xl p-1 sm:p-2 gap-1 h-auto min-h-[40px]"></CardContent>
+              </Card>
                 <TabsTrigger value="all" className="rounded-lg text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 flex-shrink-0">
                   <span className="hidden sm:inline">Todos</span>
                   <span className="sm:hidden">📋 Todos</span>
@@ -622,6 +625,8 @@ export default function ImprovedPatientDetails() {
                   )}
                 </TabsTrigger>
               </TabsList>
+                </CardContent>
+              </Card>
 
               <TabsContent value="all" className="mt-6">
                 <div className="space-y-6">
