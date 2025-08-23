@@ -198,62 +198,54 @@ export default function ImprovedPatientDetails() {
         <Tabs defaultValue="personal" className="space-y-8" value={activeTab} onValueChange={setActiveTab}>
           {/* Tabs de navegação */}
           <div className="mb-6 sm:mb-8">
-            <div className="flex flex-wrap gap-1 p-1 bg-gray-100 rounded-xl shadow-inner">
-              <Button
-                variant={activeTab === 'personal' ? 'default' : 'ghost'}
-                size="sm"
+            <div className="flex flex-wrap gap-2 p-3 bg-gray-50/80 backdrop-blur-sm border border-gray-200 shadow-lg rounded-xl justify-center">
+              <button
                 onClick={() => setActiveTab('personal')}
-                className={`flex items-center gap-2 text-xs sm:text-sm px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg transition-all duration-300 font-medium border-2 ${
+                className={`flex items-center gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 ${
                   activeTab === 'personal'
-                    ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg border-purple-600 hover:from-purple-700 hover:to-purple-800 transform scale-105'
-                    : 'bg-white text-gray-600 border-transparent hover:bg-purple-50 hover:text-purple-700 hover:border-purple-200 hover:shadow-sm'
+                    ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg shadow-purple-300 ring-2 ring-purple-300'
+                    : 'bg-white text-gray-700 border border-gray-200 hover:bg-purple-50 hover:text-purple-700 hover:border-purple-200 hover:shadow-md'
                 }`}
               >
                 <span className="text-base">👤</span>
                 <span>Informações Pessoais</span>
-              </Button>
+              </button>
 
-              <Button
-                variant={activeTab === 'records' ? 'default' : 'ghost'}
-                size="sm"
+              <button
                 onClick={() => setActiveTab('records')}
-                className={`flex items-center gap-2 text-xs sm:text-sm px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg transition-all duration-300 font-medium border-2 ${
+                className={`flex items-center gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 ${
                   activeTab === 'records'
-                    ? 'bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg border-green-600 hover:from-green-700 hover:to-green-800 transform scale-105'
-                    : 'bg-white text-gray-600 border-transparent hover:bg-green-50 hover:text-green-700 hover:border-green-200 hover:shadow-sm'
+                    ? 'bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg shadow-green-300 ring-2 ring-green-300'
+                    : 'bg-white text-gray-700 border border-gray-200 hover:bg-green-50 hover:text-green-700 hover:border-green-200 hover:shadow-md'
                 }`}
               >
                 <span className="text-base">🗂️</span>
                 <span>Registros Médicos</span>
-              </Button>
+              </button>
 
-              <Button
-                variant={activeTab === 'summary' ? 'default' : 'ghost'}
-                size="sm"
+              <button
                 onClick={() => setActiveTab('summary')}
-                className={`flex items-center gap-2 text-xs sm:text-sm px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg transition-all duration-300 font-medium border-2 ${
+                className={`flex items-center gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 ${
                   activeTab === 'summary'
-                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg border-blue-600 hover:from-blue-700 hover:to-blue-800 transform scale-105'
-                    : 'bg-white text-gray-600 border-transparent hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 hover:shadow-sm'
+                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-300 ring-2 ring-blue-300'
+                    : 'bg-white text-gray-700 border border-gray-200 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 hover:shadow-md'
                 }`}
               >
                 <span className="text-base">📊</span>
                 <span>Resumo</span>
-              </Button>
+              </button>
 
-              <Button
-                variant={activeTab === 'timeline' ? 'default' : 'ghost'}
-                size="sm"
+              <button
                 onClick={() => setActiveTab('timeline')}
-                className={`flex items-center gap-2 text-xs sm:text-sm px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg transition-all duration-300 font-medium border-2 ${
+                className={`flex items-center gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 ${
                   activeTab === 'timeline'
-                    ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-lg border-orange-600 hover:from-orange-700 hover:to-orange-800 transform scale-105'
-                    : 'bg-white text-gray-600 border-transparent hover:bg-orange-50 hover:text-orange-700 hover:border-orange-200 hover:shadow-sm'
+                    ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-lg shadow-orange-300 ring-2 ring-orange-300'
+                    : 'bg-white text-gray-700 border border-gray-200 hover:bg-orange-50 hover:text-orange-700 hover:border-orange-200 hover:shadow-md'
                 }`}
               >
                 <span className="text-base">⏰</span>
                 <span>Linha do Tempo</span>
-              </Button>
+              </button>
             </div>
           </div>
 
