@@ -224,7 +224,7 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                 <p className="text-sm">{record.observations}</p>
               </div>
             )}
-            
+
             {/* Links diretos para download dos anexos */}
             {record.attachments && record.attachments.length > 0 && (
               <div className="mt-3 p-3 bg-blue-50 rounded-lg">
@@ -242,7 +242,7 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                     } else {
                       downloadUrl = `http://localhost:5000/uploads/${attachment}`;
                     }
-                    
+
                     return (
                       <div key={index} className="text-xs">
                         <a 
@@ -530,13 +530,13 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                         // É apenas o nome do arquivo
                         imageUrl = `http://localhost:5000/uploads/${attachment}`;
                       }
-                      
+
                       console.log('Renderizando imagem:', {
                         attachment,
                         imageUrl,
                         recordId: record.id
                       });
-                      
+
                       return (
                         <div key={index} className="relative group">
                           <div className="aspect-square bg-gray-100 rounded-lg border overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
@@ -608,8 +608,16 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                           variant="ghost" 
                           size="sm"
                           onClick={() => {
-                            // O attachment agora já contém o nome gerado correto
-                            const fileUrl = `http://localhost:5000/uploads/${attachment}`;
+                            // Construir URL dinamicamente baseada no servidor atual
+                            let fileUrl;
+                            if (attachment.startsWith('http')) {
+                              fileUrl = attachment;
+                            } else if (attachment.startsWith('/uploads/')) {
+                              fileUrl = attachment;
+                            } else {
+                              fileUrl = `/uploads/${attachment}`;
+                            }
+
                             console.log('📥 Baixando arquivo:', { attachment, fileUrl });
                             window.open(fileUrl, '_blank');
                           }}
