@@ -1,4 +1,3 @@
-
 import { useParams } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -11,12 +10,15 @@ import MedicalRecordCard from "@/components/medical-record-card";
 import type { Patient, MedicalRecord } from "@shared/schema";
 import { useState } from "react";
 import EditPatientModal from "@/components/edit-patient-modal";
+import QuickRegisterModal from "@/components/quick-register-modal";
 
 
 export default function ImprovedPatientDetails() {
   const { id } = useParams();
   const [, navigate] = useLocation();
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showQuickRegister, setShowQuickRegister] = useState(false);
+  const [showEditPatient, setShowEditPatient] = useState(false);
 
 
   const { data: patient } = useQuery<Patient>({
@@ -124,7 +126,7 @@ export default function ImprovedPatientDetails() {
                   </div>
                 </div>
                 <Button
-                  onClick={() => setShowEditModal(true)}
+                  onClick={() => setShowEditPatient(true)}
                   className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-sm sm:text-base w-full sm:w-auto"
                 >
                   <Edit className="w-4 h-4 mr-2" />
@@ -606,9 +608,16 @@ export default function ImprovedPatientDetails() {
         </Tabs>
       </div>
 
+      {/* Modals */}
+      <QuickRegisterModal
+        open={showQuickRegister}
+        onOpenChange={setShowQuickRegister}
+        patients={patient ? [patient] : []}
+      />
+
       <EditPatientModal
-        open={showEditModal}
-        onOpenChange={setShowEditModal}
+        open={showEditPatient}
+        onOpenChange={setShowEditPatient}
         patient={patient}
       />
     </div>
