@@ -34,6 +34,8 @@ export default function EditPatientModal({ open, onOpenChange, patient }: EditPa
     allergies: [] as string[],
     emergencyContactName: "",
     emergencyContactPhone: "",
+    insurancePlan: "",
+    insuranceNumber: "",
     observations: "",
   });
 
@@ -50,6 +52,8 @@ export default function EditPatientModal({ open, onOpenChange, patient }: EditPa
         allergies: patient.allergies || [],
         emergencyContactName: patient.emergencyContactName || "",
         emergencyContactPhone: patient.emergencyContactPhone || "",
+        insurancePlan: patient.insurancePlan || "",
+        insuranceNumber: patient.insuranceNumber || "",
         observations: patient.observations || "",
       });
     }
@@ -253,6 +257,40 @@ export default function EditPatientModal({ open, onOpenChange, patient }: EditPa
                 value={formData.emergencyContactPhone}
                 onChange={(e) => setFormData(prev => ({ ...prev, emergencyContactPhone: e.target.value }))}
                 placeholder="(11) 99999-9999"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="insurancePlan">Plano de Saúde</Label>
+              <Select value={formData.insurancePlan} onValueChange={(value) => setFormData(prev => ({ ...prev, insurancePlan: value }))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o plano..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Amil">Amil</SelectItem>
+                  <SelectItem value="Bradesco Saúde">Bradesco Saúde</SelectItem>
+                  <SelectItem value="SulAmérica">SulAmérica</SelectItem>
+                  <SelectItem value="Unimed">Unimed</SelectItem>
+                  <SelectItem value="NotreDame Intermédica">NotreDame Intermédica</SelectItem>
+                  <SelectItem value="Hapvida">Hapvida</SelectItem>
+                  <SelectItem value="Prevent Senior">Prevent Senior</SelectItem>
+                  <SelectItem value="Porto Seguro">Porto Seguro</SelectItem>
+                  <SelectItem value="Golden Cross">Golden Cross</SelectItem>
+                  <SelectItem value="Particular">Particular</SelectItem>
+                  <SelectItem value="SUS">SUS</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="insuranceNumber">Número da Carteirinha</Label>
+              <Input
+                id="insuranceNumber"
+                value={formData.insuranceNumber}
+                onChange={(e) => setFormData(prev => ({ ...prev, insuranceNumber: e.target.value }))}
+                placeholder="Número da carteirinha"
               />
             </div>
           </div>
