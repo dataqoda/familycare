@@ -224,6 +224,41 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                 <p className="text-sm">{record.observations}</p>
               </div>
             )}
+            
+            {/* Links diretos para download dos anexos */}
+            {record.attachments && record.attachments.length > 0 && (
+              <div className="mt-3 p-3 bg-blue-50 rounded-lg">
+                <span className="text-sm font-medium text-blue-700 block mb-2">🔗 Links diretos para download:</span>
+                <div className="space-y-1">
+                  {record.attachments.map((attachment, index) => {
+                    let downloadUrl;
+                    if (attachment.startsWith('http')) {
+                      downloadUrl = attachment;
+                    } else if (attachment.startsWith('/uploads/')) {
+                      downloadUrl = `http://localhost:5000${attachment}`;
+                    } else if (attachment.includes('/')) {
+                      const fileName = attachment.split('/').pop();
+                      downloadUrl = `http://localhost:5000/uploads/${fileName}`;
+                    } else {
+                      downloadUrl = `http://localhost:5000/uploads/${attachment}`;
+                    }
+                    
+                    return (
+                      <div key={index} className="text-xs">
+                        <a 
+                          href={downloadUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 underline break-all"
+                        >
+                          {downloadUrl}
+                        </a>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         );
 
