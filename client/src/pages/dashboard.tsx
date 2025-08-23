@@ -125,15 +125,15 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Sidebar 
-        patients={patients} 
-        isOpen={sidebarOpen} 
+      <Sidebar
+        patients={patients}
+        isOpen={sidebarOpen}
         onToggle={() => setSidebarOpen(!sidebarOpen)}
         onPatientClick={handlePatientClick}
       />
 
       <div className="lg:ml-64">
-        <Header 
+        <Header
           onQuickRegister={() => setShowQuickRegister(true)}
           onPatientRegister={() => setShowPatientRegister(true)}
           onMenuToggle={() => setSidebarOpen(!sidebarOpen)}
@@ -154,8 +154,8 @@ export default function Dashboard() {
                     upcomingAppointments
                       .slice(0, 4)
                       .map((appointment) => (
-                        <div 
-                          key={appointment.id} 
+                        <div
+                          key={appointment.id}
                           className="p-4 bg-blue-50 rounded-lg border border-blue-100 cursor-pointer hover:bg-blue-100 transition-colors"
                           onClick={() => setSelectedAppointment(appointment)}
                         >
@@ -182,8 +182,8 @@ export default function Dashboard() {
                 </div>
 
                 <div className="mt-4 text-center">
-                  <Button 
-                    variant="link" 
+                  <Button
+                    variant="link"
                     className="text-blue-600 hover:text-blue-800 text-sm font-medium"
                     onClick={() => navigate("/appointments")}
                   >
@@ -206,8 +206,8 @@ export default function Dashboard() {
                     allPendingItems
                       .slice(0, 5)
                       .map((item) => (
-                        <div 
-                          key={item.id} 
+                        <div
+                          key={item.id}
                           className="p-4 bg-orange-50 rounded-lg border border-orange-100 cursor-pointer hover:bg-orange-100 transition-colors"
                           onClick={() => setSelectedPendingItem(item)}
                         >
@@ -221,7 +221,7 @@ export default function Dashboard() {
                               item.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
                               'bg-green-100 text-green-800'
                             }`}>
-                              Prioridade {item.priority === 'high' ? 'Alta' : 
+                              Prioridade {item.priority === 'high' ? 'Alta' :
                                item.priority === 'medium' ? 'Média' : 'Baixa'}
                             </span>
                           </div>
@@ -235,8 +235,8 @@ export default function Dashboard() {
                 </div>
 
                 <div className="mt-4 text-center">
-                  <Button 
-                    variant="link" 
+                  <Button
+                    variant="link"
                     className="text-orange-600 hover:text-orange-800 text-sm font-medium"
                     onClick={() => navigate("/pending-items")}
                   >
@@ -255,7 +255,7 @@ export default function Dashboard() {
                   <span className="text-2xl mr-3">👨‍👩‍👧‍👦</span>
                   <h2 className="text-lg font-semibold text-gray-900">Pacientes Cadastrados</h2>
                 </div>
-                <Button 
+                <Button
                   className="bg-green-600 hover:bg-green-700 text-white"
                   onClick={() => setShowPatientRegister(true)}
                 >
@@ -265,8 +265,8 @@ export default function Dashboard() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {patients.map((patient) => (
-                  <div 
-                    key={patient.id} 
+                  <div
+                    key={patient.id}
                     className="p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow duration-200 cursor-pointer"
                     onClick={() => handlePatientClick(patient.id)}
                   >
@@ -328,7 +328,7 @@ export default function Dashboard() {
         </main>
       </div>
 
-      <AdvancedQuickRegisterModal 
+      <AdvancedQuickRegisterModal
         open={showQuickRegister}
         onOpenChange={setShowQuickRegister}
         patients={patients}
@@ -396,9 +396,25 @@ export default function Dashboard() {
                 </div>
               </div>
 
+              {selectedAppointment.location && selectedAppointment.location !== "Local não informado" && (
+                <div className="mb-6">
+                  <Button
+                    onClick={() => {
+                      const encodedLocation = encodeURIComponent(selectedAppointment.location);
+                      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodedLocation}`;
+                      window.open(mapsUrl, '_blank');
+                    }}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center space-x-2"
+                  >
+                    <MapPin className="w-4 h-4" />
+                    <span>Abrir no Google Maps</span>
+                  </Button>
+                </div>
+              )}
+
               <div className="flex gap-2 pt-4">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="flex-1"
                   onClick={() => {
                     const eventTitle = `Consulta - ${selectedAppointment.patientName}`;
@@ -439,7 +455,7 @@ export default function Dashboard() {
                 >
                   📅 Adicionar à Agenda
                 </Button>
-                <Button 
+                <Button
                   onClick={() => {
                     // Use patientId from appointment, or find by name as fallback
                     const patientId = selectedAppointment.patientId || patients.find(p => p.name === selectedAppointment.patientName)?.id;
@@ -531,8 +547,8 @@ export default function Dashboard() {
               </div>
 
               <div className="flex gap-2 pt-4">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="flex-1"
                   onClick={() => {
                     if (selectedPendingItem.patientId) {
@@ -545,7 +561,7 @@ export default function Dashboard() {
                 >
                   Ver Paciente
                 </Button>
-                <Button 
+                <Button
                   className="flex-1"
                   onClick={() => setSelectedPendingItem(null)}
                 >
@@ -557,8 +573,8 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      <ImprovedPatientRegisterModal 
-        open={showPatientRegister} 
+      <ImprovedPatientRegisterModal
+        open={showPatientRegister}
         onOpenChange={setShowPatientRegister}
       />
     </div>
