@@ -480,43 +480,65 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
                   {record.attachments
                     .filter(attachment => isImageFile(attachment))
-                    .map((attachment, index) => (
-                      <div key={index} className="relative group">
-                        <div className="aspect-square bg-gray-100 rounded-lg border overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
-                             onClick={() => setSelectedImage(attachment)}>
-                          <img 
-                            src={`http://localhost:5000/uploads/${attachment.split('/').pop()}`}
-                            alt={attachment}
-                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
-                            onLoad={() => {
-                              console.log('Imagem carregada com sucesso:', attachment);
-                            }}
-                            onError={(e) => {
-                              console.error('Erro ao carregar imagem:', {
-                                attachment,
-                                tentativaUrl: `http://localhost:5000/uploads/${attachment.split('/').pop()}`,
-                                error: e
-                              });
-                              // Fallback se a imagem não carregar
-                              const target = e.target as HTMLImageElement;
-                              target.style.display = 'none';
-                              target.nextElementSibling?.classList.remove('hidden');
-                            }}
-                          />
-                          <div className="w-full h-full flex items-center justify-center text-center p-4 hidden">
-                            <div>
-                              <Image className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                              <p className="text-xs text-gray-500 break-all">{attachment.split('/').pop() || attachment}</p>
+                    .map((attachment, index) => {
+                      // Construir URL correta baseada no formato do anexo
+                      const fileName = attachment.includes('/') ? attachment.split('/').pop() : attachment;
+                      const imageUrl = `http://localhost:5000/uploads/${fileName}`;
+                      
+                      console.log('Renderizando imagem:', {
+                        attachment,
+                        fileName,
+                        imageUrl,
+                        recordId: record.id
+                      });
+                      
+                      return (
+                        <div key={index} className="relative group">
+                          <div className="aspect-square bg-gray-100 rounded-lg border overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
+                               onClick={() => setSelectedImage(attachment)}>
+                            <img 
+                              src={imageUrl}
+                              alt={`Anexo ${index + 1}`}
+                              className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+                              onLoad={(e) => {
+                                console.log('✅ Imagem carregada com sucesso:', {
+                                  attachment,
+                                  imageUrl,
+                                  dimensions: `${(e.target as HTMLImageElement).naturalWidth}x${(e.target as HTMLImageElement).naturalHeight}`
+                                });
+                              }}
+                              onError={(e) => {
+                                console.error('❌ Erro ao carregar imagem:', {
+                                  attachment,
+                                  fileName,
+                                  imageUrl,
+                                  recordId: record.id
+                                });
+                                // Mostrar fallback
+                                const target = e.target as HTMLImageElement;
+                                const container = target.parentElement;
+                                if (container) {
+                                  container.innerHTML = `
+                                    <div class="w-full h-full flex items-center justify-center bg-red-50 border-2 border-red-200">
+                                      <div class="text-center p-2">
+                                        <div class="text-red-400 mb-1">📷</div>
+                                        <p class="text-xs text-red-600">Erro ao carregar</p>
+                                        <p class="text-xs text-gray-500 break-all">${fileName}</p>
+                                      </div>
+                                    </div>
+                                  `;
+                                }
+                              }}
+                            />
+                          </div>
+                          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-lg transition-opacity flex items-center justify-center">
+                            <div className="bg-white/80 backdrop-blur-sm rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Eye className="w-4 h-4 text-gray-700" />
                             </div>
                           </div>
                         </div>
-                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-lg transition-opacity flex items-center justify-center">
-                          <div className="bg-white/80 backdrop-blur-sm rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Eye className="w-4 h-4 text-gray-700" />
-                          </div>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                 </div>
 
                 {/* Lista de outros arquivos */}
@@ -533,7 +555,9 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                           variant="ghost" 
                           size="sm"
                           onClick={() => {
-                            const fileUrl = `http://localhost:5000/uploads/${attachment.split('/').pop()}`;
+                            const fileName = attachment.includes('/') ? attachment.split('/').pop() : attachment;
+                            const fileUrl = `http://localhost:5000/uploads/${fileName}`;
+                            console.log('📥 Baixando arquivo:', { attachment, fileName, fileUrl });
                             window.open(fileUrl, '_blank');
                           }}
                         >
@@ -553,17 +577,23 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
           <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" onClick={() => setSelectedImage(null)}>
             <div className="relative max-w-4xl max-h-4xl p-4">
               <img 
-                src={`http://localhost:5000/uploads/${selectedImage.split('/').pop()}`}
-                alt="Visualização"
+                src={`http://localhost:5000/uploads/${selectedImage.includes('/') ? selectedImage.split('/').pop() : selectedImage}`}
+                alt="Visualização ampliada"
                 className="max-w-full max-h-full object-contain"
+                onLoad={() => {
+                  console.log('✅ Modal - Imagem carregada:', selectedImage);
+                }}
                 onError={(e) => {
-                  console.error('Erro ao carregar imagem:', selectedImage);
+                  console.error('❌ Modal - Erro ao carregar imagem:', selectedImage);
                   setSelectedImage(null);
                 }}
               />
               <button 
-                onClick={() => setSelectedImage(null)}
-                className="absolute top-4 right-4 text-white bg-black bg-opacity-50 rounded-full p-2 hover:bg-opacity-75"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedImage(null);
+                }}
+                className="absolute top-4 right-4 text-white bg-black bg-opacity-50 rounded-full p-2 hover:bg-opacity-75 transition-colors"
               >
                 <X className="w-6 h-6" />
               </button>

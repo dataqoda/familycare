@@ -294,13 +294,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/uploads/:filename", (req, res) => {
     const filename = req.params.filename;
     const filePath = path.join(process.cwd(), 'uploads', filename);
+    const uploadDir = path.join(process.cwd(), 'uploads');
 
-    console.log("Requisição de arquivo:", {
+    console.log("🔍 Requisição de arquivo:", {
       filename,
       filePath,
       exists: fs.existsSync(filePath),
-      uploadDir: process.cwd() + '/uploads',
-      files: fs.existsSync(path.join(process.cwd(), 'uploads')) ? fs.readdirSync(path.join(process.cwd(), 'uploads')) : 'pasta não existe'
+      uploadDir,
+      uploadsExists: fs.existsSync(uploadDir),
+      files: fs.existsSync(uploadDir) ? fs.readdirSync(uploadDir) : 'pasta uploads não existe'
     });
 
     if (fs.existsSync(filePath)) {
@@ -344,8 +346,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.status(500).json({ error: "Erro interno do servidor" });
       }
     } else {
-      console.log("Arquivo não encontrado:", filePath);
-      res.status(404).json({ error: "Arquivo não encontrado" });
+      console.log("❌ Arquivo não encontrado:", {
+        filePath,
+        filename,
+        existingFiles: fs.existsSync(uploadDir) ? fs.readdirSync(uploadDir) : 'pasta não existe'
+      });
+      res.status(404).json({ 
+        error: "Arquivo não encontrado",
+        filename,
+        availableFiles: fs.existsSync(uploadDir) ? fs.readdirSync(uploadDir) : []
+      });
     }
   });
 
