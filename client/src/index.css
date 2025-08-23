@@ -194,4 +194,23 @@
     outline: 2px solid hsl(var(--ring));
     outline-offset: 2px;
   }
+
+  /* Fix modal positioning and prevent layout shifts */
+  .fixed-position {
+    position: fixed !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+  }
+
+  /* Force radix select content to always open downward */
+  [data-radix-select-content] {
+    position: fixed !important;
+    transform-origin: var(--radix-select-content-transform-origin) !important;
+  }
+
+  /* Prevent body scroll shift when modal opens */
+  body:has([data-state="open"]) {
+    padding-right: 0 !important;
+  }
 }

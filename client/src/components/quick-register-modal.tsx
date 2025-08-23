@@ -86,7 +86,7 @@ export default function QuickRegisterModal({ open, onOpenChange, patients }: Qui
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[90vw] sm:max-w-md max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-[95vw] sm:max-w-md max-h-[85vh] overflow-y-auto fixed-position">
         <DialogHeader>
           <DialogTitle>⚡ Registro Rápido</DialogTitle>
         </DialogHeader>
@@ -100,12 +100,9 @@ export default function QuickRegisterModal({ open, onOpenChange, patients }: Qui
                 <SelectValue placeholder="Escolha um familiar..." />
               </SelectTrigger>
               <SelectContent 
-                position="popper" 
                 side="bottom" 
-                align="start" 
-                sideOffset={8}
                 avoidCollisions={false}
-                className="z-[60] max-h-[200px]"
+                className="z-[100] max-h-[150px] overflow-auto"
               >
                 {patients.map((patient) => (
                   <SelectItem key={patient.id} value={patient.id}>
