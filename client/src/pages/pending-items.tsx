@@ -17,30 +17,42 @@ export default function PendingItemsPage() {
     queryKey: ["/api/medical-records"],
   });
 
+  const { data: patients = [] } = useQuery<any[]>({
+    queryKey: ["/api/patients"],
+  });
+
   // Combinar pendências das duas fontes
   const allPendingItems = [
-    ...pendingItems.map(item => ({
-      id: item.id,
-      patientId: item.patientId,
-      title: item.title,
-      description: item.description,
-      priority: item.priority,
-      completed: item.completed,
-      createdAt: item.createdAt,
-      isFromMedicalRecord: false
-    })),
+    ...pendingItems.map(item => {
+      const patient = patients.find(p => p.id === item.patientId);
+      return {
+        id: item.id,
+        patientId: item.patientId,
+        patientName: patient?.name || 'Paciente desconhecido',
+        title: item.title,
+        description: item.description,
+        priority: item.priority,
+        completed: item.completed,
+        createdAt: item.createdAt,
+        isFromMedicalRecord: false
+      };
+    }),
     ...medicalRecords
       .filter(record => record.type === 'pending')
-      .map(record => ({
-        id: record.id,
-        patientId: record.patientId,
-        title: record.title || record.description || 'Pendência',
-        description: record.description,
-        priority: 'medium' as const,
-        completed: false,
-        createdAt: record.createdAt,
-        isFromMedicalRecord: true
-      }))
+      .map(record => {
+        const patient = patients.find(p => p.id === record.patientId);
+        return {
+          id: record.id,
+          patientId: record.patientId,
+          patientName: patient?.name || 'Paciente desconhecido',
+          title: record.title || record.description || 'Pendência',
+          description: record.description,
+          priority: 'medium' as const,
+          completed: false,
+          createdAt: record.createdAt,
+          isFromMedicalRecord: true
+        };
+      })
   ];
 
   const incompletePendingItems = allPendingItems.filter(item => !item.completed);
@@ -76,6 +88,7 @@ export default function PendingItemsPage() {
                 <Card key={item.id} className="hover:shadow-lg transition-shadow duration-200">
                   <CardHeader>
                     <CardTitle className="text-lg">{item.title}</CardTitle>
+                    <p className="text-sm text-blue-600 font-medium">{item.patientName}</p>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     {item.description && (
@@ -95,6 +108,16 @@ export default function PendingItemsPage() {
                     
                     <div className="text-xs text-gray-500">
                       Criado em: {new Date(item.createdAt).toLocaleDateString('pt-BR')}
+                    </div>
+                    
+                    <div className="flex space-x-2 pt-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => navigate(`/patient/${item.patientId}`)}
+                      >
+                        Ver Paciente
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -126,6 +149,7 @@ export default function PendingItemsPage() {
                 <Card key={item.id} className="opacity-75 hover:shadow-lg transition-shadow duration-200">
                   <CardHeader>
                     <CardTitle className="text-lg text-gray-700">{item.title}</CardTitle>
+                    <p className="text-sm text-gray-500 font-medium">{item.patientName}</p>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     {item.description && (
@@ -140,6 +164,16 @@ export default function PendingItemsPage() {
                     
                     <div className="text-xs text-gray-500">
                       Criado em: {new Date(item.createdAt).toLocaleDateString('pt-BR')}
+                    </div>
+                    
+                    <div className="flex space-x-2 pt-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => navigate(`/patient/${item.patientId}`)}
+                      >
+                        Ver Paciente
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
