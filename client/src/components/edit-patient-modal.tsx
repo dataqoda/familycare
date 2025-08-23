@@ -179,75 +179,94 @@ export default function EditPatientModal({ open, onOpenChange, patient }: EditPa
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Editar Paciente</DialogTitle>
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto bg-gradient-to-br from-white to-blue-50/30">
+        <DialogHeader className="pb-6 border-b border-gray-200">
+          <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent flex items-center">
+            ✏️ Editar Paciente
+          </DialogTitle>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Nome Completo *</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                placeholder="Nome completo do paciente"
-                required
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="birthDate">Data de Nascimento</Label>
-              <Input
-                id="birthDate"
-                type="date"
-                value={formData.birthDate}
-                onChange={(e) => setFormData(prev => ({ ...prev, birthDate: e.target.value }))}
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="bloodType">Tipo Sanguíneo</Label>
-              <Select value={formData.bloodType} onValueChange={(value) => setFormData(prev => ({ ...prev, bloodType: value }))}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o tipo sanguíneo" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="A+">A+</SelectItem>
-                  <SelectItem value="A-">A-</SelectItem>
-                  <SelectItem value="B+">B+</SelectItem>
-                  <SelectItem value="B-">B-</SelectItem>
-                  <SelectItem value="AB+">AB+</SelectItem>
-                  <SelectItem value="AB-">AB-</SelectItem>
-                  <SelectItem value="O+">O+</SelectItem>
-                  <SelectItem value="O-">O-</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="doctor">Médico Responsável</Label>
-              <Input
-                id="doctor"
-                value={formData.doctor}
-                onChange={(e) => setFormData(prev => ({ ...prev, doctor: e.target.value }))}
-                placeholder="Dr. Nome do médico"
-              />
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-100">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+              👤 Informações Pessoais
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-sm font-semibold text-gray-700">Nome Completo *</Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="Nome completo do paciente"
+                  required
+                  className="bg-white/70 backdrop-blur-sm border-blue-200 hover:border-blue-300 focus:border-blue-400 transition-all duration-300"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="birthDate" className="text-sm font-semibold text-gray-700">Data de Nascimento</Label>
+                <Input
+                  id="birthDate"
+                  type="date"
+                  value={formData.birthDate}
+                  onChange={(e) => setFormData(prev => ({ ...prev, birthDate: e.target.value }))}
+                  className="bg-white/70 backdrop-blur-sm border-blue-200 hover:border-blue-300 focus:border-blue-400 transition-all duration-300"
+                />
+              </div>
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label>Foto/Avatar</Label>
-            <div className="flex gap-2 flex-wrap">
+          <div className="bg-gradient-to-br from-red-50 to-pink-50 rounded-xl p-6 border border-red-100">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+              🩺 Informações Médicas
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="bloodType" className="text-sm font-semibold text-gray-700">Tipo Sanguíneo</Label>
+                <Select value={formData.bloodType} onValueChange={(value) => setFormData(prev => ({ ...prev, bloodType: value }))}>
+                  <SelectTrigger className="bg-white/70 backdrop-blur-sm border-red-200 hover:border-red-300 focus:border-red-400 transition-all duration-300">
+                    <SelectValue placeholder="Selecione o tipo sanguíneo" />
+                  </SelectTrigger>
+                  <SelectContent className="border-0 shadow-xl">
+                    <SelectItem value="A+" className="hover:bg-red-50">A+</SelectItem>
+                    <SelectItem value="A-" className="hover:bg-red-50">A-</SelectItem>
+                    <SelectItem value="B+" className="hover:bg-red-50">B+</SelectItem>
+                    <SelectItem value="B-" className="hover:bg-red-50">B-</SelectItem>
+                    <SelectItem value="AB+" className="hover:bg-red-50">AB+</SelectItem>
+                    <SelectItem value="AB-" className="hover:bg-red-50">AB-</SelectItem>
+                    <SelectItem value="O+" className="hover:bg-red-50">O+</SelectItem>
+                    <SelectItem value="O-" className="hover:bg-red-50">O-</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="doctor" className="text-sm font-semibold text-gray-700">Médico Responsável</Label>
+                <Input
+                  id="doctor"
+                  value={formData.doctor}
+                  onChange={(e) => setFormData(prev => ({ ...prev, doctor: e.target.value }))}
+                  placeholder="Dr. Nome do médico"
+                  className="bg-white/70 backdrop-blur-sm border-red-200 hover:border-red-300 focus:border-red-400 transition-all duration-300"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-6 border border-yellow-100">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+              📸 Foto/Avatar
+            </h3>
+            <div className="flex gap-3 flex-wrap justify-center">
               {emojiOptions.map((emoji) => (
                 <button
                   key={emoji}
                   type="button"
-                  className={`w-12 h-12 text-2xl border rounded-lg hover:bg-gray-50 ${
-                    formData.photoUrl === emoji ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+                  className={`w-14 h-14 text-3xl border-2 rounded-xl transition-all duration-300 transform hover:scale-110 ${
+                    formData.photoUrl === emoji 
+                      ? 'border-orange-500 bg-gradient-to-br from-orange-100 to-yellow-100 shadow-lg scale-105' 
+                      : 'border-gray-200 bg-white/70 hover:border-orange-300 hover:bg-orange-50 hover:shadow-md'
                   }`}
                   onClick={() => setFormData(prev => ({ ...prev, photoUrl: emoji }))}
                 >
@@ -489,12 +508,21 @@ export default function EditPatientModal({ open, onOpenChange, patient }: EditPa
             </div>
           </div>
 
-          <div className="flex justify-end space-x-2 pt-4">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+          <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => onOpenChange(false)}
+              className="px-6 py-2 border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-300"
+            >
               Cancelar
             </Button>
-            <Button type="submit" disabled={updatePatientMutation.isPending || isUploading}>
-              {isUploading ? "Enviando arquivos..." : updatePatientMutation.isPending ? "Salvando..." : "Salvar Alterações"}
+            <Button 
+              type="submit" 
+              disabled={updatePatientMutation.isPending || isUploading}
+              className="px-6 py-2 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+            >
+              {isUploading ? "📤 Enviando arquivos..." : updatePatientMutation.isPending ? "⏳ Salvando..." : "💾 Salvar Alterações"}
             </Button>
           </div>
         </form>

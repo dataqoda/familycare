@@ -522,36 +522,48 @@ export default function AdvancedQuickRegisterModal({ open, onOpenChange, patient
 
         <div className="space-y-6">
           {/* Step 1: Select Patient */}
-          <div>
-            <Label className="text-sm font-medium text-gray-700 mb-2">1. Selecionar Familiar</Label>
+          <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-4 border border-blue-100">
+            <Label className="text-sm font-semibold text-gray-800 mb-3 flex items-center">
+              <span className="w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white text-xs mr-2">1</span>
+              Selecionar Familiar
+            </Label>
             <Select value={selectedPatient} onValueChange={setSelectedPatient}>
-              <SelectTrigger>
+              <SelectTrigger className="bg-white/70 backdrop-blur-sm border-blue-200 hover:border-blue-300 focus:border-blue-400 transition-all duration-300">
                 <SelectValue placeholder="Escolha um familiar..." />
               </SelectTrigger>
-              <SelectContent>
-                {patients.map((patient) => (
-                  <SelectItem key={patient.id} value={patient.id}>
+              <SelectContent
+                side="bottom"
+                avoidCollisions={false}
+                className="z-[100] max-h-[150px] overflow-auto border-0 shadow-xl"
+              >
+                {patients?.map((patient) => (
+                  <SelectItem key={patient.id} value={patient.id} className="hover:bg-blue-50">
                     {patient.photoUrl} {patient.name}
                   </SelectItem>
-                ))}
+                )) || []}
               </SelectContent>
             </Select>
           </div>
 
           {/* Step 2: Select Type */}
-          <div>
-            <Label className="text-sm font-medium text-gray-700 mb-2">2. Escolher Tipo</Label>
-            <div className="grid grid-cols-2 gap-2">
+          <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-4 border border-green-100">
+            <Label className="text-sm font-semibold text-gray-800 mb-3 flex items-center">
+              <span className="w-6 h-6 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center text-white text-xs mr-2">2</span>
+              Escolher Tipo
+            </Label>
+            <div className="grid grid-cols-2 gap-3">
               {typeOptions.map((option) => (
                 <Button
                   key={option.value}
-                  variant={selectedType === option.value ? "default" : "outline"}
-                  className={`p-2 text-sm justify-start ${
-                    selectedType === option.value ? 'bg-purple-600 hover:bg-purple-700' : ''
+                  variant="outline"
+                  className={`p-3 text-sm justify-start border-2 transition-all duration-300 ${
+                    selectedType === option.value 
+                      ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white border-purple-500 shadow-lg transform scale-105' 
+                      : 'bg-white/70 backdrop-blur-sm border-gray-200 hover:border-purple-300 hover:bg-purple-50 hover:shadow-md'
                   }`}
                   onClick={() => {
                     setSelectedType(option.value);
-                    setFormData({});
+                    setFormData({}); // Reset form data when type changes
                   }}
                 >
                   {option.label}
@@ -560,23 +572,44 @@ export default function AdvancedQuickRegisterModal({ open, onOpenChange, patient
             </div>
           </div>
 
-          {/* Step 3: Specific Fields */}
-          <div>
-            <Label className="text-sm font-medium text-gray-700 mb-2">3. Preencher Detalhes</Label>
-            {renderSpecificFields()}
+          {/* Step 3: Fill Details */}
+          <div className="bg-gradient-to-br from-orange-50 to-pink-50 rounded-xl p-4 border border-orange-100">
+            <Label className="text-sm font-semibold text-gray-800 mb-3 flex items-center">
+              <span className="w-6 h-6 bg-gradient-to-r from-orange-500 to-pink-500 rounded-full flex items-center justify-center text-white text-xs mr-2">3</span>
+              Preencher Detalhes
+            </Label>
+            <div className="space-y-4">
+              {renderSpecificFields()}
+              <div className="bg-white/50 backdrop-blur-sm rounded-lg p-3 border border-orange-200">
+                <Label className="text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                  📎 Anexos (opcional)
+                </Label>
+                <Input
+                  type="file"
+                  multiple
+                  accept=".pdf,.png,.jpg,.jpeg"
+                  className="text-sm text-gray-600 bg-white/70 border-orange-200 hover:border-orange-300 focus:border-orange-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-gradient-to-r file:from-orange-100 file:to-pink-100 file:text-orange-700 hover:file:from-orange-200 hover:file:to-pink-200 transition-all duration-300"
+                  onChange={handleFileUpload}
+                />
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="flex justify-end space-x-3 mt-6">
-          <Button variant="outline" onClick={handleClose}>
+        <div className="flex justify-end space-x-3 mt-8 pt-4 border-t border-gray-200">
+          <Button 
+            variant="outline" 
+            onClick={handleClose}
+            className="px-6 py-2 border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-300"
+          >
             Cancelar
           </Button>
-          <Button 
-            className="bg-purple-600 hover:bg-purple-700"
+          <Button
+            className="px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
             onClick={handleSave}
             disabled={createRecordMutation.isPending}
           >
-            {createRecordMutation.isPending ? "Salvando..." : "Salvar"}
+            {createRecordMutation.isPending ? "Salvando..." : "✨ Salvar Registro"}
           </Button>
         </div>
       </DialogContent>
