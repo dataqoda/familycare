@@ -541,7 +541,11 @@ export default function Dashboard() {
               </div>
 
               <div className="mt-6 text-center">
-                <Button variant="link" className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                <Button 
+                  variant="link" 
+                  className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                  onClick={() => navigate("/recent-updates")}
+                >
                   Ver todas as atualizações →
                 </Button>
               </div>

@@ -8,6 +8,7 @@ import ImprovedPatientDetails from "@/pages/improved-patient-details";
 import SearchPage from "@/pages/search";
 import AppointmentsPage from "@/pages/appointments";
 import PendingItemsPage from "@/pages/pending-items";
+import RecentUpdatesPage from "@/pages/recent-updates";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -17,6 +18,7 @@ function Router() {
       <Route path="/search" component={SearchPage} />
       <Route path="/appointments" component={AppointmentsPage} />
       <Route path="/pending-items" component={PendingItemsPage} />
+      <Route path="/recent-updates" component={RecentUpdatesPage} />
       <Route path="/patient/:id" component={ImprovedPatientDetails} />
       <Route component={NotFound} />
     </Switch>
