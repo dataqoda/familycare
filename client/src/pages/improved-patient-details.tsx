@@ -123,61 +123,75 @@ export default function ImprovedPatientDetails() {
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <Button
-            variant="outline"
-            onClick={() => navigate("/")}
-            className="mb-6 shadow-md hover:shadow-lg transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Voltar ao Dashboard
-          </Button>
-
-          {/* Header do Paciente - Modernizado e Responsivo */}
-          <Card className="mb-8 border-0 shadow-xl bg-gradient-to-r from-white via-white to-purple-50/50 overflow-hidden">
-            <CardContent className="p-4 sm:p-6 lg:p-8">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-                <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
-                  <div className="relative mx-auto sm:mx-0">
-                    <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center shadow-xl ring-4 ring-purple-100">
-                      <span className="text-2xl sm:text-4xl text-white font-bold">{patient.photoUrl}</span>
-                    </div>
-                    <div className="absolute -bottom-2 -right-2 w-6 h-6 sm:w-8 sm:h-8 bg-green-500 rounded-full border-4 border-white flex items-center justify-center">
-                      <span className="text-white text-xs">✓</span>
-                    </div>
+          {/* Header com informações do paciente */}
+          <div className="bg-gradient-to-br from-white to-blue-50/30 rounded-xl shadow-xl p-6 mb-8 border border-blue-100">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-center space-x-4">
+                <Button
+                  variant="ghost"
+                  onClick={() => navigate("/")}
+                  className="text-blue-600 hover:text-blue-800 hover:bg-blue-100 p-2 rounded-xl transition-all duration-300"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </Button>
+                <div className="flex items-center space-x-4">
+                  <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg ring-4 ring-blue-100">
+                    {patient?.photoUrl || "👤"}
                   </div>
-                  <div className="text-center sm:text-left">
-                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">{patient.name}</h1>
-                    <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-4">
-                      <p className="text-lg sm:text-xl text-gray-600">
-                        {calculateAge(patient.birthDate)} anos
-                      </p>
-                      <span className="hidden sm:inline text-gray-400">•</span>
-                      <p className="text-sm sm:text-lg text-gray-500">
-                        Nascido em {formatDate(patient.birthDate)}
-                      </p>
-                    </div>
-                    <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 mt-3">
-                      <Badge variant="secondary" className="bg-purple-100 text-purple-800 px-3 py-1 text-xs sm:text-sm justify-center sm:justify-start">
-                        <Droplet className="w-3 h-3 mr-1" />
-                        {patient.bloodType || "Tipo não informado"}
-                      </Badge>
-                      <Badge variant="secondary" className="bg-blue-100 text-blue-800 px-3 py-1 text-xs sm:text-sm justify-center sm:justify-start">
-                        <User className="w-3 h-3 mr-1" />
-                        {patient.doctor || "Médico não informado"}
-                      </Badge>
+                  <div>
+                    <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-800 to-purple-800 bg-clip-text text-transparent">{patient?.name}</h1>
+                    <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600 mt-1">
+                      <span className="bg-blue-100 px-2 py-1 rounded-full">🎂 {calculateAge(patient.birthDate)} anos</span>
+                      {patient?.bloodType && (
+                        <span className="bg-red-100 px-2 py-1 rounded-full flex items-center space-x-1">
+                          <Droplet className="w-4 h-4 text-red-500" />
+                          <span>{patient.bloodType}</span>
+                        </span>
+                      )}
+                      {patient?.doctor && (
+                        <span className="bg-green-100 px-2 py-1 rounded-full">👨‍⚕️ {patient.doctor}</span>
+                      )}
                     </div>
                   </div>
                 </div>
+              </div>
+              <div className="flex flex-wrap gap-3">
                 <Button
                   onClick={() => setShowEditPatient(true)}
-                  className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-sm sm:text-base w-full sm:w-auto"
+                  className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 font-semibold"
                 >
                   <Edit className="w-4 h-4 mr-2" />
-                  Editar Paciente
+                  ✏️ Editar
+                </Button>
+                <Button
+                  onClick={() => setShowQuickRegister(true)}
+                  className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 font-semibold"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  ➕ Novo Registro
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+
+            {/* Alergias */}
+            {patient?.allergies && patient.allergies.length > 0 && (
+              <div className="mt-6 p-4 bg-gradient-to-r from-red-50 to-orange-50 border-l-4 border-red-400 rounded-xl shadow-sm">
+                <div className="flex items-start space-x-2">
+                  <AlertTriangle className="w-5 h-5 text-red-500 mt-0.5" />
+                  <div>
+                    <h3 className="text-sm font-bold text-red-800">⚠️ Alergias conhecidas:</h3>
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {patient.allergies.map((allergy, index) => (
+                        <Badge key={index} className="text-xs bg-red-100 text-red-800 border border-red-200 px-3 py-1 rounded-full font-semibold">
+                          ⚠️ {allergy}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         <Tabs defaultValue="personal" className="space-y-8" value={activeTab} onValueChange={setActiveTab}>
@@ -435,7 +449,7 @@ export default function ImprovedPatientDetails() {
                 <CardContent>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div 
-                      className="text-center p-4 bg-blue-50 rounded-lg relative"
+                      className="text-center p-4 bg-blue-50 rounded-lg relative cursor-pointer"
                       onClick={() => {
                         setActiveTab("records");
                         setActiveRecordTab("exam");
@@ -454,7 +468,7 @@ export default function ImprovedPatientDetails() {
                       </div>
                     </div>
                     <div 
-                      className="text-center p-4 bg-green-50 rounded-lg"
+                      className="text-center p-4 bg-green-50 rounded-lg cursor-pointer"
                       onClick={() => {
                         setActiveTab("records");
                         setActiveRecordTab("medication");
@@ -466,7 +480,7 @@ export default function ImprovedPatientDetails() {
                       <div className="text-sm text-gray-600">💊 Medicações</div>
                     </div>
                     <div 
-                      className="text-center p-4 bg-purple-50 rounded-lg"
+                      className="text-center p-4 bg-purple-50 rounded-lg cursor-pointer"
                       onClick={() => {
                         setActiveTab("records");
                         setActiveRecordTab("appointment");
@@ -478,7 +492,7 @@ export default function ImprovedPatientDetails() {
                       <div className="text-sm text-gray-600">📅 Consultas</div>
                     </div>
                     <div 
-                      className="text-center p-4 bg-yellow-50 rounded-lg relative"
+                      className="text-center p-4 bg-yellow-50 rounded-lg relative cursor-pointer"
                       onClick={() => {
                         setActiveTab("records");
                         setActiveRecordTab("history");
@@ -497,7 +511,7 @@ export default function ImprovedPatientDetails() {
                       </div>
                     </div>
                     <div 
-                      className="text-center p-4 bg-red-50 rounded-lg"
+                      className="text-center p-4 bg-red-50 rounded-lg cursor-pointer"
                       onClick={() => {
                         setActiveTab("records");
                         setActiveRecordTab("incident");
@@ -509,7 +523,7 @@ export default function ImprovedPatientDetails() {
                       <div className="text-sm text-gray-600">⚠️ Incidentes</div>
                     </div>
                     <div 
-                      className="text-center p-4 bg-orange-50 rounded-lg"
+                      className="text-center p-4 bg-orange-50 rounded-lg cursor-pointer"
                       onClick={() => {
                         setActiveTab("records");
                         setActiveRecordTab("pending");
@@ -520,7 +534,7 @@ export default function ImprovedPatientDetails() {
                       </div>
                       <div className="text-sm text-gray-600">📋 Pendências</div>
                     </div>
-                    <div className="text-center p-4 bg-indigo-50 rounded-lg relative">
+                    <div className="text-center p-4 bg-indigo-50 rounded-lg relative cursor-pointer">
                       <div className="text-2xl font-bold text-indigo-600">
                         {allRecordsByType.credential?.length || 0}
                       </div>
@@ -709,7 +723,7 @@ export default function ImprovedPatientDetails() {
           <TabsContent value="summary" className="space-y-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div 
-                className="text-center p-4 bg-blue-50 rounded-lg relative"
+                className="text-center p-4 bg-blue-50 rounded-lg relative cursor-pointer"
                 onClick={() => {
                   setActiveTab("records");
                   setActiveRecordTab("exam");
@@ -728,7 +742,7 @@ export default function ImprovedPatientDetails() {
                 </div>
               </div>
               <div 
-                className="text-center p-4 bg-green-50 rounded-lg"
+                className="text-center p-4 bg-green-50 rounded-lg cursor-pointer"
                 onClick={() => {
                   setActiveTab("records");
                   setActiveRecordTab("medication");
@@ -740,7 +754,7 @@ export default function ImprovedPatientDetails() {
                 <div className="text-sm text-gray-600">💊 Medicações</div>
               </div>
               <div 
-                className="text-center p-4 bg-purple-50 rounded-lg"
+                className="text-center p-4 bg-purple-50 rounded-lg cursor-pointer"
                 onClick={() => {
                   setActiveTab("records");
                   setActiveRecordTab("appointment");
@@ -752,7 +766,7 @@ export default function ImprovedPatientDetails() {
                 <div className="text-sm text-gray-600">📅 Consultas</div>
               </div>
               <div 
-                className="text-center p-4 bg-yellow-50 rounded-lg relative"
+                className="text-center p-4 bg-yellow-50 rounded-lg relative cursor-pointer"
                 onClick={() => {
                   setActiveTab("records");
                   setActiveRecordTab("history");
@@ -771,7 +785,7 @@ export default function ImprovedPatientDetails() {
                 </div>
               </div>
               <div 
-                className="text-center p-4 bg-red-50 rounded-lg"
+                className="text-center p-4 bg-red-50 rounded-lg cursor-pointer"
                 onClick={() => {
                   setActiveTab("records");
                   setActiveRecordTab("incident");
@@ -783,7 +797,7 @@ export default function ImprovedPatientDetails() {
                 <div className="text-sm text-gray-600">⚠️ Incidentes</div>
               </div>
               <div 
-                className="text-center p-4 bg-orange-50 rounded-lg"
+                className="text-center p-4 bg-orange-50 rounded-lg cursor-pointer"
                 onClick={() => {
                   setActiveTab("records");
                   setActiveRecordTab("pending");
@@ -794,7 +808,7 @@ export default function ImprovedPatientDetails() {
                 </div>
                 <div className="text-sm text-gray-600">📋 Pendências</div>
               </div>
-              <div className="text-center p-4 bg-indigo-50 rounded-lg relative">
+              <div className="text-center p-4 bg-indigo-50 rounded-lg relative cursor-pointer">
                 <div className="text-2xl font-bold text-indigo-600">
                   {allRecordsByType.credential?.length || 0}
                 </div>
