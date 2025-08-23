@@ -298,7 +298,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     console.log("Requisição de arquivo:", {
       filename,
       filePath,
-      exists: fs.existsSync(filePath)
+      exists: fs.existsSync(filePath),
+      uploadDir: process.cwd() + '/uploads',
+      files: fs.existsSync(path.join(process.cwd(), 'uploads')) ? fs.readdirSync(path.join(process.cwd(), 'uploads')) : 'pasta não existe'
     });
 
     if (fs.existsSync(filePath)) {

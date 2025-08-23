@@ -485,21 +485,16 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                         <div className="aspect-square bg-gray-100 rounded-lg border overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
                              onClick={() => setSelectedImage(attachment)}>
                           <img 
-                            src={attachment.startsWith('http') ? attachment : 
-                                 attachment.startsWith('/uploads/') ? `http://localhost:5000${attachment}` : 
-                                 `http://localhost:5000/uploads/${attachment}`}
+                            src={`http://localhost:5000/uploads/${attachment.split('/').pop()}`}
                             alt={attachment}
                             className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
                             onLoad={() => {
                               console.log('Imagem carregada com sucesso:', attachment);
                             }}
                             onError={(e) => {
-                              const imageUrl = attachment.startsWith('http') ? attachment : 
-                                             attachment.startsWith('/uploads/') ? `http://localhost:5000${attachment}` : 
-                                             `http://localhost:5000/uploads/${attachment}`;
                               console.error('Erro ao carregar imagem:', {
                                 attachment,
-                                imageUrl,
+                                tentativaUrl: `http://localhost:5000/uploads/${attachment.split('/').pop()}`,
                                 error: e
                               });
                               // Fallback se a imagem não carregar
@@ -538,9 +533,7 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                           variant="ghost" 
                           size="sm"
                           onClick={() => {
-                            const fileUrl = attachment.startsWith('http') ? attachment : 
-                                          attachment.startsWith('/uploads/') ? `http://localhost:5000${attachment}` : 
-                                          `http://localhost:5000/uploads/${attachment}`;
+                            const fileUrl = `http://localhost:5000/uploads/${attachment.split('/').pop()}`;
                             window.open(fileUrl, '_blank');
                           }}
                         >
@@ -560,9 +553,7 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
           <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" onClick={() => setSelectedImage(null)}>
             <div className="relative max-w-4xl max-h-4xl p-4">
               <img 
-                src={selectedImage.startsWith('http') ? selectedImage : 
-                     selectedImage.startsWith('/uploads/') ? `http://localhost:5000${selectedImage}` : 
-                     `http://localhost:5000/uploads/${selectedImage}`}
+                src={`http://localhost:5000/uploads/${selectedImage.split('/').pop()}`}
                 alt="Visualização"
                 className="max-w-full max-h-full object-contain"
                 onError={(e) => {
