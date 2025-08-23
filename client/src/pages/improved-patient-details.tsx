@@ -183,64 +183,62 @@ export default function ImprovedPatientDetails() {
         <Tabs defaultValue="personal" className="space-y-8" value={activeTab} onValueChange={setActiveTab}>
           {/* Tabs de navegação */}
           <div className="mb-6 sm:mb-8">
-            <div className="flex justify-center">
-              <div className="inline-flex gap-1 p-1 bg-gray-100 rounded-xl shadow-inner">
-                <Button
-                  variant={activeTab === 'personal' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setActiveTab('personal')}
-                  className={`flex items-center gap-2 text-xs sm:text-sm px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg transition-all duration-300 font-medium border-2 ${
-                    activeTab === 'personal'
-                      ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg border-purple-600 hover:from-purple-700 hover:to-purple-800 transform scale-105'
-                      : 'bg-white text-gray-600 border-transparent hover:bg-purple-50 hover:text-purple-700 hover:border-purple-200 hover:shadow-sm'
-                  }`}
-                >
-                  <span className="text-base">👤</span>
-                  <span>Informações Pessoais</span>
-                </Button>
+            <div className="flex flex-wrap gap-1 p-1 bg-gray-100 rounded-xl shadow-inner">
+              <Button
+                variant={activeTab === 'personal' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setActiveTab('personal')}
+                className={`flex items-center gap-2 text-xs sm:text-sm px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg transition-all duration-300 font-medium border-2 ${
+                  activeTab === 'personal'
+                    ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg border-purple-600 hover:from-purple-700 hover:to-purple-800 transform scale-105'
+                    : 'bg-white text-gray-600 border-transparent hover:bg-purple-50 hover:text-purple-700 hover:border-purple-200 hover:shadow-sm'
+                }`}
+              >
+                <span className="text-base">👤</span>
+                <span>Informações Pessoais</span>
+              </Button>
 
-                <Button
-                  variant={activeTab === 'records' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setActiveTab('records')}
-                  className={`flex items-center gap-2 text-xs sm:text-sm px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg transition-all duration-300 font-medium border-2 ${
-                    activeTab === 'records'
-                      ? 'bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg border-green-600 hover:from-green-700 hover:to-green-800 transform scale-105'
-                      : 'bg-white text-gray-600 border-transparent hover:bg-green-50 hover:text-green-700 hover:border-green-200 hover:shadow-sm'
-                  }`}
-                >
-                  <span className="text-base">🗂️</span>
-                  <span>Registros Médicos</span>
-                </Button>
+              <Button
+                variant={activeTab === 'records' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setActiveTab('records')}
+                className={`flex items-center gap-2 text-xs sm:text-sm px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg transition-all duration-300 font-medium border-2 ${
+                  activeTab === 'records'
+                    ? 'bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg border-green-600 hover:from-green-700 hover:to-green-800 transform scale-105'
+                    : 'bg-white text-gray-600 border-transparent hover:bg-green-50 hover:text-green-700 hover:border-green-200 hover:shadow-sm'
+                }`}
+              >
+                <span className="text-base">🗂️</span>
+                <span>Registros Médicos</span>
+              </Button>
 
-                <Button
-                  variant={activeTab === 'summary' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setActiveTab('summary')}
-                  className={`flex items-center gap-2 text-xs sm:text-sm px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg transition-all duration-300 font-medium border-2 ${
-                    activeTab === 'summary'
-                      ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg border-blue-600 hover:from-blue-700 hover:to-blue-800 transform scale-105'
-                      : 'bg-white text-gray-600 border-transparent hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 hover:shadow-sm'
-                  }`}
-                >
-                  <span className="text-base">📊</span>
-                  <span>Resumo</span>
-                </Button>
+              <Button
+                variant={activeTab === 'summary' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setActiveTab('summary')}
+                className={`flex items-center gap-2 text-xs sm:text-sm px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg transition-all duration-300 font-medium border-2 ${
+                  activeTab === 'summary'
+                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg border-blue-600 hover:from-blue-700 hover:to-blue-800 transform scale-105'
+                    : 'bg-white text-gray-600 border-transparent hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 hover:shadow-sm'
+                }`}
+              >
+                <span className="text-base">📊</span>
+                <span>Resumo</span>
+              </Button>
 
-                <Button
-                  variant={activeTab === 'timeline' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setActiveTab('timeline')}
-                  className={`flex items-center gap-2 text-xs sm:text-sm px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg transition-all duration-300 font-medium border-2 ${
-                    activeTab === 'timeline'
-                      ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-lg border-orange-600 hover:from-orange-700 hover:to-orange-800 transform scale-105'
-                      : 'bg-white text-gray-600 border-transparent hover:bg-orange-50 hover:text-orange-700 hover:border-orange-200 hover:shadow-sm'
-                  }`}
-                >
-                  <span className="text-base">⏰</span>
-                  <span>Linha do Tempo</span>
-                </Button>
-              </div>
+              <Button
+                variant={activeTab === 'timeline' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setActiveTab('timeline')}
+                className={`flex items-center gap-2 text-xs sm:text-sm px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg transition-all duration-300 font-medium border-2 ${
+                  activeTab === 'timeline'
+                    ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-lg border-orange-600 hover:from-orange-700 hover:to-orange-800 transform scale-105'
+                    : 'bg-white text-gray-600 border-transparent hover:bg-orange-50 hover:text-orange-700 hover:border-orange-200 hover:shadow-sm'
+                }`}
+              >
+                <span className="text-base">⏰</span>
+                <span>Linha do Tempo</span>
+              </Button>
             </div>
           </div>
 
@@ -543,10 +541,7 @@ export default function ImprovedPatientDetails() {
 
           <TabsContent value="records" className="space-y-6">
             <Tabs value={activeRecordTab} onValueChange={setActiveRecordTab} className="space-y-6">
-              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-white to-gray-50/30 max-w-6xl mx-auto">
-                <CardContent className="p-4 sm:p-6">
-                  <TabsList className="flex flex-wrap justify-center w-full bg-gray-100 rounded-xl p-1 sm:p-2 gap-1 h-auto min-h-[40px]"></CardContent>
-              </Card>
+              <TabsList className="grid grid-cols-2 sm:grid-cols-4 w-full max-w-4xl mx-auto bg-white/80 backdrop-blur-sm border-0 shadow-md rounded-xl p-1 sm:p-2 flex flex-wrap justify-center sm:justify-start gap-1 h-auto min-h-[40px]">
                 <TabsTrigger value="all" className="rounded-lg text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 flex-shrink-0">
                   <span className="hidden sm:inline">Todos</span>
                   <span className="sm:hidden">📋 Todos</span>
@@ -625,8 +620,6 @@ export default function ImprovedPatientDetails() {
                   )}
                 </TabsTrigger>
               </TabsList>
-                </CardContent>
-              </Card>
 
               <TabsContent value="all" className="mt-6">
                 <div className="space-y-6">
