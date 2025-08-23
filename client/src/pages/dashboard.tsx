@@ -327,13 +327,9 @@ export default function Dashboard() {
       </div>
 
       <AdvancedQuickRegisterModal 
-        isOpen={showQuickRegister}
-        onClose={() => setShowQuickRegister(false)}
-        onSuccess={() => {
-          setShowQuickRegister(false);
-          // Refresh data
-          window.location.reload();
-        }}
+        open={showQuickRegister}
+        onOpenChange={setShowQuickRegister}
+        patients={patients}
       />
 
       {/* Modal de Detalhes da Consulta */}

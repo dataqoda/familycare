@@ -17,7 +17,7 @@ interface AdvancedQuickRegisterModalProps {
   patients: Patient[];
 }
 
-export default function AdvancedQuickRegisterModal({ open, onOpenChange, patients }: AdvancedQuickRegisterModalProps) {
+export default function AdvancedQuickRegisterModal({ open, onOpenChange, patients = [] }: AdvancedQuickRegisterModalProps) {
   const [selectedPatient, setSelectedPatient] = useState<string>("");
   const [selectedType, setSelectedType] = useState<string>("");
   const [formData, setFormData] = useState<any>({});
