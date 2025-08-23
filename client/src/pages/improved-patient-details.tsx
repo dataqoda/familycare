@@ -556,41 +556,68 @@ export default function ImprovedPatientDetails() {
 
           <TabsContent value="records" className="space-y-6">
             <Tabs value={activeRecordTab} onValueChange={setActiveRecordTab} className="space-y-6">
-              <TabsList className="grid grid-cols-2 sm:grid-cols-4 w-full max-w-4xl mx-auto bg-white/80 backdrop-blur-sm border-0 shadow-md rounded-xl p-1 sm:p-2 flex flex-wrap justify-center sm:justify-start gap-1 h-auto min-h-[40px]">
-                <TabsTrigger value="all" className="rounded-lg text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 flex-shrink-0">
-                  <span className="hidden sm:inline">Todos</span>
-                  <span className="sm:hidden">📋 Todos</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="exam" 
-                  className="relative rounded-lg text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 flex-shrink-0"
+              <div className="flex flex-wrap gap-2 p-3 bg-gray-50/80 backdrop-blur-sm border border-gray-200 shadow-lg rounded-xl justify-center">
+                <button
+                  onClick={() => setActiveRecordTab('all')}
+                  className={`flex items-center gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 ${
+                    activeRecordTab === 'all'
+                      ? 'bg-gradient-to-r from-gray-600 to-gray-700 text-white shadow-lg shadow-gray-300 ring-2 ring-gray-300'
+                      : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 hover:text-gray-900 hover:border-gray-300 hover:shadow-md'
+                  }`}
+                >
+                  <span>📋</span>
+                  <span>Todos</span>
+                </button>
+
+                <button
                   onClick={(e) => {
-                    e.preventDefault(); // Prevent default tab switch if sensitive
+                    e.preventDefault();
                     if (isSensitiveRecordType('exam') && patient?.sensitiveDataPasswordActive && !isAuthenticated) {
                       requestSensitiveAccess();
                     } else {
                       setActiveRecordTab('exam');
                     }
                   }}
+                  className={`flex items-center gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 relative ${
+                    activeRecordTab === 'exam'
+                      ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-300 ring-2 ring-blue-300'
+                      : 'bg-white text-gray-700 border border-gray-200 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 hover:shadow-md'
+                  }`}
                 >
-                  📋 Exames
+                  <span>📋</span>
+                  <span>Exames</span>
                   {patient?.sensitiveDataPasswordActive && isSensitiveRecordType('exam') && (
-                    <span className={`ml-1 ${isAuthenticated ? 'text-green-600' : 'text-red-500'}`}>
+                    <span className={`text-xs ${activeRecordTab === 'exam' ? 'text-white' : (isAuthenticated ? 'text-green-600' : 'text-red-500')}`}>
                       {isAuthenticated ? '🔓' : '🔒'}
                     </span>
                   )}
-                </TabsTrigger>
-                <TabsTrigger value="medication" className="rounded-lg text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 flex-shrink-0">
-                  <span className="hidden sm:inline">💊 Medicações</span>
-                  <span className="sm:hidden">💊</span>
-                </TabsTrigger>
-                <TabsTrigger value="appointment" className="rounded-lg text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 flex-shrink-0">
-                  <span className="hidden sm:inline">📅 Consultas</span>
-                  <span className="sm:hidden">📅</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="history"
-                  className="relative rounded-lg text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 flex-shrink-0"
+                </button>
+
+                <button
+                  onClick={() => setActiveRecordTab('medication')}
+                  className={`flex items-center gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 ${
+                    activeRecordTab === 'medication'
+                      ? 'bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg shadow-green-300 ring-2 ring-green-300'
+                      : 'bg-white text-gray-700 border border-gray-200 hover:bg-green-50 hover:text-green-700 hover:border-green-200 hover:shadow-md'
+                  }`}
+                >
+                  <span>💊</span>
+                  <span>Medicações</span>
+                </button>
+
+                <button
+                  onClick={() => setActiveRecordTab('appointment')}
+                  className={`flex items-center gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 ${
+                    activeRecordTab === 'appointment'
+                      ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg shadow-purple-300 ring-2 ring-purple-300'
+                      : 'bg-white text-gray-700 border border-gray-200 hover:bg-purple-50 hover:text-purple-700 hover:border-purple-200 hover:shadow-md'
+                  }`}
+                >
+                  <span>📅</span>
+                  <span>Consultas</span>
+                </button>
+
+                <button
                   onClick={(e) => {
                     e.preventDefault();
                     if (isSensitiveRecordType('history') && patient?.sensitiveDataPasswordActive && !isAuthenticated) {
@@ -599,25 +626,46 @@ export default function ImprovedPatientDetails() {
                       setActiveRecordTab('history');
                     }
                   }}
+                  className={`flex items-center gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 relative ${
+                    activeRecordTab === 'history'
+                      ? 'bg-gradient-to-r from-yellow-600 to-yellow-700 text-white shadow-lg shadow-yellow-300 ring-2 ring-yellow-300'
+                      : 'bg-white text-gray-700 border border-gray-200 hover:bg-yellow-50 hover:text-yellow-700 hover:border-yellow-200 hover:shadow-md'
+                  }`}
                 >
-                  📝 Histórico
+                  <span>📝</span>
+                  <span>Histórico</span>
                   {patient?.sensitiveDataPasswordActive && isSensitiveRecordType('history') && (
-                    <span className={`ml-1 ${isAuthenticated ? 'text-green-600' : 'text-red-500'}`}>
+                    <span className={`text-xs ${activeRecordTab === 'history' ? 'text-white' : (isAuthenticated ? 'text-green-600' : 'text-red-500')}`}>
                       {isAuthenticated ? '🔓' : '🔒'}
                     </span>
                   )}
-                </TabsTrigger>
-                <TabsTrigger value="incident" className="rounded-lg text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 flex-shrink-0">
-                  <span className="hidden sm:inline">⚠️ Incidentes</span>
-                  <span className="sm:hidden">⚠️</span>
-                </TabsTrigger>
-                <TabsTrigger value="pending" className="rounded-lg text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 flex-shrink-0">
-                  <span className="hidden sm:inline">📋 Pendências</span>
-                  <span className="sm:hidden">📋</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="credential"
-                  className="relative rounded-lg text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 flex-shrink-0"
+                </button>
+
+                <button
+                  onClick={() => setActiveRecordTab('incident')}
+                  className={`flex items-center gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 ${
+                    activeRecordTab === 'incident'
+                      ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg shadow-red-300 ring-2 ring-red-300'
+                      : 'bg-white text-gray-700 border border-gray-200 hover:bg-red-50 hover:text-red-700 hover:border-red-200 hover:shadow-md'
+                  }`}
+                >
+                  <span>⚠️</span>
+                  <span>Incidentes</span>
+                </button>
+
+                <button
+                  onClick={() => setActiveRecordTab('pending')}
+                  className={`flex items-center gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 ${
+                    activeRecordTab === 'pending'
+                      ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-lg shadow-orange-300 ring-2 ring-orange-300'
+                      : 'bg-white text-gray-700 border border-gray-200 hover:bg-orange-50 hover:text-orange-700 hover:border-orange-200 hover:shadow-md'
+                  }`}
+                >
+                  <span>📋</span>
+                  <span>Pendências</span>
+                </button>
+
+                <button
                   onClick={(e) => {
                     e.preventDefault();
                     if (isSensitiveRecordType('credential') && patient?.sensitiveDataPasswordActive && !isAuthenticated) {
@@ -626,15 +674,21 @@ export default function ImprovedPatientDetails() {
                       setActiveRecordTab('credential');
                     }
                   }}
+                  className={`flex items-center gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 relative ${
+                    activeRecordTab === 'credential'
+                      ? 'bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-lg shadow-indigo-300 ring-2 ring-indigo-300'
+                      : 'bg-white text-gray-700 border border-gray-200 hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-200 hover:shadow-md'
+                  }`}
                 >
-                  🔑 Senha
+                  <span>🔑</span>
+                  <span>Senha</span>
                   {patient?.sensitiveDataPasswordActive && isSensitiveRecordType('credential') && (
-                    <span className={`ml-1 ${isAuthenticated ? 'text-green-600' : 'text-red-500'}`}>
+                    <span className={`text-xs ${activeRecordTab === 'credential' ? 'text-white' : (isAuthenticated ? 'text-green-600' : 'text-red-500')}`}>
                       {isAuthenticated ? '🔓' : '🔒'}
                     </span>
                   )}
-                </TabsTrigger>
-              </TabsList>
+                </button>
+              </div>
 
               <TabsContent value="all" className="mt-6">
                 <div className="space-y-6">
