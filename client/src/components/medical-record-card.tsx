@@ -25,6 +25,7 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editFormData, setEditFormData] = useState({
     type: record.type,
+    title: record.title,
     description: record.description,
     date: record.date,
     attachments: record.attachments || []
@@ -83,11 +84,50 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
   };
 
   const handleEdit = () => {
-    setEditFormData({
+    const baseData = {
       type: record.type,
       description: record.description,
       date: record.date,
       attachments: record.attachments || []
+    };
+
+    // Incluir campos específicos baseado no tipo
+    const specificFields = {} as any;
+    
+    if (record.type === 'appointment') {
+      specificFields.time = (record as any).time;
+      specificFields.doctor = (record as any).doctor;
+      specificFields.specialty = (record as any).specialty;
+      specificFields.clinicHospital = (record as any).clinicHospital;
+      specificFields.address = (record as any).address;
+      specificFields.mapUrl = (record as any).mapUrl;
+    } else if (record.type === 'exam') {
+      specificFields.examType = (record as any).examType;
+      specificFields.requestingDoctor = (record as any).requestingDoctor;
+      specificFields.observations = (record as any).observations;
+    } else if (record.type === 'medication') {
+      specificFields.medicationName = (record as any).medicationName;
+      specificFields.frequency = (record as any).frequency;
+      specificFields.usageType = (record as any).usageType;
+      specificFields.periodOfDay = (record as any).periodOfDay;
+      specificFields.startDate = (record as any).startDate;
+      specificFields.duration = (record as any).duration;
+      specificFields.prescribingDoctor = (record as any).prescribingDoctor;
+      specificFields.indication = (record as any).indication;
+    } else if (record.type === 'credential') {
+      specificFields.serviceName = (record as any).serviceName;
+      specificFields.serviceUrl = (record as any).serviceUrl;
+      specificFields.username = (record as any).username;
+      specificFields.password = (record as any).password;
+      specificFields.additionalNotes = (record as any).additionalNotes;
+    } else if (record.type === 'pending') {
+      specificFields.requestingDoctor = (record as any).requestingDoctor;
+      specificFields.deadline = (record as any).deadline;
+    }
+
+    setEditFormData({
+      ...baseData,
+      ...specificFields
     });
     setShowEditModal(true);
   };
@@ -545,6 +585,16 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="edit-title">Título</Label>
+              <Input
+                id="edit-title"
+                value={editFormData.title || ''}
+                onChange={(e) => setEditFormData(prev => ({ ...prev, title: e.target.value }))}
+                placeholder="Título do registro"
+              />
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="edit-date">Data</Label>
               <Input
                 id="edit-date"
@@ -564,6 +614,213 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                 rows={4}
               />
             </div>
+
+            {/* Campos específicos por tipo */}
+            {editFormData.type === 'appointment' && (
+              <div className="space-y-4 p-4 bg-purple-50 rounded-lg">
+                <h4 className="font-medium text-purple-900">Detalhes da Consulta</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-time">Horário</Label>
+                    <Input
+                      id="edit-time"
+                      type="time"
+                      value={(record as any).time || ''}
+                      onChange={(e) => setEditFormData(prev => ({ ...prev, time: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-doctor">Médico</Label>
+                    <Input
+                      id="edit-doctor"
+                      value={(record as any).doctor || ''}
+                      onChange={(e) => setEditFormData(prev => ({ ...prev, doctor: e.target.value }))}
+                      placeholder="Nome do médico"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-specialty">Especialidade</Label>
+                    <Input
+                      id="edit-specialty"
+                      value={(record as any).specialty || ''}
+                      onChange={(e) => setEditFormData(prev => ({ ...prev, specialty: e.target.value }))}
+                      placeholder="Especialidade médica"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-clinic">Local</Label>
+                    <Input
+                      id="edit-clinic"
+                      value={(record as any).clinicHospital || ''}
+                      onChange={(e) => setEditFormData(prev => ({ ...prev, clinicHospital: e.target.value }))}
+                      placeholder="Clínica/Hospital"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-address">Endereço</Label>
+                  <Input
+                    id="edit-address"
+                    value={(record as any).address || ''}
+                    onChange={(e) => setEditFormData(prev => ({ ...prev, address: e.target.value }))}
+                    placeholder="Endereço completo"
+                  />
+                </div>
+              </div>
+            )}
+
+            {editFormData.type === 'exam' && (
+              <div className="space-y-4 p-4 bg-blue-50 rounded-lg">
+                <h4 className="font-medium text-blue-900">Detalhes do Exame</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-exam-type">Tipo de Exame</Label>
+                    <Select 
+                      value={(record as any).examType || ''} 
+                      onValueChange={(value) => setEditFormData(prev => ({ ...prev, examType: value }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o tipo" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Laboratorial">Laboratorial</SelectItem>
+                        <SelectItem value="Imagem">Imagem</SelectItem>
+                        <SelectItem value="Clínico">Clínico</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-requesting-doctor">Médico Solicitante</Label>
+                    <Input
+                      id="edit-requesting-doctor"
+                      value={(record as any).requestingDoctor || ''}
+                      onChange={(e) => setEditFormData(prev => ({ ...prev, requestingDoctor: e.target.value }))}
+                      placeholder="Nome do médico"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-observations">Observações</Label>
+                  <Textarea
+                    id="edit-observations"
+                    value={(record as any).observations || ''}
+                    onChange={(e) => setEditFormData(prev => ({ ...prev, observations: e.target.value }))}
+                    placeholder="Observações do exame"
+                    rows={3}
+                  />
+                </div>
+              </div>
+            )}
+
+            {editFormData.type === 'medication' && (
+              <div className="space-y-4 p-4 bg-green-50 rounded-lg">
+                <h4 className="font-medium text-green-900">Detalhes da Medicação</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-medication-name">Nome do Medicamento</Label>
+                    <Input
+                      id="edit-medication-name"
+                      value={(record as any).medicationName || ''}
+                      onChange={(e) => setEditFormData(prev => ({ ...prev, medicationName: e.target.value }))}
+                      placeholder="Nome do medicamento"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-frequency">Frequência</Label>
+                    <Input
+                      id="edit-frequency"
+                      value={(record as any).frequency || ''}
+                      onChange={(e) => setEditFormData(prev => ({ ...prev, frequency: e.target.value }))}
+                      placeholder="Ex: 2x ao dia"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-usage-type">Tipo de Uso</Label>
+                    <Select 
+                      value={(record as any).usageType || ''} 
+                      onValueChange={(value) => setEditFormData(prev => ({ ...prev, usageType: value }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="continuous">Contínuo</SelectItem>
+                        <SelectItem value="temporary">Temporário</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-duration">Duração</Label>
+                    <Input
+                      id="edit-duration"
+                      value={(record as any).duration || ''}
+                      onChange={(e) => setEditFormData(prev => ({ ...prev, duration: e.target.value }))}
+                      placeholder="Ex: 7 dias"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-indication">Indicação</Label>
+                  <Textarea
+                    id="edit-indication"
+                    value={(record as any).indication || ''}
+                    onChange={(e) => setEditFormData(prev => ({ ...prev, indication: e.target.value }))}
+                    placeholder="Indicação médica"
+                    rows={2}
+                  />
+                </div>
+              </div>
+            )}
+
+            {editFormData.type === 'credential' && (
+              <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
+                <h4 className="font-medium text-gray-900">Detalhes da Credencial</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-service-name">Nome do Serviço</Label>
+                    <Input
+                      id="edit-service-name"
+                      value={(record as any).serviceName || ''}
+                      onChange={(e) => setEditFormData(prev => ({ ...prev, serviceName: e.target.value }))}
+                      placeholder="Nome do serviço"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-username">Usuário</Label>
+                    <Input
+                      id="edit-username"
+                      value={(record as any).username || ''}
+                      onChange={(e) => setEditFormData(prev => ({ ...prev, username: e.target.value }))}
+                      placeholder="Nome de usuário"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-service-url">URL do Serviço</Label>
+                  <Input
+                    id="edit-service-url"
+                    type="url"
+                    value={(record as any).serviceUrl || ''}
+                    onChange={(e) => setEditFormData(prev => ({ ...prev, serviceUrl: e.target.value }))}
+                    placeholder="https://exemplo.com"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-additional-notes">Notas Adicionais</Label>
+                  <Textarea
+                    id="edit-additional-notes"
+                    value={(record as any).additionalNotes || ''}
+                    onChange={(e) => setEditFormData(prev => ({ ...prev, additionalNotes: e.target.value }))}
+                    placeholder="Notas ou observações"
+                    rows={2}
+                  />
+                </div>
+              </div>
+            )}
 
             <div className="flex justify-end space-x-2 pt-4">
               <Button variant="outline" onClick={() => setShowEditModal(false)}>
