@@ -152,68 +152,6 @@
     }
   }
 
-  /* Landscape mobile optimizations */
-  @media (max-height: 500px) and (orientation: landscape) {
-    html {
-      font-size: 12px;
-    }
-    
-    /* Reduce header height in landscape */
-    .header-landscape {
-      height: 60px !important;
-      padding: 0.5rem 1rem !important;
-    }
-    
-    /* Compress vertical spacing */
-    .py-6, .py-8 {
-      padding-top: 1rem !important;
-      padding-bottom: 1rem !important;
-    }
-    
-    .mb-12, .mb-16 {
-      margin-bottom: 1.5rem !important;
-    }
-    
-    /* Adjust modal sizing for landscape */
-    [role="dialog"] {
-      max-height: 90vh !important;
-      overflow-y: auto !important;
-    }
-    
-    /* Sidebar adjustments for landscape */
-    .sidebar-landscape {
-      width: 240px !important;
-    }
-  }
-
-  /* Very small screens - portrait */
-  @media (max-width: 375px) {
-    html {
-      font-size: 13px;
-    }
-    
-    .container {
-      padding-left: 0.75rem !important;
-      padding-right: 0.75rem !important;
-    }
-    
-    /* Smaller text sizes for very small screens */
-    .text-3xl { font-size: 1.5rem !important; }
-    .text-4xl { font-size: 1.75rem !important; }
-    .text-5xl { font-size: 2rem !important; }
-  }
-
-  /* Ultra-wide landscape phones */
-  @media (min-aspect-ratio: 2/1) {
-    .grid-cols-1 {
-      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    }
-    
-    .md\:grid-cols-2 {
-      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    }
-  }
-
   /* Modern enhancements */
   .backdrop-blur-md {
     backdrop-filter: blur(12px);
@@ -249,20 +187,6 @@
   /* Prevent horizontal scrolling */
   html, body {
     overflow-x: hidden;
-    /* Smooth transition during orientation changes */
-    transition: all 0.3s ease;
-  }
-
-  /* Prevent zoom on double tap and improve touch response */
-  * {
-    touch-action: manipulation;
-  }
-
-  /* Fix viewport issues on mobile */
-  @supports (-webkit-touch-callout: none) {
-    .min-h-screen {
-      min-height: -webkit-fill-available;
-    }
   }
   
   /* Improve focus visibility on mobile */
