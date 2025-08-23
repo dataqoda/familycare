@@ -218,24 +218,6 @@ export default function Dashboard() {
             </p>
           </div>
 
-          {/* Quick Actions */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-8 sm:mb-12 max-w-lg mx-auto">
-            <Button
-              onClick={() => setShowAddPatient(true)}
-              className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-6 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-            >
-              <UserPlus className="w-5 h-5 mr-3" />
-              <span className="font-medium">Adicionar Paciente</span>
-            </Button>
-            <Button
-              onClick={() => setShowQuickRegister(true)}
-              className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-            >
-              <FileText className="w-5 h-5 mr-3" />
-              <span className="font-medium">Registro Rápido</span>
-            </Button>
-          </div>
-
           {/* Próximas Consultas */}
           <section className="mb-12 sm:mb-16">
             <div className="flex items-center justify-between mb-6 sm:mb-8">
