@@ -519,16 +519,14 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                       // Construir URL correta - usar diretamente o attachment se já for um caminho completo
                       let imageUrl;
                       if (attachment.startsWith('http')) {
+                        // É uma URL completa
                         imageUrl = attachment;
                       } else if (attachment.startsWith('/uploads/')) {
-                        imageUrl = `http://localhost:5000${attachment}`;
-                      } else if (attachment.includes('/')) {
-                        // Se contém barra mas não é caminho completo, pegar só o nome do arquivo
-                        const fileName = attachment.split('/').pop();
-                        imageUrl = `http://localhost:5000/uploads/${fileName}`;
+                        // Já está no formato correto com /uploads/
+                        imageUrl = attachment;
                       } else {
                         // É apenas o nome do arquivo
-                        imageUrl = `http://localhost:5000/uploads/${attachment}`;
+                        imageUrl = `/uploads/${attachment}`;
                       }
 
                       console.log('Renderizando imagem:', {
