@@ -365,64 +365,96 @@ export default function Dashboard() {
           </section>
 
           {/* Pacientes Cadastrados */}
-          <Card className="rounded-xl shadow-sm border border-gray-200 mx-4 mb-8">
-            <CardContent className="p-4 sm:p-6">
-              <div className="flex flex-col sm:flex-row items-center justify-between mb-4 sm:mb-6">
-                <div className="flex items-center">
-                  <span className="text-xl sm:text-2xl mr-3">👨‍👩‍👧‍👦</span>
-                  <h2 className="text-lg font-semibold text-gray-900">Pacientes Cadastrados</h2>
-                </div>
-                <Button
-                  className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto mt-3 sm:mt-0 text-sm sm:text-base"
-                  onClick={() => setShowPatientRegister(true)}
-                >
-                  ➕ Cadastrar Paciente
-                </Button>
-              </div>
+          <section className="mb-12 sm:mb-16">
+            <div className="flex items-center justify-between mb-6 sm:mb-8">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+                👨‍👩‍👧‍👦 Pacientes Cadastrados
+              </h2>
+              <Button
+                onClick={() => setShowPatientRegister(true)}
+                className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              >
+                <UserPlus className="w-4 h-4 mr-2" />
+                Cadastrar Paciente
+              </Button>
+            </div>
 
-              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {patients.length === 0 ? (
+              <Card className="border-dashed border-2 border-gray-200 bg-gray-50/50">
+                <CardContent className="p-8 sm:p-12 text-center">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                    <Users className="w-8 h-8 sm:w-10 sm:h-10 text-gray-400" />
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
+                    Nenhum paciente cadastrado
+                  </h3>
+                  <p className="text-gray-600 mb-6 text-sm sm:text-base max-w-sm mx-auto">
+                    Comece cadastrando os membros da sua família para organizar o histórico médico
+                  </p>
+                  <Button
+                    onClick={() => setShowPatientRegister(true)}
+                    className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    Cadastrar Primeiro Paciente
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {patients.map((patient) => (
                   <Card
                     key={patient.id}
-                    className="cursor-pointer hover:shadow-md transition-shadow duration-200"
+                    className="cursor-pointer hover:shadow-lg transition-all duration-300 border-0 shadow-md bg-white hover:scale-105"
                     onClick={() => handlePatientClick(patient.id)}
                   >
-                    <CardHeader className="text-center pb-3 sm:pb-4">
-                      <Avatar className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-2 sm:mb-3">
-                        <AvatarImage src={patient.photoUrl} alt={patient.name} />
-                        <AvatarFallback className="text-sm sm:text-lg font-semibold bg-primary/10 text-primary">
-                          {patient.name.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <CardTitle className="text-lg sm:text-xl font-semibold text-gray-800">
-                        {patient.name}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="text-center space-y-1 sm:space-y-2 px-3 sm:px-6">
-                      <div className="flex items-center justify-center text-gray-600">
-                        <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                        <span className="text-xs sm:text-sm">{new Date().getFullYear() - new Date(patient.birthDate).getFullYear()} anos</span>
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="text-center mb-4">
+                        <Avatar className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-3 ring-2 ring-purple-100">
+                          <AvatarImage src={patient.photoUrl} alt={patient.name} />
+                          <AvatarFallback className="bg-gradient-to-br from-purple-500 to-purple-600 text-white text-lg sm:text-xl font-semibold">
+                            {patient.name.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <h3 className="font-semibold text-base sm:text-lg text-gray-900 mb-1">
+                          {patient.name}
+                        </h3>
                       </div>
-                      <div className="flex items-center justify-center text-gray-600">
-                        <User className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                        <span className="text-xs sm:text-sm truncate max-w-full">{patient.doctor || 'N/A'}</span>
-                      </div>
-                      <div className="flex items-center justify-center text-gray-600">
-                        <Droplet className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                        <span className="text-xs sm:text-sm">{patient.bloodType || "N/A"}</span>
-                      </div>
-                      {patient.allergies && patient.allergies.length > 0 && (
-                        <div className="flex items-center justify-center text-red-600">
-                          <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                          <span className="text-xs sm:text-sm">Alergias</span>
+                      
+                      <div className="space-y-2">
+                        <div className="flex items-center text-gray-600 bg-gray-50 rounded-lg p-2">
+                          <Calendar className="w-4 h-4 mr-3 text-purple-500 flex-shrink-0" />
+                          <span className="text-sm font-medium">
+                            {new Date().getFullYear() - new Date(patient.birthDate).getFullYear()} anos
+                          </span>
                         </div>
-                      )}
+                        <div className="flex items-center text-gray-600 bg-gray-50 rounded-lg p-2">
+                          <User className="w-4 h-4 mr-3 text-blue-500 flex-shrink-0" />
+                          <span className="text-sm font-medium truncate">
+                            {patient.doctor || 'Médico não informado'}
+                          </span>
+                        </div>
+                        <div className="flex items-center text-gray-600 bg-gray-50 rounded-lg p-2">
+                          <Droplet className="w-4 h-4 mr-3 text-red-500 flex-shrink-0" />
+                          <span className="text-sm font-medium">
+                            {patient.bloodType || "Tipo sanguíneo não informado"}
+                          </span>
+                        </div>
+                        {patient.allergies && patient.allergies.length > 0 && (
+                          <div className="flex items-center text-red-600 bg-red-50 rounded-lg p-2">
+                            <AlertTriangle className="w-4 h-4 mr-3 text-red-500 flex-shrink-0" />
+                            <span className="text-sm font-medium">
+                              {patient.allergies.length} alergia{patient.allergies.length > 1 ? 's' : ''}
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </CardContent>
                   </Card>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            )}
+          </section>
 
           {/* Últimas Atualizações */}
           <Card className="rounded-xl shadow-sm border border-gray-200 mx-4">
