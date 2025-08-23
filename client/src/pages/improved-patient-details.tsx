@@ -473,44 +473,44 @@ export default function ImprovedPatientDetails() {
                 const typeConfig = {
                   exam: { 
                     icon: '📋', 
-                    title: 'Nenhum exame registrado', 
-                    description: 'Os exames médicos aparecerão aqui quando forem adicionados.',
+                    title: 'Nenhum exame encontrado', 
+                    description: 'Este paciente ainda não possui nenhum exame médico registrado.',
                     buttonText: 'Adicionar Primeiro Exame'
                   },
                   medication: { 
                     icon: '💊', 
-                    title: 'Nenhuma medicação registrada', 
-                    description: 'As medicações e prescrições aparecerão aqui quando forem adicionadas.',
+                    title: 'Nenhuma medicação encontrada', 
+                    description: 'Este paciente ainda não possui nenhuma medicação ou prescrição registrada.',
                     buttonText: 'Adicionar Primeira Medicação'
                   },
                   appointment: { 
                     icon: '📅', 
-                    title: 'Nenhuma consulta registrada', 
-                    description: 'As consultas médicas aparecerão aqui quando forem agendadas.',
+                    title: 'Nenhuma consulta encontrada', 
+                    description: 'Este paciente ainda não possui nenhuma consulta médica registrada.',
                     buttonText: 'Agendar Primeira Consulta'
                   },
                   history: { 
                     icon: '📝', 
-                    title: 'Nenhum histórico registrado', 
-                    description: 'O histórico médico aparecerá aqui quando for adicionado.',
+                    title: 'Nenhum histórico encontrado', 
+                    description: 'Este paciente ainda não possui nenhum histórico médico registrado.',
                     buttonText: 'Adicionar Primeiro Histórico'
                   },
                   incident: { 
                     icon: '⚠️', 
-                    title: 'Nenhum incidente registrado', 
-                    description: 'Os incidentes médicos aparecerão aqui quando forem registrados.',
+                    title: 'Nenhum incidente encontrado', 
+                    description: 'Este paciente ainda não possui nenhum incidente médico registrado.',
                     buttonText: 'Registrar Primeiro Incidente'
                   },
                   pending: { 
                     icon: '📋', 
-                    title: 'Nenhuma pendência registrada', 
-                    description: 'As pendências médicas aparecerão aqui quando forem criadas.',
+                    title: 'Nenhuma pendência encontrada', 
+                    description: 'Este paciente ainda não possui nenhuma pendência médica registrada.',
                     buttonText: 'Criar Primeira Pendência'
                   },
                   credential: { 
                     icon: '🔑', 
-                    title: 'Nenhuma senha registrada', 
-                    description: 'As senhas e credenciais aparecerão aqui quando forem salvas.',
+                    title: 'Nenhuma senha encontrada', 
+                    description: 'Este paciente ainda não possui nenhuma senha ou credencial registrada.',
                     buttonText: 'Salvar Primeira Senha'
                   }
                 };
@@ -534,8 +534,8 @@ export default function ImprovedPatientDetails() {
                           <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center">
                             <FileText className="w-10 h-10 text-gray-400" />
                           </div>
-                          <h3 className="text-xl font-semibold text-gray-900 mb-3">Nenhum registro encontrado</h3>
-                          <p className="text-gray-500">Este paciente ainda não possui registros médicos deste tipo.</p>
+                          <h3 className="text-xl font-semibold text-gray-900 mb-3">{config.title}</h3>
+                          <p className="text-gray-500">{config.description}</p>
                         </CardContent>
                       </Card>
                     )}
