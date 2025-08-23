@@ -396,7 +396,7 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              {selectedAppointment.location && selectedAppointment.location !== "Local não informado" && (
+              {selectedAppointment.location && (
                 <div className="mb-6">
                   <Button
                     onClick={() => {
