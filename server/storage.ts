@@ -1,5 +1,5 @@
-import { 
-  type Patient, 
+import {
+  type Patient,
   type InsertPatient,
   type Appointment,
   type InsertAppointment,
@@ -60,48 +60,48 @@ export class MemStorage implements IStorage {
   private async initializeData() {
     // Initialize with sample family data
     const familyMembers = [
-      { 
-        name: "João Silva", 
-        birthDate: "1979-01-15", 
-        bloodType: "O+", 
-        doctor: "Dr. Santos", 
-        allergies: ["Penicilina", "Amendoim"], 
+      {
+        name: "João Silva",
+        birthDate: "1979-01-15",
+        bloodType: "O+",
+        doctor: "Dr. Santos",
+        allergies: ["Penicilina", "Amendoim"],
         photoUrl: "👨",
         emergencyContactName: "Maria Silva",
         emergencyContactPhone: "(11) 99999-8888",
         insurancePlan: "Unimed",
         insuranceNumber: "123456789"
       },
-      { 
-        name: "Maria Silva", 
-        birthDate: "1982-03-22", 
-        bloodType: "A+", 
-        doctor: "Dra. Costa", 
-        allergies: ["Aspirina"], 
+      {
+        name: "Maria Silva",
+        birthDate: "1982-03-22",
+        bloodType: "A+",
+        doctor: "Dra. Costa",
+        allergies: ["Aspirina"],
         photoUrl: "👩",
         emergencyContactName: "João Silva",
         emergencyContactPhone: "(11) 99999-7777",
         insurancePlan: "Unimed",
         insuranceNumber: "987654321"
       },
-      { 
-        name: "Ana Silva", 
-        birthDate: "2008-07-10", 
-        bloodType: "B+", 
-        doctor: "Dr. Oliveira", 
-        allergies: [], 
+      {
+        name: "Ana Silva",
+        birthDate: "2008-07-10",
+        bloodType: "B+",
+        doctor: "Dr. Oliveira",
+        allergies: [],
         photoUrl: "👧",
         emergencyContactName: "João Silva",
         emergencyContactPhone: "(11) 99999-7777",
         insurancePlan: "Unimed",
         insuranceNumber: "456789123"
       },
-      { 
-        name: "Pedro Silva", 
-        birthDate: "2012-11-05", 
-        bloodType: "O+", 
-        doctor: "Dr. Lima", 
-        allergies: ["Pólen"], 
+      {
+        name: "Pedro Silva",
+        birthDate: "2012-11-05",
+        bloodType: "O+",
+        doctor: "Dr. Lima",
+        allergies: ["Pólen"],
         photoUrl: "👦",
         emergencyContactName: "Maria Silva",
         emergencyContactPhone: "(11) 99999-8888",
@@ -475,10 +475,10 @@ export class MemStorage implements IStorage {
 
   async createPatient(insertPatient: InsertPatient): Promise<Patient> {
     const id = randomUUID();
-    const patient: Patient = { 
-      ...insertPatient, 
-      id, 
-      createdAt: new Date() 
+    const patient: Patient = {
+      ...insertPatient,
+      id,
+      createdAt: new Date()
     };
     this.patients.set(id, patient);
     return patient;
@@ -508,10 +508,10 @@ export class MemStorage implements IStorage {
 
   async createAppointment(insertAppointment: InsertAppointment): Promise<Appointment> {
     const id = randomUUID();
-    const appointment: Appointment = { 
-      ...insertAppointment, 
-      id, 
-      createdAt: new Date() 
+    const appointment: Appointment = {
+      ...insertAppointment,
+      id,
+      createdAt: new Date()
     };
     this.appointments.set(id, appointment);
     return appointment;
@@ -541,10 +541,10 @@ export class MemStorage implements IStorage {
 
   async createMedicalRecord(insertRecord: InsertMedicalRecord): Promise<MedicalRecord> {
     const id = randomUUID();
-    const record: MedicalRecord = { 
-      ...insertRecord, 
-      id, 
-      createdAt: new Date() 
+    const record: MedicalRecord = {
+      ...insertRecord,
+      id,
+      createdAt: new Date()
     };
     this.medicalRecords.set(id, record);
     return record;
@@ -574,10 +574,10 @@ export class MemStorage implements IStorage {
 
   async createPendingItem(insertItem: InsertPendingItem): Promise<PendingItem> {
     const id = randomUUID();
-    const item: PendingItem = { 
-      ...insertItem, 
-      id, 
-      createdAt: new Date() 
+    const item: PendingItem = {
+      ...insertItem,
+      id,
+      createdAt: new Date()
     };
     this.pendingItems.set(id, item);
     return item;
@@ -598,17 +598,17 @@ export class MemStorage implements IStorage {
 
   // Recent Updates
   async getRecentUpdates(): Promise<RecentUpdate[]> {
-    return Array.from(this.recentUpdates.values()).sort((a, b) => 
+    return Array.from(this.recentUpdates.values()).sort((a, b) =>
       new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
   }
 
   async createRecentUpdate(insertUpdate: InsertRecentUpdate): Promise<RecentUpdate> {
     const id = randomUUID();
-    const update: RecentUpdate = { 
-      ...insertUpdate, 
-      id, 
-      createdAt: new Date() 
+    const update: RecentUpdate = {
+      ...insertUpdate,
+      id,
+      createdAt: new Date()
     };
     this.recentUpdates.set(id, update);
     return update;

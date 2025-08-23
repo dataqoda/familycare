@@ -5,6 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Edit, Trash2, Eye, Calendar, User, MapPin, Clock, FileText, Image, Paperclip, Download } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import type { MedicalRecord } from "@shared/schema";
@@ -18,6 +22,13 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    type: record.type,
+    description: record.description,
+    date: record.date,
+    attachments: record.attachments || []
+  });
 
   const deleteRecordMutation = useMutation({
     mutationFn: async (id: string) => {
@@ -40,10 +51,58 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
     },
   });
 
+  const updateMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await apiRequest("PUT", `/api/medical-records/${record.id}`, data);
+      if (!response.ok) {
+        throw new Error("Failed to update record");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/medical-records"] });
+      toast({
+        title: "Sucesso!",
+        description: "Registro médico atualizado com sucesso.",
+      });
+      setShowEditModal(false);
+    },
+    onError: () => {
+      toast({
+        title: "Erro",
+        description: "Não foi possível atualizar o registro médico.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleDelete = () => {
     if (confirm("Tem certeza que deseja excluir este registro?")) {
       deleteRecordMutation.mutate(record.id);
     }
+  };
+
+  const handleEdit = () => {
+    setEditFormData({
+      type: record.type,
+      description: record.description,
+      date: record.date,
+      attachments: record.attachments || []
+    });
+    setShowEditModal(true);
+  };
+
+  const handleSaveEdit = () => {
+    if (!editFormData.description.trim()) {
+      toast({
+        title: "Erro",
+        description: "Descrição é obrigatória.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    updateMutation.mutate(editFormData);
   };
 
   const getTypeIcon = () => {
@@ -297,7 +356,7 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => toast({ title: "Em desenvolvimento", description: "Funcionalidade de edição em breve." })}
+                onClick={handleEdit}
               >
                 <Edit className="w-4 h-4" />
               </Button>
@@ -452,6 +511,69 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
               <Button>
                 <Download className="w-4 h-4 mr-2" />
                 Baixar
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Editar Registro Médico</DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit-type">Tipo</Label>
+              <Select 
+                value={editFormData.type} 
+                onValueChange={(value) => setEditFormData(prev => ({ ...prev, type: value }))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o tipo" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="exam">📋 Exame</SelectItem>
+                  <SelectItem value="medication">💊 Medicação</SelectItem>
+                  <SelectItem value="appointment">📅 Consulta</SelectItem>
+                  <SelectItem value="history">📝 Histórico</SelectItem>
+                  <SelectItem value="incident">⚠️ Incidente</SelectItem>
+                  <SelectItem value="pending">📋 Pendência</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-date">Data</Label>
+              <Input
+                id="edit-date"
+                type="date"
+                value={editFormData.date}
+                onChange={(e) => setEditFormData(prev => ({ ...prev, date: e.target.value }))}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-description">Descrição</Label>
+              <Textarea
+                id="edit-description"
+                value={editFormData.description}
+                onChange={(e) => setEditFormData(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Digite a descrição do registro..."
+                rows={4}
+              />
+            </div>
+
+            <div className="flex justify-end space-x-2 pt-4">
+              <Button variant="outline" onClick={() => setShowEditModal(false)}>
+                Cancelar
+              </Button>
+              <Button 
+                onClick={handleSaveEdit}
+                disabled={updateMutation.isPending}
+              >
+                {updateMutation.isPending ? "Salvando..." : "Salvar Alterações"}
               </Button>
             </div>
           </div>

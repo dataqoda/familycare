@@ -210,6 +210,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.put("/api/medical-records/:id", async (req, res) => {
+    try {
+      const validatedData = insertMedicalRecordSchema.partial().parse(req.body);
+      const record = await storage.updateMedicalRecord(req.params.id, validatedData);
+      if (!record) {
+        return res.status(404).json({ message: "Medical record not found" });
+      }
+      res.json(record);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update medical record" });
+    }
+  });
+
   app.delete("/api/medical-records/:id", async (req, res) => {
     try {
       const deleted = await storage.deleteMedicalRecord(req.params.id);
