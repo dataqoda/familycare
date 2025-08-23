@@ -99,7 +99,7 @@ export default function QuickRegisterModal({ open, onOpenChange, patients }: Qui
               <SelectTrigger>
                 <SelectValue placeholder="Escolha um familiar..." />
               </SelectTrigger>
-              <SelectContent side="bottom" align="start" sideOffset={4}>
+              <SelectContent side="bottom" align="start" sideOffset={4} avoidCollisions={false}>
                 {patients.map((patient) => (
                   <SelectItem key={patient.id} value={patient.id}>
                     {patient.avatar} {patient.name}
