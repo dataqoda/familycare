@@ -121,7 +121,7 @@ export default function Dashboard() {
         };
       })
   ].filter(apt => {
-    // Filtrar apenas consultas futuras ou recentes (últimos 30 dias para teste)
+    // Filtrar consultas futuras e dos últimos 30 dias
     try {
       let dateStr = apt.date;
 
@@ -137,12 +137,26 @@ export default function Dashboard() {
       // Converter formato YYYY-MM-DD para objeto Date
       const appointmentDate = new Date(`${dateStr}T${apt.time || '00:00'}:00`);
       const now = new Date();
+      now.setHours(0, 0, 0, 0); // Resetar horas para comparar apenas datas
 
-      // Mostrar consultas futuras e dos últimos 7 dias
-      const sevenDaysAgo = new Date();
-      sevenDaysAgo.setDate(now.getDate() - 7);
+      // Mostrar consultas futuras e dos últimos 30 dias
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(now.getDate() - 30);
+      thirtyDaysAgo.setHours(0, 0, 0, 0);
 
-      return appointmentDate >= sevenDaysAgo;
+      const appointmentDateOnly = new Date(appointmentDate);
+      appointmentDateOnly.setHours(0, 0, 0, 0);
+
+      console.log('Filtrando consulta:', {
+        patient: apt.patientName,
+        date: apt.date,
+        appointmentDateOnly: appointmentDateOnly.toISOString().split('T')[0],
+        now: now.toISOString().split('T')[0],
+        thirtyDaysAgo: thirtyDaysAgo.toISOString().split('T')[0],
+        isValid: appointmentDateOnly >= thirtyDaysAgo
+      });
+
+      return appointmentDateOnly >= thirtyDaysAgo;
     } catch (error) {
       console.log('Erro ao processar data da consulta:', apt.date, error);
       return true; // Se não conseguir parsear, mostrar mesmo assim
