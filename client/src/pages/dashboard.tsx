@@ -400,9 +400,15 @@ export default function Dashboard() {
                 <div className="mb-6">
                   <Button
                     onClick={() => {
-                      const encodedLocation = encodeURIComponent(selectedAppointment.location);
-                      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodedLocation}`;
-                      window.open(mapsUrl, '_blank');
+                      // Se o campo já contém uma URL completa do Google Maps, usar diretamente
+                      if (selectedAppointment.location.startsWith('http')) {
+                        window.open(selectedAppointment.location, '_blank');
+                      } else {
+                        // Caso contrário, fazer busca normal
+                        const encodedLocation = encodeURIComponent(selectedAppointment.location);
+                        const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodedLocation}`;
+                        window.open(mapsUrl, '_blank');
+                      }
                     }}
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center space-x-2"
                   >
