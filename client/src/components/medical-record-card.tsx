@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Trash2, Eye, Calendar, User, MapPin, Clock, FileText, Image, Paperclip, Download } from "lucide-react";
+import { Edit, Trash2, Eye, Calendar, User, MapPin, Clock, FileText, Image, Paperclip, Download, X } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,6 +30,9 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
     date: record.date,
     attachments: record.attachments || []
   });
+
+  // Debug: verificar anexos
+  console.log('Anexos do registro:', record.attachments);
 
   const deleteRecordMutation = useMutation({
     mutationFn: async (id: string) => {
@@ -93,7 +96,7 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
 
     // Incluir campos específicos baseado no tipo
     const specificFields = {} as any;
-    
+
     if (record.type === 'appointment') {
       specificFields.time = (record as any).time;
       specificFields.doctor = (record as any).doctor;
@@ -184,9 +187,11 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
     }
   };
 
-  const isImageFile = (filename: string) => {
-    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.svg'];
-    return imageExtensions.some(ext => filename.toLowerCase().includes(ext));
+  const isImageFile = (filename: string): boolean => {
+    if (!filename) return false;
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'];
+    const cleanFilename = filename.split('/').pop() || filename; // Pega apenas o nome do arquivo
+    return imageExtensions.some(ext => cleanFilename.toLowerCase().endsWith(ext));
   };
 
   const getFileIcon = (filename: string) => {
@@ -481,7 +486,7 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                              onClick={() => setSelectedImage(attachment)}>
                           <img 
                             src={attachment.startsWith('http') ? attachment : 
-                                 attachment.startsWith('/uploads/') ? attachment : 
+                                 attachment.startsWith('/uploads/') ? `/uploads/${attachment}` : 
                                  `/uploads/${attachment}`}
                             alt={attachment}
                             className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
@@ -531,55 +536,29 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
       </Dialog>
 
       {/* Modal para visualizar imagem */}
-      <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center space-x-2">
-              <Image className="w-5 h-5" />
-              <span>Visualizar Anexo</span>
-            </DialogTitle>
-          </DialogHeader>
-          <div className="flex flex-col items-center space-y-4">
-            <div className="text-sm text-gray-600 bg-gray-100 px-3 py-2 rounded-lg">
-              <strong>Arquivo:</strong> {selectedImage}
-            </div>
-            <div className="w-full max-h-96 bg-gray-100 rounded-lg border overflow-hidden">
+      {selectedImage && (
+          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" onClick={() => setSelectedImage(null)}>
+            <div className="relative max-w-4xl max-h-4xl p-4">
               <img 
-                src={selectedImage?.startsWith('http') ? selectedImage : 
-                     selectedImage?.startsWith('/uploads/') ? selectedImage : 
-                     `/uploads/${selectedImage}`}
-                alt={selectedImage || ''}
-                className="w-full h-auto max-h-96 object-contain"
+                src={selectedImage.startsWith('http') ? selectedImage : 
+                     selectedImage.startsWith('/uploads/') ? `http://localhost:5000${selectedImage}` : 
+                     `http://localhost:5000/uploads/${selectedImage}`}
+                alt="Visualização"
+                className="max-w-full max-h-full object-contain"
                 onError={(e) => {
-                  // Fallback se a imagem não carregar
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                  target.nextElementSibling?.classList.remove('hidden');
+                  console.error('Erro ao carregar imagem:', selectedImage);
+                  setSelectedImage(null);
                 }}
               />
-              <div className="w-full h-96 flex items-center justify-center text-center text-gray-500 hidden">
-                <div>
-                  <Image className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-                  <p className="text-lg font-medium">Imagem não disponível</p>
-                  <p className="text-sm">Arquivo: {selectedImage}</p>
-                  <p className="text-xs mt-2 text-gray-400">
-                    Arquivo não encontrado ou formato não suportado
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="flex space-x-2">
-              <Button variant="outline" onClick={() => setSelectedImage(null)}>
-                Fechar
-              </Button>
-              <Button>
-                <Download className="w-4 h-4 mr-2" />
-                Baixar
-              </Button>
+              <button 
+                onClick={() => setSelectedImage(null)}
+                className="absolute top-4 right-4 text-white bg-black bg-opacity-50 rounded-full p-2 hover:bg-opacity-75"
+              >
+                <X className="w-6 h-6" />
+              </button>
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
+        )}
 
       <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
         <DialogContent className="sm:max-w-[500px]">
