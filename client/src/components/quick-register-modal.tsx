@@ -174,16 +174,19 @@ export default function QuickRegisterModal({ open, onOpenChange, patients = [] }
                   className="bg-white/70 backdrop-blur-sm border-orange-200 hover:border-orange-300 focus:border-orange-400 transition-all duration-300 resize-none"
                 />
               </div>
-              <div className="bg-white/50 backdrop-blur-sm rounded-lg p-3 border border-orange-200">
+              <div className="bg-white/50 backdrop-blur-sm rounded-lg p-4 border border-orange-200">
                 <Label className="text-sm font-semibold text-gray-700 mb-2 flex items-center">
-                  📎 Anexos (opcional)
+                  📎 Arquivos do Registro
                 </Label>
                 <Input
                   type="file"
                   multiple
-                  accept=".pdf,.png,.jpg,.jpeg"
+                  accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
                   className="text-sm text-gray-600 bg-white/70 border-orange-200 hover:border-orange-300 focus:border-orange-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-gradient-to-r file:from-orange-100 file:to-pink-100 file:text-orange-700 hover:file:from-orange-200 hover:file:to-pink-200 transition-all duration-300"
                 />
+                <p className="text-xs text-orange-600 mt-2 bg-orange-50 p-2 rounded border border-orange-200">
+                  💡 <strong>Múltiplos arquivos:</strong> Selecione vários arquivos de uma vez (exames, receitas, relatórios, fotos, etc.). Formatos aceitos: PDF, PNG, JPG, JPEG, DOC, DOCX
+                </p>
               </div>
             </div>
           </div>
