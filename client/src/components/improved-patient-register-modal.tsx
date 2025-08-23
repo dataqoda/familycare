@@ -21,6 +21,9 @@ export default function ImprovedPatientRegisterModal({ open, onOpenChange }: Imp
   const [formData, setFormData] = useState({
     name: "",
     birthDate: "",
+    cpf: "",
+    phone: "",
+    address: "",
     bloodType: "",
     doctor: "",
     allergies: [] as string[],
@@ -29,6 +32,8 @@ export default function ImprovedPatientRegisterModal({ open, onOpenChange }: Imp
     emergencyContactPhone: "",
     insurancePlan: "",
     insuranceNumber: "",
+    usePassword: false,
+    password: "",
   });
 
   const [newAllergy, setNewAllergy] = useState("");
@@ -98,6 +103,9 @@ export default function ImprovedPatientRegisterModal({ open, onOpenChange }: Imp
     setFormData({
       name: "",
       birthDate: "",
+      cpf: "",
+      phone: "",
+      address: "",
       bloodType: "",
       doctor: "",
       allergies: [],
@@ -106,6 +114,8 @@ export default function ImprovedPatientRegisterModal({ open, onOpenChange }: Imp
       emergencyContactPhone: "",
       insurancePlan: "",
       insuranceNumber: "",
+      usePassword: false,
+      password: "",
     });
     setNewAllergy("");
     onOpenChange(false);
@@ -116,6 +126,15 @@ export default function ImprovedPatientRegisterModal({ open, onOpenChange }: Imp
       toast({
         title: "Campos obrigatórios",
         description: "Por favor, preencha pelo menos o nome e a data de nascimento.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (formData.usePassword && (!formData.password || formData.password.length < 4)) {
+      toast({
+        title: "Senha inválida",
+        description: "Por favor, digite uma senha com pelo menos 4 caracteres.",
         variant: "destructive",
       });
       return;
@@ -240,6 +259,38 @@ export default function ImprovedPatientRegisterModal({ open, onOpenChange }: Imp
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+
+            <div>
+              <Label htmlFor="cpf">CPF</Label>
+              <Input
+                id="cpf"
+                value={formData.cpf}
+                onChange={(e) => setFormData(prev => ({ ...prev, cpf: e.target.value }))}
+                placeholder="000.000.000-00"
+                maxLength={14}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="phone">Telefone Pessoal</Label>
+              <Input
+                id="phone"
+                value={formData.phone}
+                onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                placeholder="(11) 99999-9999"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="address">Endereço Completo</Label>
+              <Textarea
+                id="address"
+                value={formData.address}
+                onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
+                placeholder="Rua, número, bairro, cidade, CEP"
+                rows={2}
+              />
             </div>
 
             <div>
@@ -369,7 +420,7 @@ export default function ImprovedPatientRegisterModal({ open, onOpenChange }: Imp
 
             <div className="mt-6 p-4 bg-blue-50 rounded-lg">
               <h4 className="text-sm font-medium text-blue-900 mb-2">📄 Upload de Documentos</h4>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <div>
                   <Label htmlFor="photoUpload" className="text-sm text-blue-700">Foto do Paciente</Label>
                   <Input
@@ -380,7 +431,16 @@ export default function ImprovedPatientRegisterModal({ open, onOpenChange }: Imp
                   />
                 </div>
                 <div>
-                  <Label htmlFor="documentsUpload" className="text-sm text-blue-700">Documentos (RG, CPF, Carteirinha)</Label>
+                  <Label htmlFor="insuranceCardUpload" className="text-sm text-blue-700">Foto da Carteirinha do Plano</Label>
+                  <Input
+                    id="insuranceCardUpload"
+                    type="file"
+                    accept="image/*"
+                    className="text-sm"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="documentsUpload" className="text-sm text-blue-700">Documentos (RG, CPF)</Label>
                   <Input
                     id="documentsUpload"
                     type="file"
@@ -389,6 +449,40 @@ export default function ImprovedPatientRegisterModal({ open, onOpenChange }: Imp
                     className="text-sm"
                   />
                 </div>
+              </div>
+            </div>
+
+            <div className="mt-6 p-4 bg-amber-50 rounded-lg">
+              <h4 className="text-sm font-medium text-amber-900 mb-3">🔒 Configurações de Segurança</h4>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="usePassword"
+                    checked={formData.usePassword || false}
+                    onChange={(e) => setFormData(prev => ({ ...prev, usePassword: e.target.checked }))}
+                    className="rounded"
+                  />
+                  <Label htmlFor="usePassword" className="text-sm text-amber-700">
+                    Proteger dados sensíveis com senha
+                  </Label>
+                </div>
+                {formData.usePassword && (
+                  <div>
+                    <Label htmlFor="password" className="text-sm text-amber-700">Senha de Proteção</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      value={formData.password || ""}
+                      onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                      placeholder="Digite uma senha para proteger os dados"
+                      className="text-sm"
+                    />
+                    <p className="text-xs text-amber-600 mt-1">
+                      Esta senha será necessária para visualizar registros médicos sensíveis
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
