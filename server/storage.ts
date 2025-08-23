@@ -125,22 +125,7 @@ export class MemStorage implements IStorage {
       this.patients.set(patient.id, patient);
     });
 
-    // Add sample appointment
-    const joaoId = Array.from(this.patients.values()).find(p => p.name === "João Silva")?.id;
-    if (joaoId) {
-      const appointment: Appointment = {
-        id: randomUUID(),
-        patientId: joaoId,
-        patientName: "Juliana Pradela Oliveira Miziara",
-        specialty: "Cardiológico com Dr(a). Vários exames",
-        doctor: "Dr. Cardiologista",
-        date: "01/09/2025",
-        time: "15:15",
-        location: "BioCárdio",
-        createdAt: new Date()
-      };
-      this.appointments.set(appointment.id, appointment);
-    }
+    // Sample appointments will be created when users add them
 
     // Add sample recent updates
     const updates = [
