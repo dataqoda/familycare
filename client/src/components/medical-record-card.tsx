@@ -376,7 +376,19 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
             <div className="flex items-center space-x-3">
               <span className="text-2xl">{getTypeIcon()}</span>
               <div>
-                <CardTitle className="text-lg">{record.title || record.description}</CardTitle>
+                <CardTitle className="text-lg">
+                  {record.type === 'appointment' ? (
+                    `Consulta ${(record as any).specialty ? `- ${(record as any).specialty}` : ''}`
+                  ) : record.type === 'medication' ? (
+                    record.medicationName || 'Medicação'
+                  ) : record.type === 'exam' ? (
+                    record.examType || 'Exame'
+                  ) : record.type === 'credential' ? (
+                    (record as any).serviceName || 'Credencial'
+                  ) : (
+                    record.title || record.description || 'Registro'
+                  )}
+                </CardTitle>
                 <div className="flex items-center space-x-2 mt-1">
                   <Badge variant="secondary" className={getTypeColor()}>
                     {getTypeLabel()}
@@ -413,7 +425,19 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
         </CardHeader>
         <CardContent>
           <div className="text-sm text-gray-600 line-clamp-2">
-            {record.description || record.medicationName || record.examType || 'Sem descrição'}
+            {record.type === 'appointment' ? (
+              `Dr. ${(record as any).doctor || 'Não informado'} - ${(record as any).specialty || 'Especialidade não informada'}`
+            ) : record.type === 'medication' ? (
+              record.medicationName || 'Medicação não especificada'
+            ) : record.type === 'exam' ? (
+              record.examType || 'Tipo de exame não especificado'
+            ) : record.type === 'credential' ? (
+              (record as any).serviceName || 'Serviço não especificado'
+            ) : record.type === 'pending' ? (
+              record.description || 'Pendência sem descrição'
+            ) : (
+              record.description || 'Sem descrição'
+            )}
           </div>
         </CardContent>
       </Card>
