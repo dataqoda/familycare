@@ -65,6 +65,7 @@ export default function Dashboard() {
   const upcomingAppointments = [
     ...appointments.map(apt => ({
       id: apt.id,
+      patientId: apt.patientId,
       patientName: apt.patientName,
       specialty: apt.specialty,
       doctor: apt.doctor,
@@ -79,6 +80,7 @@ export default function Dashboard() {
         const patient = patients.find(p => p.id === record.patientId);
         return {
           id: record.id,
+          patientId: record.patientId,
           patientName: patient?.name || 'Paciente desconhecido',
           specialty: record.specialty || 'Consulta médica',
           doctor: record.doctor || 'Médico não informado',
@@ -442,6 +444,7 @@ export default function Dashboard() {
                     // Use patientId from appointment, or find by name as fallback
                     const patientId = selectedAppointment.patientId || patients.find(p => p.name === selectedAppointment.patientName)?.id;
                     if (patientId) {
+                      setSelectedAppointment(null); // Close modal first
                       navigate(`/patient/${patientId}`);
                     } else {
                       alert('Paciente não encontrado');
@@ -531,7 +534,14 @@ export default function Dashboard() {
                 <Button 
                   variant="outline" 
                   className="flex-1"
-                  onClick={() => navigate(`/patient/${selectedPendingItem.patientId}`)}
+                  onClick={() => {
+                    if (selectedPendingItem.patientId) {
+                      setSelectedPendingItem(null); // Close modal first
+                      navigate(`/patient/${selectedPendingItem.patientId}`);
+                    } else {
+                      alert('Paciente não encontrado');
+                    }
+                  }}
                 >
                   Ver Paciente
                 </Button>
