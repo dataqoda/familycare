@@ -481,13 +481,23 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                   {record.attachments
                     .filter(attachment => isImageFile(attachment))
                     .map((attachment, index) => {
-                      // Construir URL correta baseada no formato do anexo
-                      const fileName = attachment.includes('/') ? attachment.split('/').pop() : attachment;
-                      const imageUrl = `http://localhost:5000/uploads/${fileName}`;
+                      // Construir URL correta - usar diretamente o attachment se já for um caminho completo
+                      let imageUrl;
+                      if (attachment.startsWith('http')) {
+                        imageUrl = attachment;
+                      } else if (attachment.startsWith('/uploads/')) {
+                        imageUrl = `http://localhost:5000${attachment}`;
+                      } else if (attachment.includes('/')) {
+                        // Se contém barra mas não é caminho completo, pegar só o nome do arquivo
+                        const fileName = attachment.split('/').pop();
+                        imageUrl = `http://localhost:5000/uploads/${fileName}`;
+                      } else {
+                        // É apenas o nome do arquivo
+                        imageUrl = `http://localhost:5000/uploads/${attachment}`;
+                      }
                       
                       console.log('Renderizando imagem:', {
                         attachment,
-                        fileName,
                         imageUrl,
                         recordId: record.id
                       });
@@ -510,7 +520,6 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                               onError={(e) => {
                                 console.error('❌ Erro ao carregar imagem:', {
                                   attachment,
-                                  fileName,
                                   imageUrl,
                                   recordId: record.id
                                 });
@@ -523,7 +532,7 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                                       <div class="text-center p-2">
                                         <div class="text-red-400 mb-1">📷</div>
                                         <p class="text-xs text-red-600">Erro ao carregar</p>
-                                        <p class="text-xs text-gray-500 break-all">${fileName}</p>
+                                        <p class="text-xs text-gray-500 break-all">${attachment}</p>
                                       </div>
                                     </div>
                                   `;
@@ -555,9 +564,18 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                           variant="ghost" 
                           size="sm"
                           onClick={() => {
-                            const fileName = attachment.includes('/') ? attachment.split('/').pop() : attachment;
-                            const fileUrl = `http://localhost:5000/uploads/${fileName}`;
-                            console.log('📥 Baixando arquivo:', { attachment, fileName, fileUrl });
+                            let fileUrl;
+                            if (attachment.startsWith('http')) {
+                              fileUrl = attachment;
+                            } else if (attachment.startsWith('/uploads/')) {
+                              fileUrl = `http://localhost:5000${attachment}`;
+                            } else if (attachment.includes('/')) {
+                              const fileName = attachment.split('/').pop();
+                              fileUrl = `http://localhost:5000/uploads/${fileName}`;
+                            } else {
+                              fileUrl = `http://localhost:5000/uploads/${attachment}`;
+                            }
+                            console.log('📥 Baixando arquivo:', { attachment, fileUrl });
                             window.open(fileUrl, '_blank');
                           }}
                         >
@@ -577,7 +595,18 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
           <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" onClick={() => setSelectedImage(null)}>
             <div className="relative max-w-4xl max-h-4xl p-4">
               <img 
-                src={`http://localhost:5000/uploads/${selectedImage.includes('/') ? selectedImage.split('/').pop() : selectedImage}`}
+                src={(() => {
+                  if (selectedImage.startsWith('http')) {
+                    return selectedImage;
+                  } else if (selectedImage.startsWith('/uploads/')) {
+                    return `http://localhost:5000${selectedImage}`;
+                  } else if (selectedImage.includes('/')) {
+                    const fileName = selectedImage.split('/').pop();
+                    return `http://localhost:5000/uploads/${fileName}`;
+                  } else {
+                    return `http://localhost:5000/uploads/${selectedImage}`;
+                  }
+                })()}
                 alt="Visualização ampliada"
                 className="max-w-full max-h-full object-contain"
                 onLoad={() => {

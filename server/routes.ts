@@ -302,15 +302,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       exists: fs.existsSync(filePath),
       uploadDir,
       uploadsExists: fs.existsSync(uploadDir),
-      files: fs.existsSync(uploadDir) ? fs.readdirSync(uploadDir) : 'pasta uploads não existe'
+      files: fs.existsSync(uploadDir) ? fs.readdirSync(uploadDir).slice(0, 10) : 'pasta uploads não existe' // Limitar a 10 arquivos no log
     });
 
     if (fs.existsSync(filePath)) {
       try {
         const stats = fs.statSync(filePath);
-        console.log("Estatísticas do arquivo:", {
+        console.log("✅ Servindo arquivo:", {
+          filename,
           size: stats.size,
-          modified: stats.mtime
+          modified: stats.mtime.toISOString()
         });
 
         // Adicionar headers CORS
@@ -334,6 +335,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         if (mimeTypes[ext]) {
           res.setHeader('Content-Type', mimeTypes[ext]);
+          console.log(`📄 Content-Type definido como: ${mimeTypes[ext]}`);
+        } else {
+          console.log(`⚠️  Content-Type não definido para extensão: ${ext}`);
         }
         
         // Adicionar headers para cache
@@ -342,19 +346,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         res.sendFile(filePath);
       } catch (error) {
-        console.error("Erro ao ler arquivo:", error);
+        console.error("❌ Erro ao ler arquivo:", error);
         res.status(500).json({ error: "Erro interno do servidor" });
       }
     } else {
       console.log("❌ Arquivo não encontrado:", {
         filePath,
         filename,
-        existingFiles: fs.existsSync(uploadDir) ? fs.readdirSync(uploadDir) : 'pasta não existe'
+        existingFiles: fs.existsSync(uploadDir) ? fs.readdirSync(uploadDir).slice(0, 5) : 'pasta não existe'
       });
       res.status(404).json({ 
         error: "Arquivo não encontrado",
         filename,
-        availableFiles: fs.existsSync(uploadDir) ? fs.readdirSync(uploadDir) : []
+        availableFiles: fs.existsSync(uploadDir) ? fs.readdirSync(uploadDir).slice(0, 5) : []
       });
     }
   });
