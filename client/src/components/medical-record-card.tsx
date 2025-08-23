@@ -208,12 +208,12 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
     if (attachment.startsWith('http')) {
       attachmentUrl = attachment;
     } else if (attachment.startsWith('/uploads/')) {
-      attachmentUrl = `http://localhost:5000${attachment}`;
+      attachmentUrl = attachment;
     } else if (attachment.includes('/')) {
       const fileName = attachment.split('/').pop();
-      attachmentUrl = `http://localhost:5000/uploads/${fileName}`;
+      attachmentUrl = `/uploads/${fileName}`;
     } else {
-      attachmentUrl = `http://localhost:5000/uploads/${attachment}`;
+      attachmentUrl = `/uploads/${attachment}`;
     }
 
     const fileName = attachment.split('/').pop() || attachment;
