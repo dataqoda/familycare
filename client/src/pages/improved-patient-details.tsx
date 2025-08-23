@@ -181,24 +181,66 @@ export default function ImprovedPatientDetails() {
         </div>
 
         <Tabs defaultValue="personal" className="space-y-8" value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-2 sm:grid-cols-4 w-full max-w-4xl mx-auto bg-white/80 backdrop-blur-sm border-0 shadow-lg p-1 sm:p-2 rounded-xl gap-1 sm:gap-0">
-            <TabsTrigger value="personal" className="rounded-lg font-medium text-xs sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg p-2 sm:p-3">
-              <span className="hidden sm:inline">📋 Informações Pessoais</span>
-              <span className="sm:hidden">📋 Pessoais</span>
-            </TabsTrigger>
-            <TabsTrigger value="records" className="rounded-lg font-medium text-xs sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-green-600 data-[state=active]:text-white data-[state=active]:shadow-lg p-2 sm:p-3">
-              <span className="hidden sm:inline">📄 Registros Médicos</span>
-              <span className="sm:hidden">📄 Registros</span>
-            </TabsTrigger>
-            <TabsTrigger value="summary" className="rounded-lg font-medium text-xs sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg p-2 sm:p-3">
-              <span className="hidden sm:inline">📊 Resumo</span>
-              <span className="sm:hidden">📊 Resumo</span>
-            </TabsTrigger>
-            <TabsTrigger value="timeline" className="rounded-lg font-medium text-xs sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg p-2 sm:p-3">
-              <span className="hidden sm:inline">📅 Linha do Tempo</span>
-              <span className="sm:hidden">📅 Timeline</span>
-            </TabsTrigger>
-          </TabsList>
+          {/* Tabs de navegação */}
+          <div className="mb-6 sm:mb-8">
+            <div className="flex flex-wrap gap-1 p-1 bg-gray-100 rounded-xl shadow-inner">
+              <Button
+                variant={activeTab === 'personal' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setActiveTab('personal')}
+                className={`flex items-center gap-2 text-xs sm:text-sm px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg transition-all duration-300 font-medium border-2 ${
+                  activeTab === 'personal'
+                    ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg border-purple-600 hover:from-purple-700 hover:to-purple-800 transform scale-105'
+                    : 'bg-white text-gray-600 border-transparent hover:bg-purple-50 hover:text-purple-700 hover:border-purple-200 hover:shadow-sm'
+                }`}
+              >
+                <span className="text-base">👤</span>
+                <span>Informações Pessoais</span>
+              </Button>
+
+              <Button
+                variant={activeTab === 'records' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setActiveTab('records')}
+                className={`flex items-center gap-2 text-xs sm:text-sm px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg transition-all duration-300 font-medium border-2 ${
+                  activeTab === 'records'
+                    ? 'bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg border-green-600 hover:from-green-700 hover:to-green-800 transform scale-105'
+                    : 'bg-white text-gray-600 border-transparent hover:bg-green-50 hover:text-green-700 hover:border-green-200 hover:shadow-sm'
+                }`}
+              >
+                <span className="text-base">🗂️</span>
+                <span>Registros Médicos</span>
+              </Button>
+
+              <Button
+                variant={activeTab === 'summary' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setActiveTab('summary')}
+                className={`flex items-center gap-2 text-xs sm:text-sm px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg transition-all duration-300 font-medium border-2 ${
+                  activeTab === 'summary'
+                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg border-blue-600 hover:from-blue-700 hover:to-blue-800 transform scale-105'
+                    : 'bg-white text-gray-600 border-transparent hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 hover:shadow-sm'
+                }`}
+              >
+                <span className="text-base">📊</span>
+                <span>Resumo</span>
+              </Button>
+
+              <Button
+                variant={activeTab === 'timeline' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setActiveTab('timeline')}
+                className={`flex items-center gap-2 text-xs sm:text-sm px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg transition-all duration-300 font-medium border-2 ${
+                  activeTab === 'timeline'
+                    ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-lg border-orange-600 hover:from-orange-700 hover:to-orange-800 transform scale-105'
+                    : 'bg-white text-gray-600 border-transparent hover:bg-orange-50 hover:text-orange-700 hover:border-orange-200 hover:shadow-sm'
+                }`}
+              >
+                <span className="text-base">⏰</span>
+                <span>Linha do Tempo</span>
+              </Button>
+            </div>
+          </div>
 
           <TabsContent value="personal" className="space-y-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
