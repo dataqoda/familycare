@@ -176,115 +176,110 @@ export default function ImprovedPatientDetails() {
               </Card>
 
               {/* Plano de Saúde */}
-              <Card>
+              <Card className="lg:col-span-2">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <Shield className="w-5 h-5" />
                     <span>Plano de Saúde</span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Plano</label>
-                    <p className="text-lg">{patient.insurancePlan || "Não informado"}</p>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-gray-500">Plano</label>
+                      <p className="text-lg">{patient.insurancePlan || "Não informado"}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-500">Número da Carteirinha</label>
+                      <p className="text-lg font-mono">{patient.insuranceNumber || "Não informado"}</p>
+                    </div>
                   </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Número da Carteirinha</label>
-                    <p className="text-lg font-mono">{patient.insuranceNumber || "Não informado"}</p>
+
+                  <div className="border-t pt-4">
+                    <h4 className="font-medium text-gray-700 mb-3">Carteirinha do Plano de Saúde</h4>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="text-xs text-gray-500 block mb-1">Frente</label>
+                        {patient.insuranceCardFrontUrl ? (
+                          <div className="border rounded-lg overflow-hidden">
+                            <img 
+                              src={patient.insuranceCardFrontUrl} 
+                              alt="Carteirinha - Frente"
+                              className="w-full h-24 object-cover cursor-pointer hover:opacity-80 transition-opacity"
+                              onClick={() => window.open(patient.insuranceCardFrontUrl, '_blank')}
+                            />
+                          </div>
+                        ) : (
+                          <div className="border border-gray-200 rounded-lg h-24 flex items-center justify-center text-gray-400">
+                            <span className="text-xs">Não enviado</span>
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <label className="text-xs text-gray-500 block mb-1">Verso</label>
+                        {patient.insuranceCardBackUrl ? (
+                          <div className="border rounded-lg overflow-hidden">
+                            <img 
+                              src={patient.insuranceCardBackUrl} 
+                              alt="Carteirinha - Verso"
+                              className="w-full h-24 object-cover cursor-pointer hover:opacity-80 transition-opacity"
+                              onClick={() => window.open(patient.insuranceCardBackUrl, '_blank')}
+                            />
+                          </div>
+                        ) : (
+                          <div className="border border-gray-200 rounded-lg h-24 flex items-center justify-center text-gray-400">
+                            <span className="text-xs">Não enviado</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Documentos */}
-              <Card className="lg:col-span-2">
+              {/* Documentos RG */}
+              <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <FileText className="w-5 h-5" />
-                    <span>Documentos</span>
+                    <span>Documento de Identidade (RG)</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Carteirinha do Plano */}
+                  <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <h4 className="font-medium text-gray-700 mb-3">Carteirinha do Plano de Saúde</h4>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <label className="text-xs text-gray-500 block mb-1">Frente</label>
-                          {patient.insuranceCardFrontUrl ? (
-                            <div className="border rounded-lg overflow-hidden">
-                              <img 
-                                src={patient.insuranceCardFrontUrl} 
-                                alt="Carteirinha - Frente"
-                                className="w-full h-24 object-cover cursor-pointer hover:opacity-80 transition-opacity"
-                                onClick={() => window.open(patient.insuranceCardFrontUrl, '_blank')}
-                              />
-                            </div>
-                          ) : (
-                            <div className="border border-gray-200 rounded-lg h-24 flex items-center justify-center text-gray-400">
-                              <span className="text-xs">Não enviado</span>
-                            </div>
-                          )}
+                      <label className="text-xs text-gray-500 block mb-1">Frente</label>
+                      {patient.idCardFrontUrl ? (
+                        <div className="border rounded-lg overflow-hidden">
+                          <img 
+                            src={patient.idCardFrontUrl} 
+                            alt="RG - Frente"
+                            className="w-full h-24 object-cover cursor-pointer hover:opacity-80 transition-opacity"
+                            onClick={() => window.open(patient.idCardFrontUrl, '_blank')}
+                          />
                         </div>
-                        <div>
-                          <label className="text-xs text-gray-500 block mb-1">Verso</label>
-                          {patient.insuranceCardBackUrl ? (
-                            <div className="border rounded-lg overflow-hidden">
-                              <img 
-                                src={patient.insuranceCardBackUrl} 
-                                alt="Carteirinha - Verso"
-                                className="w-full h-24 object-cover cursor-pointer hover:opacity-80 transition-opacity"
-                                onClick={() => window.open(patient.insuranceCardBackUrl, '_blank')}
-                              />
-                            </div>
-                          ) : (
-                            <div className="border border-gray-200 rounded-lg h-24 flex items-center justify-center text-gray-400">
-                              <span className="text-xs">Não enviado</span>
-                            </div>
-                          )}
+                      ) : (
+                        <div className="border border-gray-200 rounded-lg h-24 flex items-center justify-center text-gray-400">
+                          <span className="text-xs">Não enviado</span>
                         </div>
-                      </div>
+                      )}
                     </div>
-
-                    {/* RG */}
                     <div>
-                      <h4 className="font-medium text-gray-700 mb-3">Documento de Identidade (RG)</h4>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <label className="text-xs text-gray-500 block mb-1">Frente</label>
-                          {patient.idCardFrontUrl ? (
-                            <div className="border rounded-lg overflow-hidden">
-                              <img 
-                                src={patient.idCardFrontUrl} 
-                                alt="RG - Frente"
-                                className="w-full h-24 object-cover cursor-pointer hover:opacity-80 transition-opacity"
-                                onClick={() => window.open(patient.idCardFrontUrl, '_blank')}
-                              />
-                            </div>
-                          ) : (
-                            <div className="border border-gray-200 rounded-lg h-24 flex items-center justify-center text-gray-400">
-                              <span className="text-xs">Não enviado</span>
-                            </div>
-                          )}
+                      <label className="text-xs text-gray-500 block mb-1">Verso</label>
+                      {patient.idCardBackUrl ? (
+                        <div className="border rounded-lg overflow-hidden">
+                          <img 
+                            src={patient.idCardBackUrl} 
+                            alt="RG - Verso"
+                            className="w-full h-24 object-cover cursor-pointer hover:opacity-80 transition-opacity"
+                            onClick={() => window.open(patient.idCardBackUrl, '_blank')}
+                          />
                         </div>
-                        <div>
-                          <label className="text-xs text-gray-500 block mb-1">Verso</label>
-                          {patient.idCardBackUrl ? (
-                            <div className="border rounded-lg overflow-hidden">
-                              <img 
-                                src={patient.idCardBackUrl} 
-                                alt="RG - Verso"
-                                className="w-full h-24 object-cover cursor-pointer hover:opacity-80 transition-opacity"
-                                onClick={() => window.open(patient.idCardBackUrl, '_blank')}
-                              />
-                            </div>
-                          ) : (
-                            <div className="border border-gray-200 rounded-lg h-24 flex items-center justify-center text-gray-400">
-                              <span className="text-xs">Não enviado</span>
-                            </div>
-                          )}
+                      ) : (
+                        <div className="border border-gray-200 rounded-lg h-24 flex items-center justify-center text-gray-400">
+                          <span className="text-xs">Não enviado</span>
                         </div>
-                      </div>
+                      )}
                     </div>
                   </div>
                 </CardContent>
