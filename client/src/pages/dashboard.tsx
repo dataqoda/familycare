@@ -396,26 +396,23 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-3 pt-4">
-                {selectedAppointment.location && 
-                 selectedAppointment.location !== "Local não informado" && 
-                 selectedAppointment.location.trim() !== "" && (
+              {selectedAppointment.location && selectedAppointment.location !== "Local não informado" && (
+                <div className="mb-6">
                   <Button
                     onClick={() => {
                       const encodedLocation = encodeURIComponent(selectedAppointment.location);
                       const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodedLocation}`;
                       window.open(mapsUrl, '_blank');
                     }}
-                    variant="outline"
-                    className="w-full flex items-center justify-center space-x-2"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center space-x-2"
                   >
                     <MapPin className="w-4 h-4" />
-                    <span>🗺️ Abrir no Google Maps</span>
+                    <span>Abrir no Google Maps</span>
                   </Button>
-                )}
+                </div>
+              )}
 
-                <div className="flex gap-2"></div>
-              </div>
+              <div className="flex gap-2 pt-4">
                 <Button
                   variant="outline"
                   className="flex-1"
