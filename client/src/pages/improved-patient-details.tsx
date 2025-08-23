@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Calendar, Phone, Shield, FileText, Edit, User, MapPin, Clock, Droplet, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Calendar, Phone, Shield, FileText, Edit, User, MapPin, Clock, Droplet, AlertTriangle, Plus } from "lucide-react";
 import { useLocation } from "wouter";
 import MedicalRecordCard from "@/components/medical-record-card";
 import type { Patient, MedicalRecord } from "@shared/schema";
@@ -468,29 +468,90 @@ export default function ImprovedPatientDetails() {
                 )}
               </TabsContent>
 
-              {Object.entries(recordsByType).map(([type, records]) => (
-                <TabsContent key={type} value={type} className="space-y-4">
-                  {records.length > 0 ? (
-                    <div className="space-y-4">
-                      {records
-                        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                        .map((record) => (
-                          <MedicalRecordCard key={record.id} record={record} />
-                        ))}
-                    </div>
-                  ) : (
-                    <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-gray-50">
-                      <CardContent className="text-center py-16">
-                        <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center">
-                          <FileText className="w-10 h-10 text-gray-400" />
-                        </div>
-                        <h3 className="text-xl font-semibold text-gray-900 mb-3">Nenhum registro encontrado</h3>
-                        <p className="text-gray-500">Este paciente não possui registros deste tipo.</p>
-                      </CardContent>
-                    </Card>
-                  )}
-                </TabsContent>
-              ))}
+              {Object.entries(recordsByType).map(([type, records]) => {
+                const typeConfig = {
+                  exam: { 
+                    icon: '📋', 
+                    title: 'Nenhum exame registrado', 
+                    description: 'Os exames médicos aparecerão aqui quando forem adicionados.',
+                    buttonText: 'Adicionar Primeiro Exame'
+                  },
+                  medication: { 
+                    icon: '💊', 
+                    title: 'Nenhuma medicação registrada', 
+                    description: 'As medicações e prescrições aparecerão aqui quando forem adicionadas.',
+                    buttonText: 'Adicionar Primeira Medicação'
+                  },
+                  appointment: { 
+                    icon: '📅', 
+                    title: 'Nenhuma consulta registrada', 
+                    description: 'As consultas médicas aparecerão aqui quando forem agendadas.',
+                    buttonText: 'Agendar Primeira Consulta'
+                  },
+                  history: { 
+                    icon: '📝', 
+                    title: 'Nenhum histórico registrado', 
+                    description: 'O histórico médico aparecerá aqui quando for adicionado.',
+                    buttonText: 'Adicionar Primeiro Histórico'
+                  },
+                  incident: { 
+                    icon: '⚠️', 
+                    title: 'Nenhum incidente registrado', 
+                    description: 'Os incidentes médicos aparecerão aqui quando forem registrados.',
+                    buttonText: 'Registrar Primeiro Incidente'
+                  },
+                  pending: { 
+                    icon: '📋', 
+                    title: 'Nenhuma pendência registrada', 
+                    description: 'As pendências médicas aparecerão aqui quando forem criadas.',
+                    buttonText: 'Criar Primeira Pendência'
+                  },
+                  credential: { 
+                    icon: '🔑', 
+                    title: 'Nenhuma senha registrada', 
+                    description: 'As senhas e credenciais aparecerão aqui quando forem salvas.',
+                    buttonText: 'Salvar Primeira Senha'
+                  }
+                };
+
+                const config = typeConfig[type as keyof typeof typeConfig];
+                if (!config) return null;
+
+                return (
+                  <TabsContent key={type} value={type} className="space-y-4">
+                    {records.length > 0 ? (
+                      <div className="space-y-4">
+                        {records
+                          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                          .map((record) => (
+                            <MedicalRecordCard key={record.id} record={record} />
+                          ))}
+                      </div>
+                    ) : (
+                      <Card className="border-dashed border-2 border-gray-200 bg-gray-50/50">
+                        <CardContent className="p-8 sm:p-12 text-center">
+                          <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center">
+                            <span className="text-2xl sm:text-3xl">{config.icon}</span>
+                          </div>
+                          <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
+                            {config.title}
+                          </h3>
+                          <p className="text-gray-600 mb-6 text-sm sm:text-base max-w-sm mx-auto">
+                            {config.description}
+                          </p>
+                          <Button
+                            onClick={() => setShowQuickRegister(true)}
+                            className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                          >
+                            <Plus className="w-4 h-4 mr-2" />
+                            {config.buttonText}
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    )}
+                  </TabsContent>
+                );
+              })}
             </Tabs>
           </TabsContent>
 
