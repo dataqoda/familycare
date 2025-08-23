@@ -125,7 +125,323 @@ export class MemStorage implements IStorage {
       this.patients.set(patient.id, patient);
     });
 
-    // Sample appointments will be created when users add them
+    // Add sample medical records for testing
+    const sampleMedicalRecords = [
+      // João Silva - Exames
+      {
+        patientId: Array.from(this.patients.values())[0].id,
+        type: 'exam',
+        title: 'Exame de Sangue Completo',
+        description: 'Hemograma completo com contagem de plaquetas',
+        date: '2024-01-15',
+        examType: 'Laboratorial',
+        requestingDoctor: 'Dr. Santos',
+        observations: 'Valores dentro da normalidade'
+      },
+      {
+        patientId: Array.from(this.patients.values())[0].id,
+        type: 'exam',
+        title: 'Raio-X de Tórax',
+        description: 'Radiografia do tórax para avaliação pulmonar',
+        date: '2024-01-20',
+        examType: 'Imagem',
+        requestingDoctor: 'Dr. Santos',
+        observations: 'Sem alterações significativas'
+      },
+      // João Silva - Medicações
+      {
+        patientId: Array.from(this.patients.values())[0].id,
+        type: 'medication',
+        title: 'Losartana 50mg',
+        description: 'Para controle da pressão arterial',
+        date: '2024-01-10',
+        medicationName: 'Losartana',
+        frequency: '1x ao dia',
+        usageType: 'continuous',
+        periodOfDay: 'morning',
+        prescribingDoctor: 'Dr. Santos',
+        indication: 'Hipertensão arterial'
+      },
+      // João Silva - Consultas
+      {
+        patientId: Array.from(this.patients.values())[0].id,
+        type: 'appointment',
+        title: 'Consulta Cardiológica',
+        description: 'Avaliação cardiovascular de rotina',
+        date: '2024-02-15',
+        time: '14:30',
+        doctor: 'Dr. Cardoso',
+        specialty: 'Cardiologia',
+        clinicHospital: 'Hospital São Lucas',
+        address: 'Rua das Flores, 123'
+      },
+      // João Silva - Histórico
+      {
+        patientId: Array.from(this.patients.values())[0].id,
+        type: 'history',
+        title: 'Cirurgia de Apendicite',
+        description: 'Apendicectomia realizada em 2020 sem complicações',
+        date: '2020-08-15'
+      },
+      // João Silva - Incidente
+      {
+        patientId: Array.from(this.patients.values())[0].id,
+        type: 'incident',
+        title: 'Queda em Casa',
+        description: 'Paciente sofreu queda no banheiro, sem fraturas',
+        date: '2024-01-25'
+      },
+      // João Silva - Credencial
+      {
+        patientId: Array.from(this.patients.values())[0].id,
+        type: 'credential',
+        title: 'Portal do Paciente - Hospital São Lucas',
+        description: 'Acesso ao portal online do hospital',
+        date: '2024-01-05',
+        serviceName: 'Portal São Lucas',
+        serviceUrl: 'https://portal.saolucas.com.br',
+        username: 'joao.silva',
+        password: 'senha123',
+        additionalNotes: 'Primeiro acesso requer troca de senha'
+      },
+
+      // Maria Silva - Exames
+      {
+        patientId: Array.from(this.patients.values())[1].id,
+        type: 'exam',
+        title: 'Mamografia',
+        description: 'Exame preventivo de mama',
+        date: '2024-01-12',
+        examType: 'Imagem',
+        requestingDoctor: 'Dra. Costa',
+        observations: 'Resultado normal, próximo exame em 1 ano'
+      },
+      {
+        patientId: Array.from(this.patients.values())[1].id,
+        type: 'exam',
+        title: 'Papanicolau',
+        description: 'Exame preventivo ginecológico',
+        date: '2024-01-18',
+        examType: 'Laboratorial',
+        requestingDoctor: 'Dra. Costa',
+        observations: 'Células normais'
+      },
+      // Maria Silva - Medicações
+      {
+        patientId: Array.from(this.patients.values())[1].id,
+        type: 'medication',
+        title: 'Vitamina D3',
+        description: 'Suplementação vitamínica',
+        date: '2024-01-08',
+        medicationName: 'Colecalciferol',
+        frequency: '1x por semana',
+        usageType: 'temporary',
+        periodOfDay: 'morning',
+        duration: '3 meses',
+        prescribingDoctor: 'Dra. Costa',
+        indication: 'Deficiência de vitamina D'
+      },
+      // Maria Silva - Consultas
+      {
+        patientId: Array.from(this.patients.values())[1].id,
+        type: 'appointment',
+        title: 'Consulta Ginecológica',
+        description: 'Consulta de rotina e preventivo',
+        date: '2024-02-20',
+        time: '10:00',
+        doctor: 'Dra. Costa',
+        specialty: 'Ginecologia',
+        clinicHospital: 'Clínica Feminina',
+        address: 'Av. Paulista, 456'
+      },
+      // Maria Silva - Histórico
+      {
+        patientId: Array.from(this.patients.values())[1].id,
+        type: 'history',
+        title: 'Parto Normal - Ana',
+        description: 'Parto normal da filha Ana em 2008, sem complicações',
+        date: '2008-07-10'
+      },
+      // Maria Silva - Credencial
+      {
+        patientId: Array.from(this.patients.values())[1].id,
+        type: 'credential',
+        title: 'App Unimed',
+        description: 'Aplicativo do plano de saúde',
+        date: '2024-01-03',
+        serviceName: 'Unimed App',
+        serviceUrl: 'https://app.unimed.com.br',
+        username: 'maria.silva82',
+        password: 'unimed2024',
+        additionalNotes: 'Renovar senha a cada 6 meses'
+      },
+
+      // Ana Silva - Exames
+      {
+        patientId: Array.from(this.patients.values())[2].id,
+        type: 'exam',
+        title: 'Exame Oftalmológico',
+        description: 'Avaliação da visão e saúde ocular',
+        date: '2024-01-22',
+        examType: 'Clínico',
+        requestingDoctor: 'Dr. Oliveira',
+        observations: 'Visão normal para a idade'
+      },
+      // Ana Silva - Medicações
+      {
+        patientId: Array.from(this.patients.values())[2].id,
+        type: 'medication',
+        title: 'Xarope para Tosse',
+        description: 'Tratamento para tosse seca',
+        date: '2024-01-28',
+        medicationName: 'Dextrometorfano',
+        frequency: '3x ao dia',
+        usageType: 'temporary',
+        periodOfDay: 'any',
+        duration: '7 dias',
+        prescribingDoctor: 'Dr. Oliveira',
+        indication: 'Tosse seca persistente'
+      },
+      // Ana Silva - Consultas
+      {
+        patientId: Array.from(this.patients.values())[2].id,
+        type: 'appointment',
+        title: 'Consulta Pediátrica',
+        description: 'Acompanhamento do crescimento e desenvolvimento',
+        date: '2024-03-10',
+        time: '15:00',
+        doctor: 'Dr. Oliveira',
+        specialty: 'Pediatria',
+        clinicHospital: 'Clínica Infantil',
+        address: 'Rua das Crianças, 789'
+      },
+      // Ana Silva - Histórico
+      {
+        patientId: Array.from(this.patients.values())[2].id,
+        type: 'history',
+        title: 'Vacinação HPV',
+        description: 'Primeira dose da vacina contra HPV',
+        date: '2023-07-10'
+      },
+      // Ana Silva - Incidente
+      {
+        patientId: Array.from(this.patients.values())[2].id,
+        type: 'incident',
+        title: 'Queda da Bicicleta',
+        description: 'Escoriações no joelho direito, curativo realizado',
+        date: '2024-01-30'
+      },
+
+      // Pedro Silva - Exames
+      {
+        patientId: Array.from(this.patients.values())[3].id,
+        type: 'exam',
+        title: 'Teste Alérgico',
+        description: 'Teste cutâneo para identificação de alérgenos',
+        date: '2024-01-14',
+        examType: 'Clínico',
+        requestingDoctor: 'Dr. Lima',
+        observations: 'Positivo para pólen de gramíneas'
+      },
+      // Pedro Silva - Medicações
+      {
+        patientId: Array.from(this.patients.values())[3].id,
+        type: 'medication',
+        title: 'Antialérgico Infantil',
+        description: 'Para controle dos sintomas alérgicos',
+        date: '2024-01-16',
+        medicationName: 'Loratadina',
+        frequency: '1x ao dia',
+        usageType: 'continuous',
+        periodOfDay: 'evening',
+        prescribingDoctor: 'Dr. Lima',
+        indication: 'Rinite alérgica'
+      },
+      // Pedro Silva - Consultas
+      {
+        patientId: Array.from(this.patients.values())[3].id,
+        type: 'appointment',
+        title: 'Consulta com Alergista',
+        description: 'Avaliação e ajuste do tratamento para alergia',
+        date: '2024-02-28',
+        time: '16:30',
+        doctor: 'Dra. Almeida',
+        specialty: 'Alergologia',
+        clinicHospital: 'Centro de Alergia',
+        address: 'Rua da Saúde, 321'
+      },
+      // Pedro Silva - Histórico
+      {
+        patientId: Array.from(this.patients.values())[3].id,
+        type: 'history',
+        title: 'Primeira Crise Alérgica',
+        description: 'Primeira manifestação de rinite alérgica aos 8 anos',
+        date: '2020-11-05'
+      },
+      // Pedro Silva - Credencial
+      {
+        patientId: Array.from(this.patients.values())[3].id,
+        type: 'credential',
+        title: 'Portal Escolar',
+        description: 'Acesso ao sistema da escola para acompanhamento médico',
+        date: '2024-01-02',
+        serviceName: 'Portal Escola ABC',
+        serviceUrl: 'https://escola-abc.edu.br',
+        username: 'pedro.silva',
+        password: 'escola123',
+        additionalNotes: 'Informações médicas compartilhadas com enfermaria'
+      }
+    ];
+
+    // Create medical records
+    sampleMedicalRecords.forEach(recordData => {
+      const record: MedicalRecord = {
+        id: randomUUID(),
+        ...recordData,
+        attachments: [],
+        createdAt: new Date()
+      };
+      this.medicalRecords.set(record.id, record);
+    });
+
+    // Add sample pending items
+    const samplePendingItems = [
+      {
+        patientId: Array.from(this.patients.values())[0].id,
+        title: 'Agendar Retorno Cardiológico',
+        description: 'Marcar consulta de retorno em 6 meses',
+        priority: 'medium'
+      },
+      {
+        patientId: Array.from(this.patients.values())[1].id,
+        title: 'Renovar Receita Vitamina D',
+        description: 'Solicitar nova receita com a Dra. Costa',
+        priority: 'high'
+      },
+      {
+        patientId: Array.from(this.patients.values())[2].id,
+        title: 'Agendar Consulta Ortodôntica',
+        description: 'Primeira consulta para avaliação ortodôntica',
+        priority: 'low'
+      },
+      {
+        patientId: Array.from(this.patients.values())[3].id,
+        title: 'Comprar Medicação Antialérgica',
+        description: 'Renovar estoque da Loratadina',
+        priority: 'medium'
+      }
+    ];
+
+    // Create pending items
+    samplePendingItems.forEach(itemData => {
+      const item: PendingItem = {
+        id: randomUUID(),
+        ...itemData,
+        completed: false,
+        createdAt: new Date()
+      };
+      this.pendingItems.set(item.id, item);
+    });
 
     // Add sample recent updates
     const updates = [
