@@ -138,11 +138,11 @@ export default function Dashboard() {
       const appointmentDate = new Date(`${dateStr}T${apt.time || '00:00'}:00`);
       const now = new Date();
       
-      // Mostrar consultas futuras ou dos últimos 30 dias (para demonstração)
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(now.getDate() - 30);
+      // Mostrar consultas futuras e dos últimos 7 dias
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(now.getDate() - 7);
       
-      return appointmentDate >= thirtyDaysAgo;
+      return appointmentDate >= sevenDaysAgo;
     } catch (error) {
       console.log('Erro ao processar data da consulta:', apt.date, error);
       return true; // Se não conseguir parsear, mostrar mesmo assim

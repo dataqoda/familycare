@@ -57,7 +57,7 @@ export class MemStorage implements IStorage {
     this.initializeData();
   }
 
-  private initializeData() {
+  private async initializeData() {
     // Initialize with sample family data
     const familyMembers = [
       { 
