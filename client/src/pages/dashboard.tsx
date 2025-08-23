@@ -72,6 +72,7 @@ export default function Dashboard() {
       date: apt.date,
       time: apt.time,
       location: apt.location,
+      mapUrl: null,
       isFromMedicalRecord: false
     })),
     ...medicalRecords
@@ -86,7 +87,8 @@ export default function Dashboard() {
           doctor: record.doctor || 'Médico não informado',
           date: record.date,
           time: record.time || '00:00',
-          location: record.address || record.clinicHospital || 'Local não informado',
+          location: record.clinicHospital || 'Local não informado',
+          mapUrl: record.mapUrl,
           isFromMedicalRecord: true
         };
       })
@@ -396,15 +398,15 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              {selectedAppointment.location && (
+              {(selectedAppointment.location || selectedAppointment.mapUrl) && (
                 <div className="mb-6">
                   <Button
                     onClick={() => {
-                      // Se o campo já contém uma URL completa do Google Maps, usar diretamente
-                      if (selectedAppointment.location.startsWith('http')) {
-                        window.open(selectedAppointment.location, '_blank');
-                      } else {
-                        // Caso contrário, fazer busca normal
+                      // Se há um mapUrl específico, usar ele
+                      if (selectedAppointment.mapUrl) {
+                        window.open(selectedAppointment.mapUrl, '_blank');
+                      } else if (selectedAppointment.location) {
+                        // Caso contrário, fazer busca com o nome da clínica
                         const encodedLocation = encodeURIComponent(selectedAppointment.location);
                         const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodedLocation}`;
                         window.open(mapsUrl, '_blank');

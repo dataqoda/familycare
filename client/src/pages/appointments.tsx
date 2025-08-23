@@ -46,7 +46,7 @@ export default function AppointmentsPage() {
           doctor: record.doctor || 'Médico não informado',
           date: record.date,
           time: record.time || '00:00',
-          location: record.address || record.clinicHospital || '',
+          location: record.clinicHospital || '',
           isFromMedicalRecord: true
         };
       })
