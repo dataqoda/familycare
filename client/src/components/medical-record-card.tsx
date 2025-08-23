@@ -20,6 +20,8 @@ interface MedicalRecordCardProps {
 export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
   const [showDetails, setShowDetails] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [showAttachmentPreview, setShowAttachmentPreview] = useState(false);
+  const [selectedAttachment, setSelectedAttachment] = useState<{ url: string; name: string; type: string } | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [showEditModal, setShowEditModal] = useState(false);
@@ -199,6 +201,30 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
       return <Image className="w-4 h-4 text-blue-500" />;
     }
     return <FileText className="w-4 h-4 text-gray-500" />;
+  };
+
+  const openAttachmentPreview = (attachment: string) => {
+    let attachmentUrl;
+    if (attachment.startsWith('http')) {
+      attachmentUrl = attachment;
+    } else if (attachment.startsWith('/uploads/')) {
+      attachmentUrl = `http://localhost:5000${attachment}`;
+    } else if (attachment.includes('/')) {
+      const fileName = attachment.split('/').pop();
+      attachmentUrl = `http://localhost:5000/uploads/${fileName}`;
+    } else {
+      attachmentUrl = `http://localhost:5000/uploads/${attachment}`;
+    }
+
+    const fileName = attachment.split('/').pop() || attachment;
+    const fileType = isImageFile(attachment) ? 'image' : 'document';
+
+    setSelectedAttachment({
+      url: attachmentUrl,
+      name: fileName,
+      type: fileType
+    });
+    setShowAttachmentPreview(true);
   };
 
 
@@ -536,7 +562,7 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                       return (
                         <div key={index} className="relative group">
                           <div className="aspect-square bg-gray-100 rounded-lg border overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
-                               onClick={() => setSelectedImage(attachment)}>
+                               onClick={() => openAttachmentPreview(attachment)}>
                             <img 
                               src={imageUrl}
                               alt={`Anexo ${index + 1}`}
@@ -600,26 +626,35 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
                             <p className="text-xs text-gray-500">{attachment}</p>
                           </div>
                         </div>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => {
-                            // Construir URL dinamicamente baseada no servidor atual
-                            let fileUrl;
-                            if (attachment.startsWith('http')) {
-                              fileUrl = attachment;
-                            } else if (attachment.startsWith('/uploads/')) {
-                              fileUrl = attachment;
-                            } else {
-                              fileUrl = `/uploads/${attachment}`;
-                            }
+                        <div className="flex space-x-2">
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => openAttachmentPreview(attachment)}
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => {
+                              // Construir URL dinamicamente baseada no servidor atual
+                              let fileUrl;
+                              if (attachment.startsWith('http')) {
+                                fileUrl = attachment;
+                              } else if (attachment.startsWith('/uploads/')) {
+                                fileUrl = attachment;
+                              } else {
+                                fileUrl = `/uploads/${attachment}`;
+                              }
 
-                            console.log('📥 Baixando arquivo:', { attachment, fileUrl });
-                            window.open(fileUrl, '_blank');
-                          }}
-                        >
-                          <Download className="w-4 h-4" />
-                        </Button>
+                              console.log('📥 Baixando arquivo:', { attachment, fileUrl });
+                              window.open(fileUrl, '_blank');
+                            }}
+                          >
+                            <Download className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </div>
                     ))}
                 </div>
@@ -629,45 +664,81 @@ export default function MedicalRecordCard({ record }: MedicalRecordCardProps) {
         </DialogContent>
       </Dialog>
 
-      {/* Modal para visualizar imagem */}
-      {selectedImage && (
-          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" onClick={() => setSelectedImage(null)}>
-            <div className="relative max-w-4xl max-h-4xl p-4">
-              <img 
-                src={(() => {
-                  if (selectedImage.startsWith('http')) {
-                    return selectedImage;
-                  } else if (selectedImage.startsWith('/uploads/')) {
-                    return `http://localhost:5000${selectedImage}`;
-                  } else if (selectedImage.includes('/')) {
-                    const fileName = selectedImage.split('/').pop();
-                    return `http://localhost:5000/uploads/${fileName}`;
-                  } else {
-                    return `http://localhost:5000/uploads/${selectedImage}`;
-                  }
-                })()}
-                alt="Visualização ampliada"
-                className="max-w-full max-h-full object-contain"
-                onLoad={() => {
-                  console.log('✅ Modal - Imagem carregada:', selectedImage);
-                }}
-                onError={(e) => {
-                  console.error('❌ Modal - Erro ao carregar imagem:', selectedImage);
-                  setSelectedImage(null);
-                }}
-              />
-              <button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedImage(null);
-                }}
-                className="absolute top-4 right-4 text-white bg-black bg-opacity-50 rounded-full p-2 hover:bg-opacity-75 transition-colors"
-              >
-                <X className="w-6 h-6" />
-              </button>
+      {/* Modal para visualizar anexos */}
+      {showAttachmentPreview && selectedAttachment && (
+        <Dialog open={showAttachmentPreview} onOpenChange={setShowAttachmentPreview}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
+            <DialogHeader>
+              <DialogTitle className="flex items-center space-x-2">
+                {selectedAttachment.type === 'image' ? (
+                  <Image className="w-5 h-5" />
+                ) : (
+                  <FileText className="w-5 h-5" />
+                )}
+                <span>Visualizar Anexo</span>
+              </DialogTitle>
+            </DialogHeader>
+            
+            <div className="flex flex-col space-y-4">
+              <div className="text-sm text-gray-600">
+                <span className="font-medium">Arquivo:</span> {selectedAttachment.name}
+              </div>
+              
+              <div className="flex-1 flex items-center justify-center bg-gray-50 rounded-lg p-4 min-h-[400px]">
+                {selectedAttachment.type === 'image' ? (
+                  <img 
+                    src={selectedAttachment.url}
+                    alt={selectedAttachment.name}
+                    className="max-w-full max-h-full object-contain rounded-lg shadow-lg"
+                    onError={(e) => {
+                      console.error('❌ Erro ao carregar imagem no popup:', selectedAttachment.url);
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      if (target.parentElement) {
+                        target.parentElement.innerHTML = `
+                          <div class="text-center p-8">
+                            <div class="text-red-400 text-4xl mb-4">📷</div>
+                            <p class="text-red-600 font-medium">Erro ao carregar imagem</p>
+                            <p class="text-sm text-gray-500 mt-2 break-all">${selectedAttachment.name}</p>
+                          </div>
+                        `;
+                      }
+                    }}
+                  />
+                ) : (
+                  <div className="text-center p-8">
+                    <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                    <p className="text-lg font-medium text-gray-700 mb-2">Documento</p>
+                    <p className="text-sm text-gray-500 mb-4 break-all">{selectedAttachment.name}</p>
+                    <p className="text-xs text-gray-400">
+                      Clique em "Baixar" para visualizar o documento
+                    </p>
+                  </div>
+                )}
+              </div>
+              
+              <div className="flex justify-center space-x-3">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    console.log('📥 Baixando arquivo via popup:', selectedAttachment.url);
+                    window.open(selectedAttachment.url, '_blank');
+                  }}
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Baixar
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowAttachmentPreview(false)}
+                >
+                  Fechar
+                </Button>
+              </div>
             </div>
-          </div>
-        )}
+          </DialogContent>
+        </Dialog>
+      )}
 
       <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
         <DialogContent className="sm:max-w-[500px]">
