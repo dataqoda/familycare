@@ -545,7 +545,7 @@ export default function Dashboard() {
       <AdvancedQuickRegisterModal
         open={showQuickRegister}
         onOpenChange={setShowQuickRegister}
-        patients={patients}
+        patients={patients || []}
       />
 
       {/* Modal de Detalhes da Consulta */}

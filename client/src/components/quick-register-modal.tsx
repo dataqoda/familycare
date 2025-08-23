@@ -18,7 +18,7 @@ interface QuickRegisterModalProps {
   patients: Patient[];
 }
 
-export default function QuickRegisterModal({ open, onOpenChange, patients }: QuickRegisterModalProps) {
+export default function QuickRegisterModal({ open, onOpenChange, patients = [] }: QuickRegisterModalProps) {
   const [selectedPatient, setSelectedPatient] = useState<string>("");
   const [selectedType, setSelectedType] = useState<string>("");
   const [date, setDate] = useState<string>("");
@@ -112,11 +112,11 @@ export default function QuickRegisterModal({ open, onOpenChange, patients }: Qui
                 avoidCollisions={false}
                 className="z-[100] max-h-[150px] overflow-auto"
               >
-                {patients.map((patient) => (
+                {patients?.map((patient) => (
                   <SelectItem key={patient.id} value={patient.id}>
                     {patient.avatar} {patient.name}
                   </SelectItem>
-                ))}
+                )) || []}
               </SelectContent>
             </Select>
           </div>

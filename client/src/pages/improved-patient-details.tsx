@@ -869,7 +869,7 @@ export default function ImprovedPatientDetails() {
       <QuickRegisterModal 
         open={showQuickRegister} 
         onOpenChange={setShowQuickRegister}
-        patientId={patient?.id}
+        patients={[patient].filter(Boolean) || []}entId={patient?.id}
       />
 
       <PasswordPromptModal
