@@ -546,49 +546,61 @@ export default function ImprovedPatientDetails() {
           </TabsContent>
 
           <TabsContent value="summary" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {Object.entries(recordsByType).map(([type, records]) => {
-                const typeLabels = {
-                  exam: { label: 'Exames', icon: '📋', color: 'blue' },
-                  medication: { label: 'Medicações', icon: '💊', color: 'green' },
-                  appointment: { label: 'Consultas', icon: '📅', color: 'purple' },
-                  history: { label: 'Histórico', icon: '📝', color: 'yellow' },
-                  incident: { label: 'Incidentes', icon: '⚠️', color: 'red' },
-                  pending: { label: 'Pendências', icon: '📋', color: 'orange' },
-                };
+            {Object.keys(recordsByType).length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Object.entries(recordsByType).map(([type, records]) => {
+                  const typeLabels = {
+                    exam: { label: 'Exames', icon: '📋', color: 'blue' },
+                    medication: { label: 'Medicações', icon: '💊', color: 'green' },
+                    appointment: { label: 'Consultas', icon: '📅', color: 'purple' },
+                    history: { label: 'Histórico', icon: '📝', color: 'yellow' },
+                    incident: { label: 'Incidentes', icon: '⚠️', color: 'red' },
+                    pending: { label: 'Pendências', icon: '📋', color: 'orange' },
+                  };
 
-                const typeInfo = typeLabels[type as keyof typeof typeLabels];
-                if (!typeInfo) return null;
+                  const typeInfo = typeLabels[type as keyof typeof typeLabels];
+                  if (!typeInfo) return null;
 
-                return (
-                  <Card key={type} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-white to-gray-50">
-                    <CardHeader className="pb-4">
-                      <CardTitle className="flex items-center space-x-3">
-                        <div className={`w-10 h-10 bg-gradient-to-br from-${typeInfo.color}-500 to-${typeInfo.color}-600 rounded-xl flex items-center justify-center`}>
-                          <span className="text-white">{typeInfo.icon}</span>
+                  return (
+                    <Card key={type} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-white to-gray-50">
+                      <CardHeader className="pb-4">
+                        <CardTitle className="flex items-center space-x-3">
+                          <div className={`w-10 h-10 bg-gradient-to-br from-${typeInfo.color}-500 to-${typeInfo.color}-600 rounded-xl flex items-center justify-center`}>
+                            <span className="text-white">{typeInfo.icon}</span>
+                          </div>
+                          <span>{typeInfo.label}</span>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-4xl font-bold mb-4 text-gray-900">{records.length}</div>
+                        <div className="space-y-3">
+                          {records.slice(0, 3).map((record) => (
+                            <div key={record.id} className="text-sm text-gray-600 truncate bg-gray-50 p-3 rounded-lg">
+                              {record.title || record.description}
+                            </div>
+                          ))}
+                          {records.length > 3 && (
+                            <div className="text-sm text-gray-500 bg-gray-100 p-2 rounded-lg text-center">
+                              +{records.length - 3} mais
+                            </div>
+                          )}
                         </div>
-                        <span>{typeInfo.label}</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-4xl font-bold mb-4 text-gray-900">{records.length}</div>
-                      <div className="space-y-3">
-                        {records.slice(0, 3).map((record) => (
-                          <div key={record.id} className="text-sm text-gray-600 truncate bg-gray-50 p-3 rounded-lg">
-                            {record.title || record.description}
-                          </div>
-                        ))}
-                        {records.length > 3 && (
-                          <div className="text-sm text-gray-500 bg-gray-100 p-2 rounded-lg text-center">
-                            +{records.length - 3} mais
-                          </div>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            ) : (
+              <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-gray-50">
+                <CardContent className="text-center py-16">
+                  <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center">
+                    <FileText className="w-10 h-10 text-blue-600" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Nenhum resumo disponível</h3>
+                  <p className="text-gray-500">Este paciente ainda não possui registros médicos para gerar um resumo.</p>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           <TabsContent value="timeline" className="space-y-6">
