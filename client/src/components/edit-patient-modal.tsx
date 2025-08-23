@@ -37,9 +37,14 @@ export default function EditPatientModal({ open, onOpenChange, patient }: EditPa
     insurancePlan: "",
     insuranceNumber: "",
     observations: "",
+    insuranceCardFrontUrl: "",
+    insuranceCardBackUrl: "",
+    idCardFrontUrl: "",
+    idCardBackUrl: "",
   });
 
   const [allergyInput, setAllergyInput] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     if (patient && open) {
@@ -55,6 +60,10 @@ export default function EditPatientModal({ open, onOpenChange, patient }: EditPa
         insurancePlan: patient.insurancePlan || "",
         insuranceNumber: patient.insuranceNumber || "",
         observations: patient.observations || "",
+        insuranceCardFrontUrl: patient.insuranceCardFrontUrl || "",
+        insuranceCardBackUrl: patient.insuranceCardBackUrl || "",
+        idCardFrontUrl: patient.idCardFrontUrl || "",
+        idCardBackUrl: patient.idCardBackUrl || "",
       });
     }
   }, [patient, open]);
@@ -121,6 +130,44 @@ export default function EditPatientModal({ open, onOpenChange, patient }: EditPa
       ...prev,
       allergies: prev.allergies.filter(a => a !== allergy)
     }));
+  };
+
+  const handleFileUpload = async (file: File, fieldName: string) => {
+    if (!file) return;
+
+    setIsUploading(true);
+    const formDataUpload = new FormData();
+    formDataUpload.append('file', file);
+
+    try {
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formDataUpload,
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro no upload');
+      }
+
+      const result = await response.json();
+      setFormData(prev => ({
+        ...prev,
+        [fieldName]: result.path
+      }));
+
+      toast({
+        title: "Sucesso!",
+        description: `${file.name} foi enviado com sucesso.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Falha no upload do arquivo.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const emojiOptions = ["👤", "👨", "👩", "🧒", "👶", "👴", "👵", "🧑‍⚕️", "👨‍⚕️", "👩‍⚕️"];
@@ -295,6 +342,86 @@ export default function EditPatientModal({ open, onOpenChange, patient }: EditPa
             </div>
           </div>
 
+          <div className="space-y-4">
+            <Label className="text-base font-semibold">📄 Upload de Documentos</Label>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="insuranceCardFront">Carteirinha - Frente</Label>
+                <Input
+                  id="insuranceCardFront"
+                  type="file"
+                  accept="image/*,.pdf"
+                  className="text-sm"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleFileUpload(file, 'insuranceCardFrontUrl');
+                  }}
+                  disabled={isUploading}
+                />
+                {(formData.insuranceCardFrontUrl || patient?.insuranceCardFrontUrl) && (
+                  <p className="text-xs text-green-600">✓ Arquivo atual: carteirinha-frente</p>
+                )}
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="insuranceCardBack">Carteirinha - Verso</Label>
+                <Input
+                  id="insuranceCardBack"
+                  type="file"
+                  accept="image/*,.pdf"
+                  className="text-sm"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleFileUpload(file, 'insuranceCardBackUrl');
+                  }}
+                  disabled={isUploading}
+                />
+                {(formData.insuranceCardBackUrl || patient?.insuranceCardBackUrl) && (
+                  <p className="text-xs text-green-600">✓ Arquivo atual: carteirinha-verso</p>
+                )}
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="idCardFront">RG - Frente</Label>
+                <Input
+                  id="idCardFront"
+                  type="file"
+                  accept="image/*,.pdf"
+                  className="text-sm"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleFileUpload(file, 'idCardFrontUrl');
+                  }}
+                  disabled={isUploading}
+                />
+                {(formData.idCardFrontUrl || patient?.idCardFrontUrl) && (
+                  <p className="text-xs text-green-600">✓ Arquivo atual: rg-frente</p>
+                )}
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="idCardBack">RG - Verso</Label>
+                <Input
+                  id="idCardBack"
+                  type="file"
+                  accept="image/*,.pdf"
+                  className="text-sm"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleFileUpload(file, 'idCardBackUrl');
+                  }}
+                  disabled={isUploading}
+                />
+                {(formData.idCardBackUrl || patient?.idCardBackUrl) && (
+                  <p className="text-xs text-green-600">✓ Arquivo atual: rg-verso</p>
+                )}
+              </div>
+            </div>
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="observations">Observações</Label>
             <Textarea
@@ -310,8 +437,8 @@ export default function EditPatientModal({ open, onOpenChange, patient }: EditPa
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancelar
             </Button>
-            <Button type="submit" disabled={updatePatientMutation.isPending}>
-              {updatePatientMutation.isPending ? "Salvando..." : "Salvar Alterações"}
+            <Button type="submit" disabled={updatePatientMutation.isPending || isUploading}>
+              {isUploading ? "Enviando arquivos..." : updatePatientMutation.isPending ? "Salvando..." : "Salvar Alterações"}
             </Button>
           </div>
         </form>
