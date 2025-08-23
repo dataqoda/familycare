@@ -124,7 +124,7 @@ export default function Dashboard() {
     // Filtrar apenas consultas futuras ou recentes (últimos 30 dias para teste)
     try {
       let dateStr = apt.date;
-      
+
       // Converter formato brasileiro DD/MM/YYYY para YYYY-MM-DD se necessário
       if (dateStr.includes('/')) {
         const dateParts = dateStr.split('/');
@@ -133,15 +133,15 @@ export default function Dashboard() {
           dateStr = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
         }
       }
-      
+
       // Converter formato YYYY-MM-DD para objeto Date
       const appointmentDate = new Date(`${dateStr}T${apt.time || '00:00'}:00`);
       const now = new Date();
-      
+
       // Mostrar consultas futuras e dos últimos 7 dias
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(now.getDate() - 7);
-      
+
       return appointmentDate >= sevenDaysAgo;
     } catch (error) {
       console.log('Erro ao processar data da consulta:', apt.date, error);
@@ -153,7 +153,7 @@ export default function Dashboard() {
     try {
       let dateA = a.date;
       let dateB = b.date;
-      
+
       if (dateA.includes('/')) {
         const [day, month, year] = dateA.split('/');
         dateA = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
@@ -162,10 +162,10 @@ export default function Dashboard() {
         const [day, month, year] = dateB.split('/');
         dateB = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
       }
-      
+
       const dateObjA = new Date(`${dateA}T${a.time || '00:00'}:00`);
       const dateObjB = new Date(`${dateB}T${b.time || '00:00'}:00`);
-      
+
       return dateObjA.getTime() - dateObjB.getTime();
     } catch {
       return 0;
@@ -303,7 +303,7 @@ export default function Dashboard() {
                           </p>
                         </div>
                       </div>
-                      
+
                       <div className="space-y-2">
                         <div className="flex items-center text-gray-600 bg-gray-50 rounded-lg p-2">
                           <Calendar className="w-4 h-4 mr-3 text-purple-500 flex-shrink-0" />
@@ -458,7 +458,7 @@ export default function Dashboard() {
                           {patient.name}
                         </h3>
                       </div>
-                      
+
                       <div className="space-y-2">
                         <div className="flex items-center text-gray-600 bg-gray-50 rounded-lg p-2">
                           <Calendar className="w-4 h-4 mr-3 text-purple-500 flex-shrink-0" />
