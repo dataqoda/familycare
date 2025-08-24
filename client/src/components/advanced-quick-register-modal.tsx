@@ -544,9 +544,12 @@ export default function AdvancedQuickRegisterModal({ open, onOpenChange, patient
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="dialog-content-constrained">
+      <DialogContent className="dialog-content-constrained max-w-4xl">
         <DialogHeader>
           <DialogTitle className="text-lg sm:text-xl">⚡ Registro Rápido</DialogTitle>
+          <DialogDescription className="text-sm text-gray-600">
+            Cadastre rapidamente informações médicas para seus familiares
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">

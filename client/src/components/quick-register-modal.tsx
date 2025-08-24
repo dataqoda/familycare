@@ -94,9 +94,12 @@ export default function QuickRegisterModal({ open, onOpenChange, patients = [] }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="dialog-content-constrained bg-gradient-to-br from-blue-50 to-purple-50">
+      <DialogContent className="dialog-content-constrained bg-gradient-to-br from-blue-50 to-purple-50 max-w-4xl">
         <DialogHeader className="bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg p-4 mb-6">
           <DialogTitle className="text-xl font-bold">⚡ Registro Rápido</DialogTitle>
+          <DialogDescription className="text-sm text-blue-100">
+            Cadastre rapidamente informações médicas para seus familiares
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">

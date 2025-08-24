@@ -227,9 +227,9 @@
     top: 50% !important;
     z-index: 51 !important;
     transform: translate(-50%, -50%) !important;
-    width: 95vw !important;
-    max-width: 95vw !important;
-    max-height: 95vh !important;
+    width: calc(100vw - 2rem) !important;
+    max-width: calc(100vw - 2rem) !important;
+    max-height: calc(100vh - 2rem) !important;
     margin: 0 !important;
     padding: 1.5rem !important;
     box-sizing: border-box !important;
@@ -241,16 +241,17 @@
 
   @media (min-width: 640px) {
     [data-radix-dialog-content] {
-      width: 90vw !important;
-      max-width: 90vw !important;
-      max-height: 90vh !important;
+      width: calc(90vw - 1rem) !important;
+      max-width: calc(90vw - 1rem) !important;
+      max-height: calc(90vh - 1rem) !important;
     }
   }
 
   @media (min-width: 768px) {
     [data-radix-dialog-content] {
-      width: 85vw !important;
-      max-width: 85vw !important;
+      width: calc(85vw - 1rem) !important;
+      max-width: calc(85vw - 1rem) !important;
+      max-height: calc(85vh - 1rem) !important;
     }
   }
 
@@ -258,6 +259,7 @@
     [data-radix-dialog-content] {
       width: 42rem !important;
       max-width: 42rem !important;
+      max-height: calc(90vh - 1rem) !important;
     }
   }
 
@@ -267,5 +269,12 @@
     width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
+    /* Ensure content never exceeds viewport */
+    contain: layout size style !important;
+    overflow: hidden !important;
+  }
+
+  .dialog-content-constrained > * {
+    box-sizing: border-box !important;
   }
 }
