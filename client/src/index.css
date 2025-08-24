@@ -213,4 +213,25 @@
   body:has([data-state="open"]) {
     padding-right: 0 !important;
   }
+
+  /* Ensure dialogs stay within viewport bounds */
+  [data-radix-dialog-content] {
+    max-width: calc(100vw - 1rem) !important;
+    max-height: calc(100vh - 2rem) !important;
+    margin: 1rem auto !important;
+  }
+
+  @media (min-width: 640px) {
+    [data-radix-dialog-content] {
+      max-width: calc(100vw - 2rem) !important;
+      margin: 1rem auto !important;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    [data-radix-dialog-content] {
+      max-width: 42rem !important;
+      margin: auto !important;
+    }
+  }
 }
