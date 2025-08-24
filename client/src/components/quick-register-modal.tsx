@@ -94,7 +94,7 @@ export default function QuickRegisterModal({ open, onOpenChange, patients = [] }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto mx-2 sm:mx-4 lg:mx-auto w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] lg:w-auto bg-gradient-to-br from-blue-50 to-purple-50">
+      <DialogContent className="max-h-[90vh] overflow-y-auto bg-gradient-to-br from-blue-50 to-purple-50">
         <DialogHeader className="bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg p-4 mb-6">
           <DialogTitle className="text-xl font-bold">⚡ Registro Rápido</DialogTitle>
         </DialogHeader>
