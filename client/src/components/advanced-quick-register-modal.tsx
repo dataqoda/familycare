@@ -544,7 +544,7 @@ export default function AdvancedQuickRegisterModal({ open, onOpenChange, patient
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto">
+      <DialogContent className="dialog-content-constrained">
         <DialogHeader>
           <DialogTitle className="text-lg sm:text-xl">⚡ Registro Rápido</DialogTitle>
         </DialogHeader>
