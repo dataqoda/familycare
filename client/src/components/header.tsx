@@ -52,29 +52,29 @@ export default function Header({ onQuickRegister, onPatientRegister, onMenuToggl
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center space-x-3 sm:space-x-4">
+          <div className="flex items-center space-x-1 sm:space-x-3">
             <Button
               onClick={onQuickRegister}
-              className="group relative overflow-hidden bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 border border-blue-400/30"
+              className="group relative overflow-hidden bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-2 sm:px-6 py-2 sm:py-3 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 border border-blue-400/30"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <div className="relative flex items-center space-x-2">
-                <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
+              <div className="relative flex items-center space-x-1 sm:space-x-2">
+                <FileText className="w-3 h-3 sm:w-5 sm:h-5" />
                 <span className="hidden sm:inline font-semibold">Registro Rápido</span>
-                <span className="sm:hidden font-semibold text-sm">Registro</span>
+                <span className="sm:hidden font-semibold text-xs">Registro</span>
               </div>
             </Button>
             
             <Button
               onClick={onPatientRegister}
-              className="group relative overflow-hidden bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 border border-green-400/30"
+              className="group relative overflow-hidden bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-2 sm:px-6 py-2 sm:py-3 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 border border-green-400/30"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <div className="relative flex items-center space-x-2">
-                <UserPlus className="w-4 h-4 sm:w-5 sm:h-5" />
+              <div className="relative flex items-center space-x-1 sm:space-x-2">
+                <UserPlus className="w-3 h-3 sm:w-5 sm:h-5" />
                 <span className="hidden sm:inline font-semibold">Cadastrar</span>
-                <span className="sm:hidden font-semibold text-sm">
-                  <Plus className="w-4 h-4" />
+                <span className="sm:hidden font-semibold text-xs">
+                  <Plus className="w-3 h-3" />
                 </span>
               </div>
             </Button>
