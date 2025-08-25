@@ -1,5 +1,5 @@
 import { useParams } from "wouter";
-import { useQuery, useMutation, QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -51,11 +51,9 @@ import QuickRegisterModal from "@/components/quick-register-modal";
 import PasswordPromptModal from "@/components/password-prompt-modal";
 import { deletePatient } from "@/api/patients";
 
-// Initialize QueryClient
-const queryClient = new QueryClient();
-
 export default function ImprovedPatientDetails() {
   const { id } = useParams();
+  const queryClient = useQueryClient();
   const [, navigate] = useLocation();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showQuickRegister, setShowQuickRegister] = useState(false);
