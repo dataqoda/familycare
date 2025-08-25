@@ -7,6 +7,15 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 
+// Função para formatar nome em Title Case
+function formatName(name: string): string {
+  return name
+    .toLowerCase()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
 // Configuração do multer para upload de arquivos
 const uploadStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -77,6 +86,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log("Creating patient with data:", req.body);
       const validatedData = insertPatientSchema.parse(req.body);
+      
+      // Formatar o nome em Title Case
+      if (validatedData.name) {
+        validatedData.name = formatName(validatedData.name);
+      }
+      
       console.log("Validated data:", validatedData);
       
       const patient = await storage.createPatient(validatedData);
@@ -104,6 +119,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/patients/:id", async (req, res) => {
     try {
       const validatedData = insertPatientSchema.partial().parse(req.body);
+      
+      // Formatar o nome em Title Case se estiver sendo atualizado
+      if (validatedData.name) {
+        validatedData.name = formatName(validatedData.name);
+      }
       const patient = await storage.updatePatient(req.params.id, validatedData);
       if (!patient) {
         return res.status(404).json({ message: "Patient not found" });
