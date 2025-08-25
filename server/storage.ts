@@ -637,6 +637,17 @@ export class MemStorage implements IStorage {
       .slice(0, 10);
   }
 
+  async createRecentUpdate(insertUpdate: InsertRecentUpdate): Promise<RecentUpdate> {
+    const id = randomUUID();
+    const update: RecentUpdate = {
+      ...insertUpdate,
+      id,
+      createdAt: new Date()
+    };
+    this.recentUpdates.set(id, update);
+    return update;
+  }
+
   async deletePendingItemsByPatient(patientId: string): Promise<void> {
     const itemsToDelete = Array.from(this.pendingItems.values())
       .filter(item => item.patientId === patientId);
