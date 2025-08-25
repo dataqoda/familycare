@@ -108,6 +108,23 @@ export const recentUpdates = pgTable("recent_updates", {
 export const insertPatientSchema = createInsertSchema(patients).omit({
   id: true,
   createdAt: true,
+}).extend({
+  name: z.string().min(1, "Nome é obrigatório"),
+  birthDate: z.string().min(1, "Data de nascimento é obrigatória"),
+  photoUrl: z.string().optional(),
+  bloodType: z.string().optional(),
+  doctor: z.string().optional(),
+  allergies: z.array(z.string()).optional(),
+  emergencyContactName: z.string().optional(),
+  emergencyContactPhone: z.string().optional(),
+  insurancePlan: z.string().optional(),
+  insuranceNumber: z.string().optional(),
+  insuranceCardFrontUrl: z.string().optional(),
+  insuranceCardBackUrl: z.string().optional(),
+  idCardFrontUrl: z.string().optional(),
+  idCardBackUrl: z.string().optional(),
+  sensitiveDataPasswordActive: z.boolean().optional(),
+  sensitiveDataPassword: z.string().optional(),
 });
 
 export const insertAppointmentSchema = createInsertSchema(appointments).omit({

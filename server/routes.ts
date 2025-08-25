@@ -75,8 +75,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/patients", async (req, res) => {
     try {
+      console.log("Creating patient with data:", req.body);
       const validatedData = insertPatientSchema.parse(req.body);
+      console.log("Validated data:", validatedData);
+      
       const patient = await storage.createPatient(validatedData);
+      console.log("Patient created:", patient);
 
       // Create recent update
       await storage.createRecentUpdate({
@@ -88,10 +92,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.status(201).json(patient);
     } catch (error) {
+      console.error("Error creating patient:", error);
       if (error instanceof z.ZodError) {
+        console.error("Validation errors:", error.errors);
         return res.status(400).json({ message: "Invalid data", errors: error.errors });
       }
-      res.status(500).json({ message: "Failed to create patient" });
+      res.status(500).json({ message: "Failed to create patient", error: error.message });
     }
   });
 
