@@ -37,7 +37,10 @@ import {
   ExternalLink,
   Eye,
   EyeOff,
-  Trash2
+  Trash2,
+  Droplet,
+  Shield,
+  Lock
 } from "lucide-react";
 import { useLocation } from "wouter";
 import MedicalRecordCard from "@/components/medical-record-card";
