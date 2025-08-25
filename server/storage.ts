@@ -396,7 +396,7 @@ export class MemStorage implements IStorage {
     // Create medical records
     sampleMedicalRecords.forEach((recordData, index) => {
       let attachments: string[] = [];
-      
+
       // Adicionar anexos de exemplo para alguns registros
       if (index === 0) { // Primeiro exame de João Silva
         attachments = ['imagem.png', 'documento.pdf'];
@@ -405,7 +405,7 @@ export class MemStorage implements IStorage {
       } else if (index === 13) { // Exame oftalmológico de Ana Silva
         attachments = ['file-1755952144423-604867207.jpg'];
       }
-      
+
       const record: MedicalRecord = {
         id: randomUUID(),
         ...recordData,
@@ -505,6 +505,10 @@ export class MemStorage implements IStorage {
   }
 
   async deletePatient(id: string): Promise<boolean> {
+    await this.deleteAppointmentsByPatient(id);
+    await this.deleteMedicalRecordsByPatient(id);
+    await this.deletePendingItemsByPatient(id);
+    await this.deleteRecentUpdatesByPatient(id);
     return this.patients.delete(id);
   }
 
@@ -541,6 +545,16 @@ export class MemStorage implements IStorage {
     return this.appointments.delete(id);
   }
 
+  async deleteAppointmentsByPatient(patientId: string): Promise<void> {
+    const appointmentsToDelete = Array.from(this.appointments.values())
+      .filter(appointment => appointment.patientId === patientId);
+
+    appointmentsToDelete.forEach(appointment => {
+      this.appointments.delete(appointment.id);
+    });
+  }
+
+
   // Medical Records
   async getMedicalRecords(): Promise<MedicalRecord[]> {
     return Array.from(this.medicalRecords.values());
@@ -572,6 +586,15 @@ export class MemStorage implements IStorage {
 
   async deleteMedicalRecord(id: string): Promise<boolean> {
     return this.medicalRecords.delete(id);
+  }
+
+  async deleteMedicalRecordsByPatient(patientId: string): Promise<void> {
+    const recordsToDelete = Array.from(this.medicalRecords.values())
+      .filter(record => record.patientId === patientId);
+
+    recordsToDelete.forEach(record => {
+      this.medicalRecords.delete(record.id);
+    });
   }
 
   // Pending Items
@@ -609,20 +632,27 @@ export class MemStorage implements IStorage {
 
   // Recent Updates
   async getRecentUpdates(): Promise<RecentUpdate[]> {
-    return Array.from(this.recentUpdates.values()).sort((a, b) =>
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
+    return Array.from(this.recentUpdates.values())
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .slice(0, 10);
   }
 
-  async createRecentUpdate(insertUpdate: InsertRecentUpdate): Promise<RecentUpdate> {
-    const id = randomUUID();
-    const update: RecentUpdate = {
-      ...insertUpdate,
-      id,
-      createdAt: new Date()
-    };
-    this.recentUpdates.set(id, update);
-    return update;
+  async deletePendingItemsByPatient(patientId: string): Promise<void> {
+    const itemsToDelete = Array.from(this.pendingItems.values())
+      .filter(item => item.patientId === patientId);
+
+    itemsToDelete.forEach(item => {
+      this.pendingItems.delete(item.id);
+    });
+  }
+
+  async deleteRecentUpdatesByPatient(patientId: string): Promise<void> {
+    const updatesToDelete = Array.from(this.recentUpdates.values())
+      .filter(update => update.patientId === patientId);
+
+    updatesToDelete.forEach(update => {
+      this.recentUpdates.delete(update.id);
+    });
   }
 }
 

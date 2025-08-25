@@ -1,10 +1,44 @@
 import { useParams } from "wouter";
-import { useQuery } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Calendar, Phone, Shield, FileText, Edit, User, MapPin, Clock, Droplet, AlertTriangle, Plus, Lock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  ArrowLeft,
+  Calendar,
+  User,
+  Phone,
+  Mail,
+  MapPin,
+  Heart,
+  ShieldCheck,
+  Edit,
+  Plus,
+  Filter,
+  FileText,
+  Pill,
+  Stethoscope,
+  AlertTriangle,
+  Clock,
+  Key,
+  Download,
+  ExternalLink,
+  Eye,
+  EyeOff,
+  Trash2
+} from "lucide-react";
 import { useLocation } from "wouter";
 import MedicalRecordCard from "@/components/medical-record-card";
 import type { Patient, MedicalRecord } from "@shared/schema";
@@ -12,6 +46,7 @@ import { useState, useCallback } from "react";
 import EditPatientModal from "@/components/edit-patient-modal";
 import QuickRegisterModal from "@/components/quick-register-modal";
 import PasswordPromptModal from "@/components/password-prompt-modal";
+import { deletePatient } from "@/api/patients";
 
 
 export default function ImprovedPatientDetails() {
@@ -24,6 +59,7 @@ export default function ImprovedPatientDetails() {
   const [activeRecordTab, setActiveRecordTab] = useState("all");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // State for delete confirmation
   const [filter, setFilter] = useState('all'); // State for filtering medical records
 
 
@@ -37,6 +73,19 @@ export default function ImprovedPatientDetails() {
     select: (data) => data.filter(record => record.patientId === id),
     enabled: !!id,
   });
+
+  // Mutation for deleting a patient
+  const deletePatientMutation = useMutation({
+    mutationFn: (patientId: string) => deletePatient(patientId),
+    onSuccess: () => {
+      navigate("/"); // Navigate back to the list after successful deletion
+    },
+    onError: (error) => {
+      console.error("Error deleting patient:", error);
+      // Optionally show an error message to the user
+    },
+  });
+
 
   const sensitiveRecordTypes = ["exam", "history", "credential"];
 
@@ -78,7 +127,7 @@ export default function ImprovedPatientDetails() {
                 <User className="w-10 h-10 text-red-600" />
               </div>
               <h1 className="text-2xl font-bold text-gray-900 mb-4">Paciente não encontrado</h1>
-              <Button 
+              <Button
                 onClick={() => navigate("/")}
                 className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
               >
@@ -162,14 +211,16 @@ export default function ImprovedPatientDetails() {
                   className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 font-semibold"
                 >
                   <Edit className="w-4 h-4 mr-2" />
-                  ✏️ Editar
+                  Editar Paciente
                 </Button>
+
                 <Button
-                  onClick={() => setShowQuickRegister(true)}
-                  className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 font-semibold"
+                  onClick={() => setShowDeleteConfirm(true)}
+                  variant="outline"
+                  className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                 >
-                  <Plus className="w-4 h-4 mr-2" />
-                  ➕ Novo Registro
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Deletar Paciente
                 </Button>
               </div>
             </div>
@@ -351,8 +402,8 @@ export default function ImprovedPatientDetails() {
                             <label className="text-xs text-gray-500 block mb-2 font-medium">Frente</label>
                             {patient.insuranceCardFrontUrl ? (
                               <div className="border border-gray-200 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group">
-                                <img 
-                                  src={patient.insuranceCardFrontUrl} 
+                                <img
+                                  src={patient.insuranceCardFrontUrl}
                                   alt="Carteirinha - Frente"
                                   className="w-full h-24 sm:h-32 object-cover cursor-pointer group-hover:scale-105 transition-transform duration-300"
                                   onClick={() => window.open(patient.insuranceCardFrontUrl, '_blank')}
@@ -368,8 +419,8 @@ export default function ImprovedPatientDetails() {
                             <label className="text-xs text-gray-500 block mb-2 font-medium">Verso</label>
                             {patient.insuranceCardBackUrl ? (
                               <div className="border border-gray-200 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group">
-                                <img 
-                                  src={patient.insuranceCardBackUrl} 
+                                <img
+                                  src={patient.insuranceCardBackUrl}
                                   alt="Carteirinha - Verso"
                                   className="w-full h-24 sm:h-32 object-cover cursor-pointer group-hover:scale-105 transition-transform duration-300"
                                   onClick={() => window.open(patient.insuranceCardBackUrl, '_blank')}
@@ -392,8 +443,8 @@ export default function ImprovedPatientDetails() {
                             <label className="text-xs text-gray-500 block mb-2 font-medium">Frente</label>
                             {patient.idCardFrontUrl ? (
                               <div className="border border-gray-200 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group">
-                                <img 
-                                  src={patient.idCardFrontUrl} 
+                                <img
+                                  src={patient.idCardFrontUrl}
                                   alt="RG - Frente"
                                   className="w-full h-24 sm:h-32 object-cover cursor-pointer group-hover:scale-105 transition-transform duration-300"
                                   onClick={() => window.open(patient.idCardFrontUrl, '_blank')}
@@ -409,8 +460,8 @@ export default function ImprovedPatientDetails() {
                             <label className="text-xs text-gray-500 block mb-2 font-medium">Verso</label>
                             {patient.idCardBackUrl ? (
                               <div className="border border-gray-200 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group">
-                                <img 
-                                  src={patient.idCardBackUrl} 
+                                <img
+                                  src={patient.idCardBackUrl}
                                   alt="RG - Verso"
                                   className="w-full h-24 sm:h-32 object-cover cursor-pointer group-hover:scale-105 transition-transform duration-300"
                                   onClick={() => window.open(patient.idCardBackUrl, '_blank')}
@@ -441,7 +492,7 @@ export default function ImprovedPatientDetails() {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div 
+                    <div
                       className="text-center p-4 bg-blue-50 rounded-lg relative cursor-pointer"
                       onClick={() => {
                         setActiveTab("records");
@@ -460,7 +511,7 @@ export default function ImprovedPatientDetails() {
                         )}
                       </div>
                     </div>
-                    <div 
+                    <div
                       className="text-center p-4 bg-green-50 rounded-lg cursor-pointer"
                       onClick={() => {
                         setActiveTab("records");
@@ -472,7 +523,7 @@ export default function ImprovedPatientDetails() {
                       </div>
                       <div className="text-sm text-gray-600">💊 Medicações</div>
                     </div>
-                    <div 
+                    <div
                       className="text-center p-4 bg-purple-50 rounded-lg cursor-pointer"
                       onClick={() => {
                         setActiveTab("records");
@@ -484,7 +535,7 @@ export default function ImprovedPatientDetails() {
                       </div>
                       <div className="text-sm text-gray-600">📅 Consultas</div>
                     </div>
-                    <div 
+                    <div
                       className="text-center p-4 bg-yellow-50 rounded-lg relative cursor-pointer"
                       onClick={() => {
                         setActiveTab("records");
@@ -503,7 +554,7 @@ export default function ImprovedPatientDetails() {
                         )}
                       </div>
                     </div>
-                    <div 
+                    <div
                       className="text-center p-4 bg-red-50 rounded-lg cursor-pointer"
                       onClick={() => {
                         setActiveTab("records");
@@ -515,7 +566,7 @@ export default function ImprovedPatientDetails() {
                       </div>
                       <div className="text-sm text-gray-600">⚠️ Incidentes</div>
                     </div>
-                    <div 
+                    <div
                       className="text-center p-4 bg-orange-50 rounded-lg cursor-pointer"
                       onClick={() => {
                         setActiveTab("records");
@@ -689,8 +740,8 @@ export default function ImprovedPatientDetails() {
                       <div className="flex items-center space-x-2">
                         <Shield className="w-5 h-5 text-amber-600" />
                         <p className="text-sm text-amber-800">
-                          <strong>Alguns dados estão protegidos:</strong> Exames, Histórico e Senhas estão ocultos. 
-                          <button 
+                          <strong>Alguns dados estão protegidos:</strong> Exames, Histórico e Senhas estão ocultos.
+                          <button
                             onClick={requestSensitiveAccess}
                             className="ml-2 text-amber-900 underline hover:no-underline"
                           >
@@ -769,7 +820,7 @@ export default function ImprovedPatientDetails() {
 
           <TabsContent value="summary" className="space-y-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div 
+              <div
                 className="text-center p-4 bg-blue-50 rounded-lg relative cursor-pointer"
                 onClick={() => {
                   setActiveTab("records");
@@ -788,7 +839,7 @@ export default function ImprovedPatientDetails() {
                   )}
                 </div>
               </div>
-              <div 
+              <div
                 className="text-center p-4 bg-green-50 rounded-lg cursor-pointer"
                 onClick={() => {
                   setActiveTab("records");
@@ -800,7 +851,7 @@ export default function ImprovedPatientDetails() {
                 </div>
                 <div className="text-sm text-gray-600">💊 Medicações</div>
               </div>
-              <div 
+              <div
                 className="text-center p-4 bg-purple-50 rounded-lg cursor-pointer"
                 onClick={() => {
                   setActiveTab("records");
@@ -812,7 +863,7 @@ export default function ImprovedPatientDetails() {
                 </div>
                 <div className="text-sm text-gray-600">📅 Consultas</div>
               </div>
-              <div 
+              <div
                 className="text-center p-4 bg-yellow-50 rounded-lg relative cursor-pointer"
                 onClick={() => {
                   setActiveTab("records");
@@ -831,7 +882,7 @@ export default function ImprovedPatientDetails() {
                   )}
                 </div>
               </div>
-              <div 
+              <div
                 className="text-center p-4 bg-red-50 rounded-lg cursor-pointer"
                 onClick={() => {
                   setActiveTab("records");
@@ -843,7 +894,7 @@ export default function ImprovedPatientDetails() {
                 </div>
                 <div className="text-sm text-gray-600">⚠️ Incidentes</div>
               </div>
-              <div 
+              <div
                 className="text-center p-4 bg-orange-50 rounded-lg cursor-pointer"
                 onClick={() => {
                   setActiveTab("records");
@@ -963,14 +1014,14 @@ export default function ImprovedPatientDetails() {
       </div>
 
       {/* Modals */}
-      <EditPatientModal 
-        open={showEditPatient} 
+      <EditPatientModal
+        open={showEditPatient}
         onOpenChange={setShowEditPatient}
         patient={patient}
       />
 
-      <QuickRegisterModal 
-        open={showQuickRegister} 
+      <QuickRegisterModal
+        open={showQuickRegister}
         onOpenChange={setShowQuickRegister}
         patients={[patient].filter(Boolean) || []}
         patientId={patient?.id}
@@ -982,6 +1033,51 @@ export default function ImprovedPatientDetails() {
         onPasswordSubmit={handlePasswordSubmit}
         patientName={patient?.name || ""}
       />
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-red-600">
+              <AlertTriangle className="w-5 h-5" />
+              Confirmar Exclusão
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-2">
+              <p>
+                Tem certeza que deseja deletar o paciente <strong>{patient.name}</strong>?
+              </p>
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3 mt-3">
+                <p className="text-sm text-red-700 font-semibold">
+                  ⚠️ Esta ação é irreversível!
+                </p>
+                <p className="text-sm text-red-600 mt-1">
+                  Todos os dados serão deletados permanentemente, incluindo:
+                </p>
+                <ul className="text-sm text-red-600 mt-2 ml-4 list-disc space-y-1">
+                  <li>Informações pessoais do paciente</li>
+                  <li>Todos os registros médicos ({medicalRecords.length} registros)</li>
+                  <li>Consultas agendadas</li>
+                  <li>Anexos e documentos</li>
+                  <li>Histórico de atualizações</li>
+                </ul>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                deletePatientMutation.mutate(patient.id);
+                setShowDeleteConfirm(false);
+              }}
+              className="bg-red-600 hover:bg-red-700 text-white"
+              disabled={deletePatientMutation.isPending}
+            >
+              {deletePatientMutation.isPending ? "Deletando..." : "Sim, Deletar"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

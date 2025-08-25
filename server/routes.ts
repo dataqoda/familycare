@@ -113,7 +113,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete("/api/patients/:id", async (req, res) => {
     try {
-      const deleted = await storage.deletePatient(req.params.id);
+      const patientId = req.params.id;
+      
+      // Delete all related data first
+      await storage.deleteMedicalRecordsByPatient(patientId);
+      await storage.deleteAppointmentsByPatient(patientId);
+      await storage.deletePendingItemsByPatient(patientId);
+      await storage.deleteRecentUpdatesByPatient(patientId);
+      
+      // Finally delete the patient
+      const deleted = await storage.deletePatient(patientId);
       if (!deleted) {
         return res.status(404).json({ message: "Patient not found" });
       }
